@@ -33,6 +33,7 @@ int AR = 32, zoomy = 32;
 
 int MAXlevel = 12;
 //double uemax = 0.0001;
+#define NXCOL (1 << MAXlevel)
 
 double angle = 6.4*pi/180.;
 double au = 0.03, freq = 1.5;
@@ -63,6 +64,7 @@ u.t[top] = dirichlet(0.);
 p[top] = dirichlet(0.);*/
 
 void read_params(const char * fname);
+void compute_derivative( double a[], double ax[], double axx[], double axxx[], int N, double dx);
 
 int main (int argc, char * argv[])
 {
@@ -148,6 +150,34 @@ void read_params(const char * fname)
     fprintf(stdout, "file %s not found\n", fname);
     exit(0);
   }
+}
+
+void compute_derivatives (
+  double a[], double ax[], double axx[], double axxx[],
+  int N, double dx
+) {
+  // Interior points
+  for (int i = 2; i < N - 2; i++) {
+    ax[i] =
+      (a[i+1] - a[i-1])/(2.0*dx);
+
+    axx[i] =
+      (a[i+1] - 2.0*a[i] + a[i-1])/(dx*dx);
+
+    axxx[i] =
+      (a[i+2] - 2.0*a[i+1] + 2.0*a[i-1] - a[i-2])
+      /(2.0*dx*dx*dx);
+  }
+
+  // Boundary treatment: Copying nearest value
+  ax[0] = ax[1] = ax[2];
+  ax[N-2] = ax[N-1] = ax[N-3];
+
+  axx[0] = axx[1] = axx[2];
+  axx[N-2] = axx[N-1] = axx[N-3];
+
+  axxx[0] = axxx[1] = axxx[2];
+  axxx[N-2] = axxx[N-1] = axxx[N-3];
 }
 
 
@@ -279,7 +309,70 @@ event interface (t += t_out) {
    system(command);
 }
 
-/* event velocityprofile (t += 0.0001) {
+event closure_quantities (t+=0.001) {
+
+  double h[NXCOL], q[NXCOL];
+
+  for (int i = 0; i < NXCOL; i++) {
+    h[i] = 0.;
+    q[i] = 0.;
+  }
+
+  double xmin = 0.;
+  double xmax = L0;
+  double dxcol = (xmax - xmin)/NXCOL;
+
+  foreach(reduction(+:h[:NXCOL]) reduction(+:q[:NXCOL])) {
+
+    double xleft  = x - Delta/2.;
+    double xright = x + Delta/2.;
+
+    int i0 = floor((xleft  - xmin)/dxcol);
+    int i1 = floor((xright - xmin)/dxcol);
+
+    if (i0 < 0) i0 = 0;
+    if (i1 >= NXCOL) i1 = NXCOL - 1;
+
+    for (int i = i0; i <= i1; i++) {
+      h[i] += f[]*Delta;
+      q[i] += f[]*u.x[]*Delta;
+    }
+  }
+
+  double hx[NXCOL], hxx[NXCOL], hxxx[NXCOL];
+  double qx[NXCOL], qxx[NXCOL], qxxx[NXCOL];
+
+  compute_derivatives(h, hx, hxx, hxxx, NXCOL, dxcol);
+  compute_derivatives(q, qx, qxx, qxxx, NXCOL, dxcol);
+
+  if (pid() == 0) {
+    char name[80];
+    sprintf(name, "hq-%g.dat", t);
+
+    FILE * fp = fopen(name, "w");
+
+    fprintf(fp,
+      "# t x h q hx hxx hxxx qx qxx qxxx\n"
+    );
+
+    for (int i = 0; i < NXCOL; i++) {
+      double xc = xmin + (i + 0.5)*dxcol;
+
+      fprintf(fp,
+        "%.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g\n",
+        t, xc,
+        h[i], q[i],
+        hx[i], hxx[i], hxxx[i],
+        qx[i], qxx[i], qxxx[i]
+      );
+    }
+
+    fclose(fp);
+  } 
+} 
+
+
+/*event velocityprofile (t += 0.0001) {
 
    char names[80];
    sprintf(names, "velocity%d", pid());
@@ -295,10 +388,10 @@ event interface (t += t_out) {
    char command[80];
    sprintf(command, "LC_ALL=C  cat velocity* > ux-vel%07.4f.dat",t);
    system(command);
-} */
+   } */
 
 
-event velocityprofile (t += 0.0001) {
+/*event velocityprofile (t += 0.0001) {
 
   char name[80];
   sprintf(name, "vel-%07.4f.vtu", t);
@@ -315,7 +408,7 @@ event velocityprofile (t += 0.0001) {
   );
 
   fclose(fp);
-}
+  }*/
 
 
 /* event movie (t += 1e-2)
