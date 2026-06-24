@@ -290,7 +290,7 @@ event interface (t += t_out) {
 
 event closure_quantities (t+=0.001) {
 
-  double h[NXCOL], q[NXCOL];
+  double h[NXCOL], q[NXCOL], ux_h[NXCOL], uz_h[NXCOL], uz_w[NXCOL];
 
   for (int i = 0; i < NXCOL; i++) {
     h[i] = 0.;
@@ -301,7 +301,7 @@ event closure_quantities (t+=0.001) {
   double xmax = L0;
   double dxcol = (xmax - xmin)/NXCOL;
 
-  foreach(reduction(+:h[:NXCOL]) reduction(+:q[:NXCOL])) {
+  foreach(reduction(+:h[:NXCOL]) reduction(+:q[:NXCOL]) reduction(+:ux_h[:NXCOL]) reduction(+:uz_h[:NXCOL]) reduction(+:uz_w[:NXCOL]) {
 
     double xleft  = x - Delta/2.;
     double xright = x + Delta/2.;
@@ -316,8 +316,73 @@ event closure_quantities (t+=0.001) {
       h[i] += f[]*Delta;
       q[i] += f[]*u.x[]*Delta;
     }
-  }
+	  
+    // Interface values.
+    if (f[] > 0 && f[] < 1){
+       coord n = interface_normal(point, f);
+      double alpha = plane_alpha(f[], n);
 
+      coord pc;
+      plane_center(n, alpha, f[], &pc);
+
+      double xi = x + Delta*pc.x;
+      double zi = y + Delta*pc.y;
+
+      int ic = floor((xi - xmin)/dxcol);
+
+      if (ic >= 0 && ic < NXCOL) {
+
+        double eps = 0.5*Delta;
+
+        /*
+          Velocity derivatives at the interface.
+          u.x = streamwise velocity
+          u.y = wall-normal velocity
+        */
+
+        double ux = (
+          interpolate(u.x, xi + eps, zi)
+        - interpolate(u.x, xi - eps, zi)
+        )/(2.*eps);
+
+        double uz = (
+          interpolate(u.x, xi, zi + eps)
+        - interpolate(u.x, xi, zi - eps)
+        )/(2.*eps);
+
+	ux_h[ic] += ux;
+	uz_h[ic] += uz;
+	count_h[ic] += 1.;
+      }
+    }
+
+    //Averaging values if more than one interface cell exists in a x column. RECONSIDER
+    for (int i = 0; i < NXCOL; i++) {
+    if (count_h[i] > 0.) {
+      ux_h[i] /= count_h[i];
+      uz_h[i] /= count_h[i];
+    }
+    }
+
+    //Finding wall shear
+    if (y - Delta/2. <= 0. && f[] > 0.5) {
+      int ic = floor((x - xmin)/dxcol);
+      if (ic >= 0 && ic < NXCOL) {
+
+	double z0 = 0.;
+	double eps = Delta;
+	double u0 = interpolate(u.x, x, z0);
+	double u1 = interpolate(u.x, x, z0 + eps);
+	double u2 = interpolate(u.x, x, z0 + 2.*eps);
+	double dudz_wall = (-3.*u0 + 4.*u1 - u2)/(2.*eps);
+
+	uz_w[ic] += dudz_wall;
+      }
+    }
+	  }	 
+    
+    
+    
   double hx[NXCOL], hxx[NXCOL], hxxx[NXCOL];
   double qx[NXCOL], qxx[NXCOL], qxxx[NXCOL];
 
@@ -326,29 +391,30 @@ event closure_quantities (t+=0.001) {
 
   if (pid() == 0) {
     char name[80];
-    sprintf(name, "hq-%g.dat", t);
+    sprintf(name, "closure-%g.dat", t);
 
     FILE * fp = fopen(name, "w");
 
     fprintf(fp,
-      "# t x h q hx hxx hxxx qx qxx qxxx\n"
+      "t x h q hx hxx hxxx qx qxx qxxx ux_h uz_h uz_w\n"
     );
 
     for (int i = 0; i < NXCOL; i++) {
       double xc = xmin + (i + 0.5)*dxcol;
 
       fprintf(fp,
-        "%.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g\n",
-        t, xc,
-        h[i], q[i],
-        hx[i], hxx[i], hxxx[i],
-        qx[i], qxx[i], qxxx[i]
+        "%.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g\n",
+	      t, xc,
+	      h[i], q[i],
+	      hx[i], hxx[i], hxxx[i],
+	      qx[i], qxx[i], qxxx[i],
+	      ux_h[i], uz_h[i], uz_w[i]
       );
     }
 
     fclose(fp);
   } 
-} 
+ 
 
 
 /*event velocityprofile (t += 0.0001) {
