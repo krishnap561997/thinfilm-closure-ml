@@ -12,7 +12,6 @@
 //#include "tag.h"
 //#include "reduced.h"
 #include "view.h"
-#include "output_vtu_foreach.h"
 //vector h[];
 
 double t_out = 0.01;
@@ -183,27 +182,7 @@ void compute_derivatives (
 
 
 event init (t = 0) {
-  if (!restore (file = "dump")) { 
-    fraction (f0, H0 - y);
-    //f0.refine = f0.prolongation = fraction_refine;
-    restriction ({f0}); // for boundary conditions on levels
-
-    foreach(){
-      profile[] = (y/H0)*(2.0-(y/H0));
-    }
-    //profile.refine = profile.prolongation = refine_linear;
-    //profile.refine = profile.prolongation = fraction_refine;
-    restriction ({profile}); // for boundary conditions on levels
-   
-   
-    foreach() {
-      //f[] = f0[];
-      d[] = H0 - y;
-      u.x[] = US*(f0[]*profile[]); // + 1-f0[]);
-      u.y[] = 0;
-    }
-    boundary({d, u});
-    
+  if (restore (file = "dump", list=all)) {
   }
 }
 
