@@ -12,7 +12,6 @@
 //#include "tag.h"
 //#include "reduced.h"
 #include "view.h"
-#include "output_vtu_foreach.h"
 //vector h[];
 
 double t_out = 0.01;
@@ -33,38 +32,51 @@ int AR = 32, zoomy = 32;
 
 int MAXlevel = 12;
 //double uemax = 0.0001;
-#define NXCOL (1 << MAXlevel)
 
 double angle = 6.4*pi/180.;
 double au = 0.03, freq = 1.5;
 scalar f0[], profile[];
 
-u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
-//u.n[left]  = dirichlet(f0[]*profile[]);
+// White-band noise at inlet - Update
+#define MNOISE 1000
+
+double F0_noise = 0.01;      // RMS-scale inlet noise, e.g. 0.01 = 1%
+double fcut_noise = 6.0;     // Hz, cutoff frequency
+double noise_phase[MNOISE];
+double inlet_F = 0.;
+double inlet_U = 0.;
+int noise_seed = 12345;
+
+double chang_noise_signal (double tt)
+{
+  double F = 0.;
+  double df = fcut_noise/((double) MNOISE);
+
+  for (int k = 1; k <= MNOISE; k++) {
+    double fk = k*df;
+    F += cos(2.*pi*fk*tt + noise_phase[k-1]);
+  }
+
+  // normalized so F0_noise is approximately RMS amplitude
+  return F0_noise*sqrt(2./((double) MNOISE))*F;
+}
+
+//
+
+u.n[left]  = dirichlet(inlet_U*(f0[]*profile[]));
 u.t[left]  = dirichlet(0);
-//p[left]   = neumann(0);
-//pf[left]   = neumann(0);
-//f[left]    = dirichlet(f0[]); 
 d[left] = dirichlet(H0-y);
 
 u.n[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
 u.t[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
-//u.t[right] = neumann(0);
 p[right] = dirichlet(0);
 pf[right] = dirichlet(0); 
-//f[right] = neumann(0);
 
 u.n[bottom] = dirichlet(0);
 u.t[bottom] = dirichlet(0);
-//f[bottom] = dirichlet(1);
 d[bottom] = dirichlet(H0-y);
 
-/*u.n[top] = dirichlet(0.);
-u.t[top] = dirichlet(0.);
-p[top] = dirichlet(0.);*/
-
 void read_params(const char * fname);
-void compute_derivative( double a[], double ax[], double axx[], double axxx[], int N, double dx);
 
 int main (int argc, char * argv[])
 {
@@ -131,53 +143,28 @@ void read_params(const char * fname)
 
     while(fgets(line,100,fp)) {
       sscanf(line, "%15s = %15s", key, val);
-      if (strcmp(key,"LX") == 0)              { LX        = atof(val);         }
-      else if (strcmp(key, "MAXLEVEL") == 0)  { MAXlevel  = atoi(val);         }
-      else if (strcmp(key, "AR") == 0)        { AR        = atoi(val);         }
-      else if (strcmp(key, "Zoom") == 0)      { zoomy     = atoi(val);         }
-      else if (strcmp(key, "CFL") == 0)       { CFL       = atof(val);         }
-      else if (strcmp(key, "DT") == 0)        { DT        = atof(val);         }
-      else if (strcmp(key, "TOLERANCE") == 0) { TOLERANCE = atof(val);         }
-      else if (strcmp(key, "H0") == 0)        { H0        = atof(val);         }
-      else if (strcmp(key, "ANGLE_DEG") == 0) { angle     = atof(val)*pi/180.; }
-      else if (strcmp(key, "FREQ") == 0)      { freq      = atof(val);         }
-      else if (strcmp(key, "AMP") == 0)       { au        = atof(val);         }
-      else if (strcmp(key, "T_OUT") == 0)     { t_out     = atof(val);         }
-      else if (strcmp(key, "T_END") == 0)     { t_end     = atof(val);         }
+      if (strcmp(key,"LX") == 0)              { LX         = atof(val);         }
+      else if (strcmp(key, "MAXLEVEL") == 0)  { MAXlevel   = atoi(val);         }
+      else if (strcmp(key, "AR") == 0)        { AR         = atoi(val);         }
+      else if (strcmp(key, "Zoom") == 0)      { zoomy      = atoi(val);         }
+      else if (strcmp(key, "CFL") == 0)       { CFL        = atof(val);         }
+      else if (strcmp(key, "DT") == 0)        { DT         = atof(val);         }
+      else if (strcmp(key, "TOLERANCE") == 0) { TOLERANCE  = atof(val);         }
+      else if (strcmp(key, "H0") == 0)        { H0         = atof(val);         }
+      else if (strcmp(key, "ANGLE_DEG") == 0) { angle      = atof(val)*pi/180.; }
+      else if (strcmp(key, "FREQ") == 0)      { freq       = atof(val);         }
+      else if (strcmp(key, "AMP") == 0)       { au         = atof(val);         }
+      else if (strcmp(key, "T_OUT") == 0)     { t_out      = atof(val);         }
+      else if (strcmp(key, "T_END") == 0)     { t_end      = atof(val);         }
+      else if (strcmp(key, "F0_NOISE") == 0)  { F0_noise   = atof(val);         }
+      else if (strcmp(key, "FCUT_NOISE") == 0){ fcut_noise = atof(val);         }
+      else if (strcmp(key, "NOISE_SEED") == 0){ noise_seed = atoi(val);         }
     }
     fclose(fp);
   } else {
     fprintf(stdout, "file %s not found\n", fname);
     exit(0);
   }
-}
-
-void compute_derivatives (
-  double a[], double ax[], double axx[], double axxx[],
-  int N, double dx
-) {
-  // Interior points
-  for (int i = 2; i < N - 2; i++) {
-    ax[i] =
-      (a[i+1] - a[i-1])/(2.0*dx);
-
-    axx[i] =
-      (a[i+1] - 2.0*a[i] + a[i-1])/(dx*dx);
-
-    axxx[i] =
-      (a[i+2] - 2.0*a[i+1] + 2.0*a[i-1] - a[i-2])
-      /(2.0*dx*dx*dx);
-  }
-
-  // Boundary treatment: Copying nearest value
-  ax[0] = ax[1] = ax[2];
-  ax[N-2] = ax[N-1] = ax[N-3];
-
-  axx[0] = axx[1] = axx[2];
-  axx[N-2] = axx[N-1] = axx[N-3];
-
-  axxx[0] = axxx[1] = axxx[2];
-  axxx[N-2] = axxx[N-1] = axxx[N-3];
 }
 
 
@@ -207,6 +194,41 @@ event init (t = 0) {
   }
 }
 
+event init_noise (i = 0)
+{
+  srand(noise_seed);
+
+  for (int k = 0; k < MNOISE; k++)
+    noise_phase[k] = 2.*pi*(rand()/((double) RAND_MAX));
+
+  inlet_F = chang_noise_signal(t);
+  inlet_U = US*(1. + inlet_F);
+}
+
+// Inlet noise updates
+event update_inlet_noise (i++)
+{
+  inlet_F = chang_noise_signal(t);
+  inlet_U = US*(1. + inlet_F);
+}
+
+event inlet_signal_output (i++)
+{
+  if (pid() == 0) {
+    static FILE * fp = NULL;
+
+    if (fp == NULL) {
+      fp = fopen("inlet_signal.dat", "w");
+      fprintf(fp, "# t inlet_F inlet_U US\n");
+    }
+
+    fprintf(fp, "%.12e %.12e %.12e %.12e\n",
+            t, inlet_F, inlet_U, US);
+    fflush(fp);
+  }
+}
+//
+
 event check_grid(i=1)
 {
   double xmax=0., ymax = 0., maxDelta = 0., minDelta = 10.;
@@ -221,6 +243,8 @@ event check_grid(i=1)
   fprintf(stderr, "Delta: %g , %g\n", maxDelta, minDelta);
   fprintf(stderr, "Domain: \nx : %g -> %g. \ny : %g -> %g\n", X0, xmax, Y0, ymax);
 }
+
+
 
 event acceleration (i++) {
   face vector av = a;
@@ -309,70 +333,7 @@ event interface (t += t_out) {
    system(command);
 }
 
-event closure_quantities (t+=0.001) {
-
-  double h[NXCOL], q[NXCOL];
-
-  for (int i = 0; i < NXCOL; i++) {
-    h[i] = 0.;
-    q[i] = 0.;
-  }
-
-  double xmin = 0.;
-  double xmax = L0;
-  double dxcol = (xmax - xmin)/NXCOL;
-
-  foreach(reduction(+:h[:NXCOL]) reduction(+:q[:NXCOL])) {
-
-    double xleft  = x - Delta/2.;
-    double xright = x + Delta/2.;
-
-    int i0 = floor((xleft  - xmin)/dxcol);
-    int i1 = floor((xright - xmin)/dxcol);
-
-    if (i0 < 0) i0 = 0;
-    if (i1 >= NXCOL) i1 = NXCOL - 1;
-
-    for (int i = i0; i <= i1; i++) {
-      h[i] += f[]*Delta;
-      q[i] += f[]*u.x[]*Delta;
-    }
-  }
-
-  double hx[NXCOL], hxx[NXCOL], hxxx[NXCOL];
-  double qx[NXCOL], qxx[NXCOL], qxxx[NXCOL];
-
-  compute_derivatives(h, hx, hxx, hxxx, NXCOL, dxcol);
-  compute_derivatives(q, qx, qxx, qxxx, NXCOL, dxcol);
-
-  if (pid() == 0) {
-    char name[80];
-    sprintf(name, "hq-%g.dat", t);
-
-    FILE * fp = fopen(name, "w");
-
-    fprintf(fp,
-      "# t x h q hx hxx hxxx qx qxx qxxx\n"
-    );
-
-    for (int i = 0; i < NXCOL; i++) {
-      double xc = xmin + (i + 0.5)*dxcol;
-
-      fprintf(fp,
-        "%.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g\n",
-        t, xc,
-        h[i], q[i],
-        hx[i], hxx[i], hxxx[i],
-        qx[i], qxx[i], qxxx[i]
-      );
-    }
-
-    fclose(fp);
-  } 
-} 
-
-
-/*event velocityprofile (t += 0.0001) {
+/* event velocityprofile (t += 0.0001) {
 
    char names[80];
    sprintf(names, "velocity%d", pid());
@@ -388,69 +349,7 @@ event closure_quantities (t+=0.001) {
    char command[80];
    sprintf(command, "LC_ALL=C  cat velocity* > ux-vel%07.4f.dat",t);
    system(command);
-   } */
-
-
-/*event velocityprofile (t += 0.0001) {
-
-  char name[80];
-  sprintf(name, "vel-%07.4f.vtu", t);
-
-  FILE * fp = fopen(name, "w");
-
-  scalar omega[];
-  vorticity(u, omega);
-
-  output_vtu_ascii_foreach(
-    (scalar *) {f, d, p, omega},
-    (vector *) {u},
-    fp
-  );
-
-  fclose(fp);
-  }*/
-
-
-/* event movie (t += 1e-2)
-{
-#if dimension == 2
-  scalar omega[];
-  vorticity (u, omega);
-  view (tx = -0.5);
-  clear();
-  draw_vof ("f");
-  squares ("omega", linear = true, spread = 10);
-  box ();
-#else // 3D
-  scalar pid[];
-  foreach()
-    pid[] = fmod(pid()*(npe() + 37), npe());
-  view (camera = "iso",
-	fov = 14.5, tx = -0.418, ty = 0.288,
-	width = 1600, height = 1200);
-  clear();
-  draw_vof ("f");
-#endif // 3D
-  save ("movie.mp4");
-  } */
-
-/*event snapshot (t = 0; t += 10; t <= 300) {
-  char name[80];
-  sprintf (name, "snapshot-%g", t);
-  scalar pid[];
-  foreach()
-    pid[] = fmod(pid()*(npe() + 37), npe());
-  dump (name);
-  } */
-
-/*event snapshot (t += t_out; t<=t_end) {
-  char name[80];
-  scalar kappa[];
-  curvature(f, kappa);
-  sprintf (name, "dump-%06.4f", t);
-  p.nodump = false;
-  dump (file = name); // so that we can restart
-}*/
+} */
 
 event finalize(t += t_dump; t <= t_end)
 {
@@ -461,12 +360,4 @@ event finalize(t += t_dump; t <= t_end)
   p.nodump = false;
   dump (file = name); // so that we can restart
 }
-
-/*event runtime (i += 10) {
-  mpi_all_reduce (perf.t, MPI_DOUBLE, MPI_MAX);
-  if (perf.t/60 >= maxruntime) {
-    dump (file = "dump"); // so that we can restart
-    return 1; // exit
-  }
-  }*/
 
