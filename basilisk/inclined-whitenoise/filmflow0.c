@@ -40,8 +40,8 @@ scalar f0[], profile[];
 // White-band noise at inlet - Update
 #define MNOISE 1000
 
-double F0_noise = 0.01;      // RMS-scale inlet noise, e.g. 0.01 = 1%
-double fcut_noise = 6.0;     // Hz, cutoff frequency
+double F0_noise = 0.025;      // RMS-scale inlet noise, F0 = A sqrt(M/2). 
+double fcut_noise = 28.0;     // Hz, cutoff frequency. Set to twice neutral frequency.
 double noise_phase[MNOISE];
 double inlet_F = 0.;
 double inlet_U = 0.;
