@@ -14,6 +14,9 @@
 #include "view.h"
 //vector h[];
 
+#include "hdf5.h"
+#include "output_h5_ml.h"
+
 double t_out = 0.01;
 double t_dump = 0.1;
 double t_end = 2.8;
@@ -107,7 +110,9 @@ int main (int argc, char * argv[])
   char comm[80];
   sprintf(comm, "mkdir -p images");
   system(comm);
-
+  
+  sprintf(comm, "mkdir -p output");
+  system(comm);
 
   fprintf(stderr, "LX: %.8f\n", LX);
   fprintf(stderr, "MAXlevel: %d\n", MAXlevel);
@@ -299,38 +304,6 @@ event interface (t += t_out) {
 
 
 
-/* event movie (t += 1e-2)
-{
-#if dimension == 2
-  scalar omega[];
-  vorticity (u, omega);
-  view (tx = -0.5);
-  clear();
-  draw_vof ("f");
-  squares ("omega", linear = true, spread = 10);
-  box ();
-#else // 3D
-  scalar pid[];
-  foreach()
-    pid[] = fmod(pid()*(npe() + 37), npe());
-  view (camera = "iso",
-	fov = 14.5, tx = -0.418, ty = 0.288,
-	width = 1600, height = 1200);
-  clear();
-  draw_vof ("f");
-#endif // 3D
-  save ("movie.mp4");
-  } */
-
-/*event snapshot (t = 0; t += 10; t <= 300) {
-  char name[80];
-  sprintf (name, "snapshot-%g", t);
-  scalar pid[];
-  foreach()
-    pid[] = fmod(pid()*(npe() + 37), npe());
-  dump (name);
-  } */
-
 /*event snapshot (t += t_out; t<=t_end) {
   char name[80];
   scalar kappa[];
@@ -350,6 +323,102 @@ event finalize(t += t_dump; t <= t_end)
   dump (file = name); // so that we can restart
 }
 
+event output_h5(t += t_dump; t <= t_end)
+{
+  int NXOUT = 1 << MAXlevel;
+  int NYOUT = NXOUT/AR;
+  double xmin_out = X0;
+  double ymin_out = Y0;
+  double xmax_out = X0 + L0;
+  double ymax_out = Y0 + L0/AR;
+  
+  double *xout = calloc(NXOUT, sizeof(double));
+  double *yout = calloc(NYOUT, sizeof(double));
+
+  double *uout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *vout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *pout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *fout = calloc(NXOUT*NYOUT, sizeof(double));
+
+  double *h    = calloc(NXOUT, sizeof(double));
+  double *q    = calloc(NXOUT, sizeof(double));
+  double *tauw = calloc(NXOUT, sizeof(double));
+
+  double dx = (xmax_out - xmin_out)/(NXOUT - 1);
+  double dy = (ymax_out - ymin_out)/(NYOUT - 1);
+
+  for (int i = 0; i < NXOUT; i++)
+    xout[i] = xmin_out + i*dx;
+
+  for (int j = 0; j < NYOUT; j++)
+    yout[j] = ymin_out + j*dy;
+
+  for (int j = 0; j < NYOUT; j++) {
+    for (int i = 0; i < NXOUT; i++) {
+      double xp = xout[i];
+      double yp = yout[j];
+      int id = j*NXOUT + i;
+
+      uout[id] = interpolate(u.x, xp, yp);
+      vout[id] = interpolate(u.y, xp, yp);
+      pout[id] = interpolate(p,   xp, yp);
+      fout[id] = interpolate(f,   xp, yp);
+    }
+  }
+
+  for (int i = 0; i < NXOUT; i++) {
+    double xi = xout[i];
+
+    for (int j = 0; j < NYOUT - 1; j++) {
+      double yj = yout[j];
+
+      double fj = interpolate(f,   xi, yj);
+      double uj = interpolate(u.x, xi, yj);
+
+      h[i] += fj*dy;
+      q[i] += fj*uj*dy;
+    }
+
+    double u0 = interpolate(u.x, xi, ymin_out);
+    double u1 = interpolate(u.x, xi, ymin_out + dy);
+
+    tauw[i] = mu1*(u1 - u0)/dy;
+  }
+
+  char fname[256];
+  sprintf(fname, "output/snapshot_%08.4f.h5", t);
+
+  hid_t file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+  H5Gcreate(file, "/grid",      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/fields",    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/interface", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/closures",  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  write_1d_h5(file, "/grid/x", xout, NXOUT);
+  write_1d_h5(file, "/grid/y", yout, NYOUT);
+
+  write_2d_h5(file, "/fields/u", uout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/v", vout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/p", pout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/f", fout, NYOUT, NXOUT);
+
+  write_1d_h5(file, "/interface/h", h, NXOUT);
+  write_1d_h5(file, "/closures/q", q, NXOUT);
+  write_1d_h5(file, "/closures/tau_wall", tauw, NXOUT);
+
+  H5Fclose(file);
+
+  free(xout);
+  free(yout);
+  free(uout);
+  free(vout);
+  free(pout);
+  free(fout);
+  free(h);
+  free(q);
+  free(tauw); 
+}
 /*event runtime (i += 10) {
   mpi_all_reduce (perf.t, MPI_DOUBLE, MPI_MAX);
   if (perf.t/60 >= maxruntime) {

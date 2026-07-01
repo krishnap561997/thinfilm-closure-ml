@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=clsvof
+#SBATCH --job-name=h5test
 #SBATCH -o run_%j.out
 #SBATCH --mail-type=ALL
 #!SBATCH --mail-user=krishnap561997@gmail.com
 
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                  # ONE task only
-#SBATCH --cpus-per-task=64          # OpenMP threads (adjust!)
+#SBATCH --cpus-per-task=16          # OpenMP threads (adjust!)
 #!SBATCH --mem-per-cpu=4gb
-#SBATCH -t 0-00:10:00
+#SBATCH -t 0-02:10:00
 
 #SBATCH --account=bala1s
 #SBATCH --qos=bala1s
@@ -23,11 +23,12 @@ date
 hostname
 
 # -------------------------
-# Modules (NO OpenMPI)
+# Modules 
 # -------------------------
 module purge
 module load gcc/14.2.0
 module load imagemagick/7.0.8-20
+module load hdf5
 
 # -------------------------
 # OpenMP environment
@@ -43,4 +44,4 @@ export KMP_STACKSIZE=1g
 # -------------------------
 # Run
 # -------------------------
-./filmflow
+./$1
