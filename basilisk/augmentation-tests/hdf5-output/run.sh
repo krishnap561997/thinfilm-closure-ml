@@ -44,4 +44,7 @@ export KMP_STACKSIZE=1g
 # -------------------------
 # Run
 # -------------------------
+echo "HPC_HDF5_LIB=$HPC_HDF5_LIB"
+export LD_LIBRARY_PATH=$HPC_HDF5_LIB:$LD_LIBRARY_PATH
+
 ./$1
