@@ -12,7 +12,6 @@
 //#include "tag.h"
 //#include "reduced.h"
 #include "view.h"
-#include "output_vtu_foreach.h"
 //vector h[];
 
 double t_out = 0.01;
@@ -296,27 +295,6 @@ event interface (t += t_out) {
    sprintf(command, "LC_ALL=C  cat velocity* > ux-vel%07.4f.dat",t);
    system(command);
 } */
-
-
-event velocityprofile (t += 0.0001) {
-
-  char name[80];
-  sprintf(name, "vel-%07.4f.vtu", t);
-
-  FILE * fp = fopen(name, "w");
-
-  scalar omega[];
-  vorticity(u, omega);
-
-  output_vtu_ascii_foreach(
-    (scalar *) {f, d, p, omega},
-    (vector *) {u},
-    fp
-  );
-
-  fclose(fp);
-}
-
 
 /* event movie (t += 1e-2)
 {

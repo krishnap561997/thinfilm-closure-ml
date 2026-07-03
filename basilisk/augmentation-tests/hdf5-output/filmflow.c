@@ -14,7 +14,7 @@
 #include "view.h"
 //vector h[];
 
-#include "hdf5.h"
+#include <hdf5.h>
 #include "output_h5_ml.h"
 
 double t_out = 0.01;
@@ -230,16 +230,6 @@ event logfile (i++) {
   fflush (stdout);
 }
 
-/*event damp (i++) {
-  coord Uinf = {US, 0, 0};
-  foreach() {
-    if (LX - x < LX/10.)
-      foreach_dimension()
-        u.x[] += dt*(Uinf.x*profile[]*f0[] - u.x[])/2.;
-  }
-  boundary ((scalar*){u});
-}*/
-
 
 event interfacevel (t += t_out)
 {
@@ -301,18 +291,6 @@ event interface (t += t_out) {
    system(command);
 } */
 
-
-
-
-/*event snapshot (t += t_out; t<=t_end) {
-  char name[80];
-  scalar kappa[];
-  curvature(f, kappa);
-  sprintf (name, "dump-%06.4f", t);
-  p.nodump = false;
-  dump (file = name); // so that we can restart
-}*/
-
 event finalize(t += t_dump; t <= t_end)
 {
   char name[80];
@@ -323,7 +301,7 @@ event finalize(t += t_dump; t <= t_end)
   dump (file = name); // so that we can restart
 }
 
-event output_h5(t += t_dump; t <= t_end)
+event output_h5(t += t_out; t <= t_end)
 {
   int NXOUT = 1 << MAXlevel;
   int NYOUT = NXOUT/AR;
@@ -386,7 +364,7 @@ event output_h5(t += t_dump; t <= t_end)
   }
 
   char fname[256];
-  sprintf(fname, "output/snapshot_%08.4f.h5", t);
+  sprintf(fname, "output/snapshot_%06.4f.h5", t);
 
   hid_t file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 

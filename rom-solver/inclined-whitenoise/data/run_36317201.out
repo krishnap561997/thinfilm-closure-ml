@@ -1,0 +1,86 @@
+Fri Jul  3 03:14:08 PM EDT 2026
+c0702a-s8.ufhpc
+Warning: X does not support locale en_US.UTF-8
+
+fcut_dim =
+
+    14
+
+
+t_end_dim =
+
+    10
+
+
+Ldim =
+
+     2
+
+
+N =
+
+        8000
+
+
+MNOISE =
+
+        1000
+
+
+F0_noise =
+
+    0.0250
+
+
+Re_input =
+
+   19.3000
+
+
+theta =
+
+    6.4000
+
+
+rho =
+
+        1072
+
+
+mu =
+
+    0.0067
+
+
+gamma =
+
+    0.0670
+
+
+t_save =
+
+    0.0100
+
+hN = 1.2591e-03 m
+uN = 9.6234e-02 m/s
+TN = 1.3083e-02 s
+F2 = 0.7498, We = 0.1866, Re = 19.3000, Ca = 0.0097
+fcut_noise nondim = 1.8317e-01
+dx = 1.9856e-01, dt = 3.8217e-03, nsteps = 200000
+Fontconfig warning: "/usr/share/fontconfig/conf.avail/05-reset-dirs-sample.conf", line 6: unknown element "reset-dirs"
+Fontconfig warning: "/usr/share/fontconfig/conf.avail/05-reset-dirs-sample.conf", line 6: unknown element "reset-dirs"
+Initializing white noise phases...
+Error using hdf5lib2
+Unable to open '/blue/bala1s/krishnap.kalivel/ThinFilmFlow/thinfilm-closure-ml/lavalle-solver/inclined-whitenoise/data/thinfilm_training_data.h5'. File or folder not found.
+
+Error in H5F.create (line 80)
+
+Error in h5create>create_dataset (line 206)
+
+Error in h5create (line 109)
+
+Error in append_thinfilm_h5 (line 42)
+
+Error in main_whitenoise (line 201)
+
+MATLAB:imagesci:hdf5io:resourceNotFound

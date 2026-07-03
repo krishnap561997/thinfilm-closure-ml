@@ -7,50 +7,87 @@
 
 SHELL := /bin/bash
 
-SRC    ?= filmflow.c
-TARGET ?= filmflow
+# ==========================================================
+# User Options
+# ==========================================================
 
-#HiPerGator Modules
+SRC ?= filmflow.c
+
+# BUILD = release (default) or debug
+BUILD ?= debug
+
 MODULES = ufrc gcc openmpi imagemagick hdf5
-
 
 CC99 = gcc -std=c99 -D_XOPEN_SOURCE=700 -D_GNU_SOURCE=1 -fopenmp
 
-QCCFLAGS = -O2 -g -Wall -disable-dimensions
+DEBUGFLAGS   = -O2 -g -Wall -disable-dimensions
+RELEASEFLAGS = -O3 -fno-strict-aliasing -march=x86-64-v3 -disable-dimensions
 
-HDF5_FLAGS = $(shell pkg-config --cflags hdf5 2>/dev/null)
-HDF5_LIBS  = $(shell pkg-config --libs hdf5 2>/dev/null)
+# ==========================================================
+# Build configuration
+# ==========================================================
 
-BASILISK_LIBS = \
+ifeq ($(BUILD),letitride)
+TARGET   = filmflow
+QCCFLAGS = $(DEBUGFLAGS)
+else
+TARGET   = filmflow_debug
+QCCFLAGS = $(RELEASEFLAGS)
+endif
+
+OPENGLIBS = \
 	-L$(BASILISK)/gl \
 	-lglutils \
-	-lfb_tiny \
-	$(HDF5_LIBS) \
-	-lm
+	-lfb_tiny
+
+HDFLIBS = \
+	-I$$HPC_HDF5_INC \
+	-L$$HPC_HDF5_LIB \
+	-lhdf5 \
+	-lhdf5_hl
+
+LIBS = \
+		-I$(BASILISK) \
+		$(OPENGLIBS) \
+		$(HDFLIBS) \
+		-lm
+
+# ==========================================================
+# Build
+# ==========================================================
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
 	module purge; \
 	module load $(MODULES); \
-	HDF5_SHOW="$$(h5cc -show)"; \
-	HDF5_FLAGS="$$(echo "$$HDF5_SHOW" | grep -o '\-I[^ ]*')"; \
-	HDF5_LIBS="$$(echo "$$HDF5_SHOW" | grep -o '\-L[^ ]*\|\-lhdf5[^ ]*\|\-lz\|\-ldl')"; \
-	echo "HDF5_FLAGS = $$HDF5_FLAGS"; \
-	echo "HDF5_LIBS  = $$HDF5_LIBS"; \
-	CC99='$(CC99)' qcc $(QCCFLAGS) $(HDF5_FLAGS) $(SRC) -o $(TARGET) $(BASILISK_LIBS)
+	CC99='$(CC99)' qcc $(QCCFLAGS) \
+	$(SRC) -o $(TARGET) \
+	$(LIBS)
+
+# ==========================================================
+# Run
+# ==========================================================
 
 run: $(TARGET)
 	sbatch run.sh $(TARGET)
 
+# ==========================================================
+# Cleanup
+# ==========================================================
+
 clean:
-	rm -f $(TARGET) *.o _*.c
+	rm -f filmflow filmflow_debug
+	rm -f *.o _*.c
 
 purge:
 	rm -f *.dat
 	rm -f interface*
-	rm -f dump-*
+	rm -f infc*.dat
+	rm -f dump*
 	rm -rf images
+	rm -rf output
+	rm -rf logs
 	rm -rf run_*
 
 .PHONY: all run clean purge
