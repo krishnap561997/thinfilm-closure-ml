@@ -1,5 +1,5 @@
-Fri Jul  3 03:14:08 PM EDT 2026
-c0702a-s8.ufhpc
+Fri Jul  3 03:25:06 PM EDT 2026
+c0704a-s11.ufhpc
 Warning: X does not support locale en_US.UTF-8
 
 fcut_dim =
@@ -70,17 +70,4 @@ dx = 1.9856e-01, dt = 3.8217e-03, nsteps = 200000
 Fontconfig warning: "/usr/share/fontconfig/conf.avail/05-reset-dirs-sample.conf", line 6: unknown element "reset-dirs"
 Fontconfig warning: "/usr/share/fontconfig/conf.avail/05-reset-dirs-sample.conf", line 6: unknown element "reset-dirs"
 Initializing white noise phases...
-Error using hdf5lib2
-Unable to open '/blue/bala1s/krishnap.kalivel/ThinFilmFlow/thinfilm-closure-ml/lavalle-solver/inclined-whitenoise/data/thinfilm_training_data.h5'. File or folder not found.
-
-Error in H5F.create (line 80)
-
-Error in h5create>create_dataset (line 206)
-
-Error in h5create (line 109)
-
-Error in append_thinfilm_h5 (line 42)
-
-Error in main_whitenoise (line 201)
-
-MATLAB:imagesci:hdf5io:resourceNotFound
+[2026-07-04T03:35:07.015] error: *** JOB 36318119 ON c0704a-s11 CANCELLED AT 2026-07-04T03:35:07 DUE TO TIME LIMIT ***

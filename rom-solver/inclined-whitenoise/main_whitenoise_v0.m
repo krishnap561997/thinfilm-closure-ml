@@ -13,15 +13,15 @@ N         = C{4}
 MNOISE    = C{5}
 F0_noise  = C{6}
 Re_input  = C{7}
-theta_deg = C{8}
+theta     = C{8}
 rho       = C{9}
 mu        = C{10}
-Ca_input  = C{11}
+gamma     = C{11}
 t_save    = C{12}
 fclose(fileID);
 
 MNOISE = round(MNOISE);
-theta = theta_deg*pi/180;
+
 %% Default values
 % fcut_dim  = 14;
 % t_end_dim = 0.03;
@@ -42,23 +42,20 @@ g = 9.81;
 nu = mu/rho;
 
 %% Dimensional scales
-We = Ca_input*Re_input;
 hN = (3*Re_input*nu^2/(g*sin(theta)))^(1/3);
 uN = nu*Re_input/hN;
 TN = hN/uN;
 
 Re = uN*hN/nu;
 F2 = uN^2/(g*hN);
-Ca = We/Re;
-gamma = rho*hN*uN^2/We;
+We = rho*hN*uN^2/gamma;
 
 fcut_noise = fcut_dim*TN;
 
 fprintf('hN = %.4e m\n', hN);
 fprintf('uN = %.4e m/s\n', uN);
 fprintf('TN = %.4e s\n', TN);
-fprintf('mu = %.4f, rho = %.4f, gamma = %.4f, theta = %.4f\n', mu, rho, gamma, theta);
-fprintf('F2 = %.4f, We = %.4f, Re = %.4f, Ca = %.4f\n', F2, We, Re, Ca);
+fprintf('F2 = %.4f, We = %.4f, Re = %.4f, Ca = %.4f\n', F2, We, Re, We/Re);
 fprintf('fcut_noise nondim = %.4e\n', fcut_noise);
 
 %% Domain
@@ -99,7 +96,6 @@ q_inlet_signal = zeros(nsteps,1);
 figure;
 
 %% Time loop
-tic
 for n = 1:nsteps
 
     h_old = h;
@@ -163,23 +159,19 @@ for n = 1:nsteps
 
     %% Plot
     if mod(n,plot_every)==0 || n==1
-        % hi = h(ng+1:ng+N);
-        % 
-        % plot(x_dim, hi, 'k-', 'LineWidth', 1.2);
-        % xlabel('$x$ (m)','interpreter','latex');
-        % ylabel('$h/h_0$','interpreter','latex');
-        % title(sprintf('Lavalle Solver: t = %.2f s', t*TN));
-        % grid on;
-        % ylim([0.6, 2]);
-        % drawnow;
-        fprintf('%d / %d time steps completed. t = %.6f s\n', n, nsteps, t*TN);
-        toc
-        tic
+        hi = h(ng+1:ng+N);
+
+        plot(x_dim, hi, 'k-', 'LineWidth', 1.2);
+        xlabel('$x$ (m)','interpreter','latex');
+        ylabel('$h/h_0$','interpreter','latex');
+        title(sprintf('Lavalle Solver: t = %.2f s', t*TN));
+        grid on;
+        ylim([0.6, 2]);
+        drawnow;
     end
 
     %% Save snapshots
     if mod(n,save_every)==0
-        tic
 
         hi = h(ng+1:ng+N);
         qi = q(ng+1:ng+N);
@@ -196,16 +188,11 @@ for n = 1:nsteps
     
         params.Re = Re;
         params.We = We;
-        params.Ca = Ca;
-        params.rho = rho;
-        params.mu = mu;
-        params.gamma = gamma;
         params.F2 = F2;
         params.hN = hN;
         params.uN = uN;
         params.TN = TN;
         params.theta = theta;
-        params.theta_deg = theta_deg;
         params.fcut_dim = fcut_dim;
         params.fcut_noise = fcut_noise;
         params.F0_noise = F0_noise;
@@ -213,8 +200,6 @@ for n = 1:nsteps
     
         append_thinfilm_h5('thinfilm_training_data.h5', ...
             x, t, hi, qi, ri, dhdt, dqdt, F_now, q_inlet_now, params);
-        disp(strcat(['Data saved at t = ',num2str(t*TN),' s']));
-        toc
     end
 end
 
