@@ -13,6 +13,7 @@ restart*
 *.h5
 *.hdf5
 *.mat
+*.xdmf
 
 # Visualization
 *.vtk
