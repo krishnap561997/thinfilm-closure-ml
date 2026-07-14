@@ -1,0 +1,3576 @@
+Tue Jul  7 10:05:17 AM EDT 2026
+c0704a-s28.ufhpc
+Warning: X does not support locale en_US.UTF-8
+
+fcut_dim =
+
+    20
+
+
+t_end_dim =
+
+    15
+
+
+Ldim =
+
+     2
+
+
+N =
+
+        8000
+
+
+MNOISE =
+
+        1000
+
+
+F0_noise =
+
+    0.0250
+
+
+Re_input =
+
+    40
+
+
+theta_deg =
+
+    45
+
+
+rho =
+
+        1072
+
+
+mu =
+
+    0.0067
+
+
+Ca_input =
+
+    0.1000
+
+
+t_save =
+
+    0.0100
+
+hN = 8.8015e-04 m
+uN = 2.8531e-01 m/s
+TN = 3.0848e-03 s
+mu = 0.0067, rho = 1072.0000, gamma = 0.0192, theta = 0.7854
+F2 = 9.4281, We = 4.0000, Re = 40.0000, Ca = 0.1000
+fcut_noise nondim = 6.1697e-02
+dx = 2.8404e-01, dt = 1.6208e-02, nsteps = 300000
+Fontconfig warning: "/usr/share/fontconfig/conf.avail/05-reset-dirs-sample.conf", line 6: unknown element "reset-dirs"
+Fontconfig warning: "/usr/share/fontconfig/conf.avail/05-reset-dirs-sample.conf", line 6: unknown element "reset-dirs"
+Initializing white noise phases...
+1 / 300000 time steps completed. t = 0.000000 s
+Elapsed time is 0.847704 seconds.
+Data saved at t = 0.00995 s
+Elapsed time is 1.056818 seconds.
+Data saved at t = 0.01995 s
+Elapsed time is 0.064349 seconds.
+Data saved at t = 0.02995 s
+Elapsed time is 0.045620 seconds.
+Data saved at t = 0.03995 s
+Elapsed time is 0.063651 seconds.
+Data saved at t = 0.04995 s
+Elapsed time is 0.080270 seconds.
+1200 / 300000 time steps completed. t = 0.059950 s
+Elapsed time is 6.116844 seconds.
+Data saved at t = 0.05995 s
+Elapsed time is 0.144965 seconds.
+Data saved at t = 0.06995 s
+Elapsed time is 0.047993 seconds.
+Data saved at t = 0.07995 s
+Elapsed time is 0.052375 seconds.
+Data saved at t = 0.08995 s
+Elapsed time is 0.170032 seconds.
+Data saved at t = 0.09995 s
+Elapsed time is 0.044617 seconds.
+Data saved at t = 0.10995 s
+Elapsed time is 0.038912 seconds.
+2400 / 300000 time steps completed. t = 0.119950 s
+Elapsed time is 6.058858 seconds.
+Data saved at t = 0.11995 s
+Elapsed time is 0.055286 seconds.
+Data saved at t = 0.12995 s
+Elapsed time is 0.047138 seconds.
+Data saved at t = 0.13995 s
+Elapsed time is 0.048773 seconds.
+Data saved at t = 0.14995 s
+Elapsed time is 0.047331 seconds.
+Data saved at t = 0.15995 s
+Elapsed time is 0.044220 seconds.
+Data saved at t = 0.16995 s
+Elapsed time is 0.055598 seconds.
+3600 / 300000 time steps completed. t = 0.179950 s
+Elapsed time is 6.062532 seconds.
+Data saved at t = 0.17995 s
+Elapsed time is 0.046541 seconds.
+Data saved at t = 0.18995 s
+Elapsed time is 0.038880 seconds.
+Data saved at t = 0.19995 s
+Elapsed time is 0.038014 seconds.
+Data saved at t = 0.20995 s
+Elapsed time is 0.073792 seconds.
+Data saved at t = 0.21995 s
+Elapsed time is 0.065113 seconds.
+Data saved at t = 0.22995 s
+Elapsed time is 0.035089 seconds.
+4800 / 300000 time steps completed. t = 0.239950 s
+Elapsed time is 6.200492 seconds.
+Data saved at t = 0.23995 s
+Elapsed time is 0.043610 seconds.
+Data saved at t = 0.24995 s
+Elapsed time is 0.057230 seconds.
+Data saved at t = 0.25995 s
+Elapsed time is 0.046009 seconds.
+Data saved at t = 0.26995 s
+Elapsed time is 0.047751 seconds.
+Data saved at t = 0.27995 s
+Elapsed time is 0.047890 seconds.
+Data saved at t = 0.28995 s
+Elapsed time is 0.033959 seconds.
+6000 / 300000 time steps completed. t = 0.299950 s
+Elapsed time is 6.264864 seconds.
+Data saved at t = 0.29995 s
+Elapsed time is 0.056315 seconds.
+Data saved at t = 0.30995 s
+Elapsed time is 0.047498 seconds.
+Data saved at t = 0.31995 s
+Elapsed time is 0.115556 seconds.
+Data saved at t = 0.32995 s
+Elapsed time is 0.040878 seconds.
+Data saved at t = 0.33995 s
+Elapsed time is 0.035557 seconds.
+Data saved at t = 0.34995 s
+Elapsed time is 0.047108 seconds.
+7200 / 300000 time steps completed. t = 0.359950 s
+Elapsed time is 6.344879 seconds.
+Data saved at t = 0.35995 s
+Elapsed time is 0.041914 seconds.
+Data saved at t = 0.36995 s
+Elapsed time is 0.040549 seconds.
+Data saved at t = 0.37995 s
+Elapsed time is 0.046352 seconds.
+Data saved at t = 0.38995 s
+Elapsed time is 0.056486 seconds.
+Data saved at t = 0.39995 s
+Elapsed time is 0.041048 seconds.
+Data saved at t = 0.40995 s
+Elapsed time is 0.043909 seconds.
+8400 / 300000 time steps completed. t = 0.419950 s
+Elapsed time is 6.303479 seconds.
+Data saved at t = 0.41995 s
+Elapsed time is 0.040677 seconds.
+Data saved at t = 0.42995 s
+Elapsed time is 0.039407 seconds.
+Data saved at t = 0.43995 s
+Elapsed time is 0.047986 seconds.
+Data saved at t = 0.44995 s
+Elapsed time is 0.050574 seconds.
+Data saved at t = 0.45995 s
+Elapsed time is 0.040783 seconds.
+Data saved at t = 0.46995 s
+Elapsed time is 0.051836 seconds.
+9600 / 300000 time steps completed. t = 0.479950 s
+Elapsed time is 6.422351 seconds.
+Data saved at t = 0.47995 s
+Elapsed time is 0.038698 seconds.
+Data saved at t = 0.48995 s
+Elapsed time is 0.045501 seconds.
+Data saved at t = 0.49995 s
+Elapsed time is 0.047684 seconds.
+Data saved at t = 0.50995 s
+Elapsed time is 0.034216 seconds.
+Data saved at t = 0.51995 s
+Elapsed time is 0.043423 seconds.
+Data saved at t = 0.52995 s
+Elapsed time is 0.039114 seconds.
+10800 / 300000 time steps completed. t = 0.539950 s
+Elapsed time is 6.474098 seconds.
+Data saved at t = 0.53995 s
+Elapsed time is 0.043400 seconds.
+Data saved at t = 0.54995 s
+Elapsed time is 0.039663 seconds.
+Data saved at t = 0.55995 s
+Elapsed time is 0.035310 seconds.
+Data saved at t = 0.56995 s
+Elapsed time is 0.040591 seconds.
+Data saved at t = 0.57995 s
+Elapsed time is 0.042482 seconds.
+Data saved at t = 0.58995 s
+Elapsed time is 0.050794 seconds.
+12000 / 300000 time steps completed. t = 0.599950 s
+Elapsed time is 6.439736 seconds.
+Data saved at t = 0.59995 s
+Elapsed time is 0.061917 seconds.
+Data saved at t = 0.60995 s
+Elapsed time is 0.122798 seconds.
+Data saved at t = 0.61995 s
+Elapsed time is 0.086599 seconds.
+Data saved at t = 0.62995 s
+Elapsed time is 0.158157 seconds.
+Data saved at t = 0.63995 s
+Elapsed time is 0.045349 seconds.
+Data saved at t = 0.64995 s
+Elapsed time is 0.044131 seconds.
+13200 / 300000 time steps completed. t = 0.659950 s
+Elapsed time is 6.517760 seconds.
+Data saved at t = 0.65995 s
+Elapsed time is 0.040744 seconds.
+Data saved at t = 0.66995 s
+Elapsed time is 0.046817 seconds.
+Data saved at t = 0.67995 s
+Elapsed time is 0.037721 seconds.
+Data saved at t = 0.68995 s
+Elapsed time is 0.039136 seconds.
+Data saved at t = 0.69995 s
+Elapsed time is 0.041233 seconds.
+Data saved at t = 0.70995 s
+Elapsed time is 0.048151 seconds.
+14400 / 300000 time steps completed. t = 0.719950 s
+Elapsed time is 6.697220 seconds.
+Data saved at t = 0.71995 s
+Elapsed time is 0.041760 seconds.
+Data saved at t = 0.72995 s
+Elapsed time is 0.054446 seconds.
+Data saved at t = 0.73995 s
+Elapsed time is 0.043367 seconds.
+Data saved at t = 0.74995 s
+Elapsed time is 0.035467 seconds.
+Data saved at t = 0.75995 s
+Elapsed time is 0.057556 seconds.
+Data saved at t = 0.76995 s
+Elapsed time is 0.039031 seconds.
+15600 / 300000 time steps completed. t = 0.779950 s
+Elapsed time is 6.785487 seconds.
+Data saved at t = 0.77995 s
+Elapsed time is 0.179266 seconds.
+Data saved at t = 0.78995 s
+Elapsed time is 0.056840 seconds.
+Data saved at t = 0.79995 s
+Elapsed time is 0.042881 seconds.
+Data saved at t = 0.80995 s
+Elapsed time is 0.044636 seconds.
+Data saved at t = 0.81995 s
+Elapsed time is 0.046359 seconds.
+Data saved at t = 0.82995 s
+Elapsed time is 0.050096 seconds.
+16800 / 300000 time steps completed. t = 0.839950 s
+Elapsed time is 6.945492 seconds.
+Data saved at t = 0.83995 s
+Elapsed time is 0.039114 seconds.
+Data saved at t = 0.84995 s
+Elapsed time is 0.039979 seconds.
+Data saved at t = 0.85995 s
+Elapsed time is 0.039108 seconds.
+Data saved at t = 0.86995 s
+Elapsed time is 0.036928 seconds.
+Data saved at t = 0.87995 s
+Elapsed time is 0.041103 seconds.
+Data saved at t = 0.88995 s
+Elapsed time is 0.034688 seconds.
+18000 / 300000 time steps completed. t = 0.899950 s
+Elapsed time is 6.988234 seconds.
+Data saved at t = 0.89995 s
+Elapsed time is 0.046790 seconds.
+Data saved at t = 0.90995 s
+Elapsed time is 0.039592 seconds.
+Data saved at t = 0.91995 s
+Elapsed time is 0.041667 seconds.
+Data saved at t = 0.92995 s
+Elapsed time is 0.040529 seconds.
+Data saved at t = 0.93995 s
+Elapsed time is 0.044589 seconds.
+Data saved at t = 0.94995 s
+Elapsed time is 0.038534 seconds.
+19200 / 300000 time steps completed. t = 0.959950 s
+Elapsed time is 7.092504 seconds.
+Data saved at t = 0.95995 s
+Elapsed time is 0.055677 seconds.
+Data saved at t = 0.96995 s
+Elapsed time is 0.038712 seconds.
+Data saved at t = 0.97995 s
+Elapsed time is 0.041489 seconds.
+Data saved at t = 0.98995 s
+Elapsed time is 0.048334 seconds.
+Data saved at t = 0.99995 s
+Elapsed time is 0.051217 seconds.
+Data saved at t = 1.01 s
+Elapsed time is 0.041650 seconds.
+20400 / 300000 time steps completed. t = 1.019950 s
+Elapsed time is 7.211229 seconds.
+Data saved at t = 1.02 s
+Elapsed time is 0.036235 seconds.
+Data saved at t = 1.03 s
+Elapsed time is 0.048890 seconds.
+Data saved at t = 1.0399 s
+Elapsed time is 0.036339 seconds.
+Data saved at t = 1.0499 s
+Elapsed time is 0.043705 seconds.
+Data saved at t = 1.0599 s
+Elapsed time is 0.048797 seconds.
+Data saved at t = 1.0699 s
+Elapsed time is 0.039838 seconds.
+21600 / 300000 time steps completed. t = 1.079950 s
+Elapsed time is 7.339374 seconds.
+Data saved at t = 1.08 s
+Elapsed time is 0.036327 seconds.
+Data saved at t = 1.09 s
+Elapsed time is 0.045489 seconds.
+Data saved at t = 1.1 s
+Elapsed time is 0.040858 seconds.
+Data saved at t = 1.11 s
+Elapsed time is 0.044354 seconds.
+Data saved at t = 1.12 s
+Elapsed time is 0.037838 seconds.
+Data saved at t = 1.13 s
+Elapsed time is 0.036877 seconds.
+22800 / 300000 time steps completed. t = 1.139950 s
+Elapsed time is 7.490564 seconds.
+Data saved at t = 1.14 s
+Elapsed time is 0.057612 seconds.
+Data saved at t = 1.15 s
+Elapsed time is 0.033960 seconds.
+Data saved at t = 1.16 s
+Elapsed time is 0.053753 seconds.
+Data saved at t = 1.17 s
+Elapsed time is 0.042850 seconds.
+Data saved at t = 1.18 s
+Elapsed time is 0.042684 seconds.
+Data saved at t = 1.19 s
+Elapsed time is 0.043449 seconds.
+24000 / 300000 time steps completed. t = 1.199950 s
+Elapsed time is 7.587707 seconds.
+Data saved at t = 1.2 s
+Elapsed time is 0.049833 seconds.
+Data saved at t = 1.21 s
+Elapsed time is 0.042385 seconds.
+Data saved at t = 1.22 s
+Elapsed time is 0.034563 seconds.
+Data saved at t = 1.23 s
+Elapsed time is 0.049601 seconds.
+Data saved at t = 1.24 s
+Elapsed time is 0.052009 seconds.
+Data saved at t = 1.25 s
+Elapsed time is 0.045545 seconds.
+25200 / 300000 time steps completed. t = 1.259950 s
+Elapsed time is 7.696504 seconds.
+Data saved at t = 1.26 s
+Elapsed time is 0.035902 seconds.
+Data saved at t = 1.27 s
+Elapsed time is 0.045572 seconds.
+Data saved at t = 1.28 s
+Elapsed time is 0.038582 seconds.
+Data saved at t = 1.29 s
+Elapsed time is 0.049553 seconds.
+Data saved at t = 1.3 s
+Elapsed time is 0.033710 seconds.
+Data saved at t = 1.31 s
+Elapsed time is 0.047305 seconds.
+26400 / 300000 time steps completed. t = 1.319950 s
+Elapsed time is 7.886105 seconds.
+Data saved at t = 1.3199 s
+Elapsed time is 0.044950 seconds.
+Data saved at t = 1.3299 s
+Elapsed time is 0.044595 seconds.
+Data saved at t = 1.34 s
+Elapsed time is 0.043177 seconds.
+Data saved at t = 1.35 s
+Elapsed time is 0.040353 seconds.
+Data saved at t = 1.36 s
+Elapsed time is 0.043852 seconds.
+Data saved at t = 1.37 s
+Elapsed time is 0.039568 seconds.
+27600 / 300000 time steps completed. t = 1.379950 s
+Elapsed time is 7.642527 seconds.
+Data saved at t = 1.38 s
+Elapsed time is 0.042289 seconds.
+Data saved at t = 1.39 s
+Elapsed time is 0.036782 seconds.
+Data saved at t = 1.4 s
+Elapsed time is 0.041221 seconds.
+Data saved at t = 1.41 s
+Elapsed time is 0.041367 seconds.
+Data saved at t = 1.42 s
+Elapsed time is 0.036367 seconds.
+Data saved at t = 1.43 s
+Elapsed time is 0.038822 seconds.
+28800 / 300000 time steps completed. t = 1.439950 s
+Elapsed time is 7.996651 seconds.
+Data saved at t = 1.44 s
+Elapsed time is 0.039659 seconds.
+Data saved at t = 1.45 s
+Elapsed time is 0.038298 seconds.
+Data saved at t = 1.46 s
+Elapsed time is 0.041553 seconds.
+Data saved at t = 1.47 s
+Elapsed time is 0.035503 seconds.
+Data saved at t = 1.48 s
+Elapsed time is 0.040292 seconds.
+Data saved at t = 1.49 s
+Elapsed time is 0.041305 seconds.
+30000 / 300000 time steps completed. t = 1.499950 s
+Elapsed time is 8.203882 seconds.
+Data saved at t = 1.5 s
+Elapsed time is 0.039824 seconds.
+Data saved at t = 1.51 s
+Elapsed time is 0.049652 seconds.
+Data saved at t = 1.52 s
+Elapsed time is 0.041022 seconds.
+Data saved at t = 1.53 s
+Elapsed time is 0.042897 seconds.
+Data saved at t = 1.54 s
+Elapsed time is 0.039910 seconds.
+Data saved at t = 1.55 s
+Elapsed time is 0.043180 seconds.
+31200 / 300000 time steps completed. t = 1.559950 s
+Elapsed time is 8.387806 seconds.
+Data saved at t = 1.56 s
+Elapsed time is 0.048596 seconds.
+Data saved at t = 1.57 s
+Elapsed time is 0.036569 seconds.
+Data saved at t = 1.58 s
+Elapsed time is 0.054392 seconds.
+Data saved at t = 1.59 s
+Elapsed time is 0.034495 seconds.
+Data saved at t = 1.6 s
+Elapsed time is 0.033727 seconds.
+Data saved at t = 1.61 s
+Elapsed time is 0.044405 seconds.
+32400 / 300000 time steps completed. t = 1.619950 s
+Elapsed time is 8.490622 seconds.
+Data saved at t = 1.62 s
+Elapsed time is 0.039825 seconds.
+Data saved at t = 1.63 s
+Elapsed time is 0.048222 seconds.
+Data saved at t = 1.64 s
+Elapsed time is 0.040441 seconds.
+Data saved at t = 1.65 s
+Elapsed time is 0.048607 seconds.
+Data saved at t = 1.66 s
+Elapsed time is 0.037780 seconds.
+Data saved at t = 1.67 s
+Elapsed time is 0.039709 seconds.
+33600 / 300000 time steps completed. t = 1.679950 s
+Elapsed time is 8.571918 seconds.
+Data saved at t = 1.68 s
+Elapsed time is 0.041136 seconds.
+Data saved at t = 1.69 s
+Elapsed time is 0.034701 seconds.
+Data saved at t = 1.7 s
+Elapsed time is 0.039894 seconds.
+Data saved at t = 1.71 s
+Elapsed time is 0.040117 seconds.
+Data saved at t = 1.72 s
+Elapsed time is 0.035032 seconds.
+Data saved at t = 1.73 s
+Elapsed time is 0.051474 seconds.
+34800 / 300000 time steps completed. t = 1.739950 s
+Elapsed time is 8.761597 seconds.
+Data saved at t = 1.74 s
+Elapsed time is 0.052818 seconds.
+Data saved at t = 1.75 s
+Elapsed time is 0.041577 seconds.
+Data saved at t = 1.76 s
+Elapsed time is 0.044860 seconds.
+Data saved at t = 1.77 s
+Elapsed time is 0.037946 seconds.
+Data saved at t = 1.78 s
+Elapsed time is 0.040356 seconds.
+Data saved at t = 1.79 s
+Elapsed time is 0.035112 seconds.
+36000 / 300000 time steps completed. t = 1.799950 s
+Elapsed time is 8.879463 seconds.
+Data saved at t = 1.8 s
+Elapsed time is 0.038113 seconds.
+Data saved at t = 1.81 s
+Elapsed time is 0.033848 seconds.
+Data saved at t = 1.82 s
+Elapsed time is 0.038663 seconds.
+Data saved at t = 1.83 s
+Elapsed time is 0.043415 seconds.
+Data saved at t = 1.84 s
+Elapsed time is 0.035379 seconds.
+Data saved at t = 1.85 s
+Elapsed time is 0.042579 seconds.
+37200 / 300000 time steps completed. t = 1.859950 s
+Elapsed time is 9.071160 seconds.
+Data saved at t = 1.86 s
+Elapsed time is 0.035932 seconds.
+Data saved at t = 1.87 s
+Elapsed time is 0.040628 seconds.
+Data saved at t = 1.88 s
+Elapsed time is 0.044587 seconds.
+Data saved at t = 1.89 s
+Elapsed time is 0.052859 seconds.
+Data saved at t = 1.9 s
+Elapsed time is 0.039084 seconds.
+Data saved at t = 1.91 s
+Elapsed time is 0.036164 seconds.
+38400 / 300000 time steps completed. t = 1.919950 s
+Elapsed time is 9.121787 seconds.
+Data saved at t = 1.92 s
+Elapsed time is 0.038508 seconds.
+Data saved at t = 1.93 s
+Elapsed time is 0.055298 seconds.
+Data saved at t = 1.94 s
+Elapsed time is 0.043040 seconds.
+Data saved at t = 1.95 s
+Elapsed time is 0.053489 seconds.
+Data saved at t = 1.96 s
+Elapsed time is 0.050896 seconds.
+Data saved at t = 1.97 s
+Elapsed time is 0.049250 seconds.
+39600 / 300000 time steps completed. t = 1.979950 s
+Elapsed time is 9.225629 seconds.
+Data saved at t = 1.98 s
+Elapsed time is 0.037760 seconds.
+Data saved at t = 1.99 s
+Elapsed time is 0.038298 seconds.
+Data saved at t = 2 s
+Elapsed time is 0.042857 seconds.
+Data saved at t = 2.01 s
+Elapsed time is 0.042332 seconds.
+Data saved at t = 2.02 s
+Elapsed time is 0.052118 seconds.
+Data saved at t = 2.03 s
+Elapsed time is 0.044017 seconds.
+40800 / 300000 time steps completed. t = 2.039950 s
+Elapsed time is 9.288485 seconds.
+Data saved at t = 2.04 s
+Elapsed time is 0.050163 seconds.
+Data saved at t = 2.05 s
+Elapsed time is 0.040100 seconds.
+Data saved at t = 2.06 s
+Elapsed time is 0.033805 seconds.
+Data saved at t = 2.07 s
+Elapsed time is 0.048092 seconds.
+Data saved at t = 2.08 s
+Elapsed time is 0.040575 seconds.
+Data saved at t = 2.09 s
+Elapsed time is 0.061859 seconds.
+42000 / 300000 time steps completed. t = 2.099950 s
+Elapsed time is 9.234605 seconds.
+Data saved at t = 2.1 s
+Elapsed time is 0.041749 seconds.
+Data saved at t = 2.11 s
+Elapsed time is 0.046185 seconds.
+Data saved at t = 2.12 s
+Elapsed time is 0.036110 seconds.
+Data saved at t = 2.13 s
+Elapsed time is 0.044524 seconds.
+Data saved at t = 2.14 s
+Elapsed time is 0.046668 seconds.
+Data saved at t = 2.15 s
+Elapsed time is 0.035372 seconds.
+43200 / 300000 time steps completed. t = 2.159950 s
+Elapsed time is 9.215045 seconds.
+Data saved at t = 2.16 s
+Elapsed time is 0.047016 seconds.
+Data saved at t = 2.17 s
+Elapsed time is 0.046102 seconds.
+Data saved at t = 2.18 s
+Elapsed time is 0.044574 seconds.
+Data saved at t = 2.19 s
+Elapsed time is 0.047268 seconds.
+Data saved at t = 2.2 s
+Elapsed time is 0.054760 seconds.
+Data saved at t = 2.21 s
+Elapsed time is 0.036075 seconds.
+44400 / 300000 time steps completed. t = 2.219950 s
+Elapsed time is 9.197612 seconds.
+Data saved at t = 2.2199 s
+Elapsed time is 0.041772 seconds.
+Data saved at t = 2.23 s
+Elapsed time is 0.043697 seconds.
+Data saved at t = 2.2399 s
+Elapsed time is 0.047068 seconds.
+Data saved at t = 2.25 s
+Elapsed time is 0.054432 seconds.
+Data saved at t = 2.26 s
+Elapsed time is 0.037160 seconds.
+Data saved at t = 2.27 s
+Elapsed time is 0.043202 seconds.
+45600 / 300000 time steps completed. t = 2.279950 s
+Elapsed time is 9.242143 seconds.
+Data saved at t = 2.28 s
+Elapsed time is 0.037487 seconds.
+Data saved at t = 2.29 s
+Elapsed time is 0.038460 seconds.
+Data saved at t = 2.3 s
+Elapsed time is 0.045342 seconds.
+Data saved at t = 2.31 s
+Elapsed time is 0.045711 seconds.
+Data saved at t = 2.32 s
+Elapsed time is 0.054309 seconds.
+Data saved at t = 2.33 s
+Elapsed time is 0.036722 seconds.
+46800 / 300000 time steps completed. t = 2.339950 s
+Elapsed time is 9.124276 seconds.
+Data saved at t = 2.34 s
+Elapsed time is 0.048677 seconds.
+Data saved at t = 2.35 s
+Elapsed time is 0.037446 seconds.
+Data saved at t = 2.36 s
+Elapsed time is 0.052436 seconds.
+Data saved at t = 2.37 s
+Elapsed time is 0.038344 seconds.
+Data saved at t = 2.38 s
+Elapsed time is 0.041348 seconds.
+Data saved at t = 2.39 s
+Elapsed time is 0.044668 seconds.
+48000 / 300000 time steps completed. t = 2.399950 s
+Elapsed time is 9.207247 seconds.
+Data saved at t = 2.4 s
+Elapsed time is 0.049337 seconds.
+Data saved at t = 2.41 s
+Elapsed time is 0.040618 seconds.
+Data saved at t = 2.42 s
+Elapsed time is 0.044543 seconds.
+Data saved at t = 2.43 s
+Elapsed time is 0.033562 seconds.
+Data saved at t = 2.44 s
+Elapsed time is 0.037505 seconds.
+Data saved at t = 2.45 s
+Elapsed time is 0.048954 seconds.
+49200 / 300000 time steps completed. t = 2.459950 s
+Elapsed time is 9.237933 seconds.
+Data saved at t = 2.46 s
+Elapsed time is 0.055434 seconds.
+Data saved at t = 2.47 s
+Elapsed time is 0.044481 seconds.
+Data saved at t = 2.48 s
+Elapsed time is 0.039295 seconds.
+Data saved at t = 2.4899 s
+Elapsed time is 0.056720 seconds.
+Data saved at t = 2.5 s
+Elapsed time is 0.041144 seconds.
+Data saved at t = 2.5099 s
+Elapsed time is 0.046454 seconds.
+50400 / 300000 time steps completed. t = 2.519950 s
+Elapsed time is 9.316276 seconds.
+Data saved at t = 2.52 s
+Elapsed time is 0.053119 seconds.
+Data saved at t = 2.53 s
+Elapsed time is 0.036864 seconds.
+Data saved at t = 2.54 s
+Elapsed time is 0.038366 seconds.
+Data saved at t = 2.55 s
+Elapsed time is 0.045913 seconds.
+Data saved at t = 2.56 s
+Elapsed time is 0.052168 seconds.
+Data saved at t = 2.57 s
+Elapsed time is 0.039302 seconds.
+51600 / 300000 time steps completed. t = 2.579950 s
+Elapsed time is 9.383071 seconds.
+Data saved at t = 2.58 s
+Elapsed time is 0.058761 seconds.
+Data saved at t = 2.59 s
+Elapsed time is 0.040871 seconds.
+Data saved at t = 2.6 s
+Elapsed time is 0.038970 seconds.
+Data saved at t = 2.61 s
+Elapsed time is 0.039397 seconds.
+Data saved at t = 2.62 s
+Elapsed time is 0.036881 seconds.
+Data saved at t = 2.63 s
+Elapsed time is 0.035278 seconds.
+52800 / 300000 time steps completed. t = 2.639950 s
+Elapsed time is 8.971083 seconds.
+Data saved at t = 2.64 s
+Elapsed time is 0.036357 seconds.
+Data saved at t = 2.65 s
+Elapsed time is 0.040661 seconds.
+Data saved at t = 2.66 s
+Elapsed time is 0.038890 seconds.
+Data saved at t = 2.67 s
+Elapsed time is 0.036825 seconds.
+Data saved at t = 2.68 s
+Elapsed time is 0.052243 seconds.
+Data saved at t = 2.69 s
+Elapsed time is 0.039703 seconds.
+54000 / 300000 time steps completed. t = 2.699950 s
+Elapsed time is 9.198186 seconds.
+Data saved at t = 2.7 s
+Elapsed time is 0.041226 seconds.
+Data saved at t = 2.71 s
+Elapsed time is 0.043349 seconds.
+Data saved at t = 2.72 s
+Elapsed time is 0.042405 seconds.
+Data saved at t = 2.73 s
+Elapsed time is 0.045321 seconds.
+Data saved at t = 2.74 s
+Elapsed time is 0.047009 seconds.
+Data saved at t = 2.75 s
+Elapsed time is 0.040216 seconds.
+55200 / 300000 time steps completed. t = 2.759950 s
+Elapsed time is 9.216687 seconds.
+Data saved at t = 2.7599 s
+Elapsed time is 0.048955 seconds.
+Data saved at t = 2.77 s
+Elapsed time is 0.159032 seconds.
+Data saved at t = 2.78 s
+Elapsed time is 0.042713 seconds.
+Data saved at t = 2.79 s
+Elapsed time is 0.042603 seconds.
+Data saved at t = 2.8 s
+Elapsed time is 0.044840 seconds.
+Data saved at t = 2.81 s
+Elapsed time is 0.039446 seconds.
+56400 / 300000 time steps completed. t = 2.819950 s
+Elapsed time is 9.185987 seconds.
+Data saved at t = 2.82 s
+Elapsed time is 0.038516 seconds.
+Data saved at t = 2.83 s
+Elapsed time is 0.049374 seconds.
+Data saved at t = 2.84 s
+Elapsed time is 0.040280 seconds.
+Data saved at t = 2.85 s
+Elapsed time is 0.049016 seconds.
+Data saved at t = 2.86 s
+Elapsed time is 0.033536 seconds.
+Data saved at t = 2.87 s
+Elapsed time is 0.054639 seconds.
+57600 / 300000 time steps completed. t = 2.879950 s
+Elapsed time is 9.137702 seconds.
+Data saved at t = 2.88 s
+Elapsed time is 0.040180 seconds.
+Data saved at t = 2.89 s
+Elapsed time is 0.047409 seconds.
+Data saved at t = 2.9 s
+Elapsed time is 0.045507 seconds.
+Data saved at t = 2.91 s
+Elapsed time is 0.048220 seconds.
+Data saved at t = 2.92 s
+Elapsed time is 0.050290 seconds.
+Data saved at t = 2.93 s
+Elapsed time is 0.043993 seconds.
+58800 / 300000 time steps completed. t = 2.939950 s
+Elapsed time is 9.242575 seconds.
+Data saved at t = 2.94 s
+Elapsed time is 0.045680 seconds.
+Data saved at t = 2.95 s
+Elapsed time is 0.039824 seconds.
+Data saved at t = 2.96 s
+Elapsed time is 0.057752 seconds.
+Data saved at t = 2.97 s
+Elapsed time is 0.041101 seconds.
+Data saved at t = 2.98 s
+Elapsed time is 0.051507 seconds.
+Data saved at t = 2.99 s
+Elapsed time is 0.049880 seconds.
+60000 / 300000 time steps completed. t = 2.999950 s
+Elapsed time is 9.198688 seconds.
+Data saved at t = 3 s
+Elapsed time is 0.044404 seconds.
+Data saved at t = 3.01 s
+Elapsed time is 0.035510 seconds.
+Data saved at t = 3.02 s
+Elapsed time is 0.041605 seconds.
+Data saved at t = 3.03 s
+Elapsed time is 0.039034 seconds.
+Data saved at t = 3.04 s
+Elapsed time is 0.053131 seconds.
+Data saved at t = 3.05 s
+Elapsed time is 0.035867 seconds.
+61200 / 300000 time steps completed. t = 3.059950 s
+Elapsed time is 9.221789 seconds.
+Data saved at t = 3.06 s
+Elapsed time is 0.041994 seconds.
+Data saved at t = 3.07 s
+Elapsed time is 0.045103 seconds.
+Data saved at t = 3.08 s
+Elapsed time is 0.056351 seconds.
+Data saved at t = 3.09 s
+Elapsed time is 0.040007 seconds.
+Data saved at t = 3.1 s
+Elapsed time is 0.049418 seconds.
+Data saved at t = 3.11 s
+Elapsed time is 0.045434 seconds.
+62400 / 300000 time steps completed. t = 3.119950 s
+Elapsed time is 9.312657 seconds.
+Data saved at t = 3.12 s
+Elapsed time is 0.044888 seconds.
+Data saved at t = 3.13 s
+Elapsed time is 0.066216 seconds.
+Data saved at t = 3.14 s
+Elapsed time is 0.041618 seconds.
+Data saved at t = 3.15 s
+Elapsed time is 0.040491 seconds.
+Data saved at t = 3.16 s
+Elapsed time is 0.042072 seconds.
+Data saved at t = 3.17 s
+Elapsed time is 0.034946 seconds.
+63600 / 300000 time steps completed. t = 3.179950 s
+Elapsed time is 9.167940 seconds.
+Data saved at t = 3.18 s
+Elapsed time is 0.038699 seconds.
+Data saved at t = 3.19 s
+Elapsed time is 0.040736 seconds.
+Data saved at t = 3.2 s
+Elapsed time is 0.055576 seconds.
+Data saved at t = 3.21 s
+Elapsed time is 0.061220 seconds.
+Data saved at t = 3.22 s
+Elapsed time is 0.038964 seconds.
+Data saved at t = 3.23 s
+Elapsed time is 0.042620 seconds.
+64800 / 300000 time steps completed. t = 3.239950 s
+Elapsed time is 9.164730 seconds.
+Data saved at t = 3.24 s
+Elapsed time is 0.044540 seconds.
+Data saved at t = 3.25 s
+Elapsed time is 0.046888 seconds.
+Data saved at t = 3.26 s
+Elapsed time is 0.050699 seconds.
+Data saved at t = 3.27 s
+Elapsed time is 0.050318 seconds.
+Data saved at t = 3.28 s
+Elapsed time is 0.056998 seconds.
+Data saved at t = 3.29 s
+Elapsed time is 0.044431 seconds.
+66000 / 300000 time steps completed. t = 3.299950 s
+Elapsed time is 9.197693 seconds.
+Data saved at t = 3.3 s
+Elapsed time is 0.041928 seconds.
+Data saved at t = 3.31 s
+Elapsed time is 0.047139 seconds.
+Data saved at t = 3.32 s
+Elapsed time is 0.039732 seconds.
+Data saved at t = 3.33 s
+Elapsed time is 0.035035 seconds.
+Data saved at t = 3.34 s
+Elapsed time is 0.100812 seconds.
+Data saved at t = 3.35 s
+Elapsed time is 0.214036 seconds.
+67200 / 300000 time steps completed. t = 3.359950 s
+Elapsed time is 9.409516 seconds.
+Data saved at t = 3.36 s
+Elapsed time is 0.038280 seconds.
+Data saved at t = 3.37 s
+Elapsed time is 0.041501 seconds.
+Data saved at t = 3.38 s
+Elapsed time is 0.044280 seconds.
+Data saved at t = 3.39 s
+Elapsed time is 0.039582 seconds.
+Data saved at t = 3.4 s
+Elapsed time is 0.035457 seconds.
+Data saved at t = 3.41 s
+Elapsed time is 0.043674 seconds.
+68400 / 300000 time steps completed. t = 3.419950 s
+Elapsed time is 9.178813 seconds.
+Data saved at t = 3.42 s
+Elapsed time is 0.036462 seconds.
+Data saved at t = 3.43 s
+Elapsed time is 0.045298 seconds.
+Data saved at t = 3.44 s
+Elapsed time is 0.046600 seconds.
+Data saved at t = 3.4499 s
+Elapsed time is 0.041298 seconds.
+Data saved at t = 3.46 s
+Elapsed time is 0.033198 seconds.
+Data saved at t = 3.4699 s
+Elapsed time is 0.048448 seconds.
+69600 / 300000 time steps completed. t = 3.479950 s
+Elapsed time is 9.237669 seconds.
+Data saved at t = 3.48 s
+Elapsed time is 0.037771 seconds.
+Data saved at t = 3.4899 s
+Elapsed time is 0.041645 seconds.
+Data saved at t = 3.5 s
+Elapsed time is 0.045005 seconds.
+Data saved at t = 3.5099 s
+Elapsed time is 0.034932 seconds.
+Data saved at t = 3.52 s
+Elapsed time is 0.041419 seconds.
+Data saved at t = 3.5299 s
+Elapsed time is 0.043496 seconds.
+70800 / 300000 time steps completed. t = 3.539950 s
+Elapsed time is 9.186231 seconds.
+Data saved at t = 3.54 s
+Elapsed time is 0.051962 seconds.
+Data saved at t = 3.5499 s
+Elapsed time is 0.044919 seconds.
+Data saved at t = 3.56 s
+Elapsed time is 0.082107 seconds.
+Data saved at t = 3.57 s
+Elapsed time is 0.064320 seconds.
+Data saved at t = 3.58 s
+Elapsed time is 0.047528 seconds.
+Data saved at t = 3.59 s
+Elapsed time is 0.034686 seconds.
+72000 / 300000 time steps completed. t = 3.599950 s
+Elapsed time is 9.106416 seconds.
+Data saved at t = 3.6 s
+Elapsed time is 0.038900 seconds.
+Data saved at t = 3.61 s
+Elapsed time is 0.040259 seconds.
+Data saved at t = 3.62 s
+Elapsed time is 0.034167 seconds.
+Data saved at t = 3.63 s
+Elapsed time is 0.044465 seconds.
+Data saved at t = 3.64 s
+Elapsed time is 0.038065 seconds.
+Data saved at t = 3.65 s
+Elapsed time is 0.043253 seconds.
+73200 / 300000 time steps completed. t = 3.659950 s
+Elapsed time is 9.202108 seconds.
+Data saved at t = 3.66 s
+Elapsed time is 0.045006 seconds.
+Data saved at t = 3.67 s
+Elapsed time is 0.054205 seconds.
+Data saved at t = 3.68 s
+Elapsed time is 0.041810 seconds.
+Data saved at t = 3.69 s
+Elapsed time is 0.043732 seconds.
+Data saved at t = 3.7 s
+Elapsed time is 0.053477 seconds.
+Data saved at t = 3.71 s
+Elapsed time is 0.046023 seconds.
+74400 / 300000 time steps completed. t = 3.719950 s
+Elapsed time is 9.208946 seconds.
+Data saved at t = 3.72 s
+Elapsed time is 0.041489 seconds.
+Data saved at t = 3.73 s
+Elapsed time is 0.041409 seconds.
+Data saved at t = 3.74 s
+Elapsed time is 0.078828 seconds.
+Data saved at t = 3.75 s
+Elapsed time is 0.043657 seconds.
+Data saved at t = 3.76 s
+Elapsed time is 0.037412 seconds.
+Data saved at t = 3.77 s
+Elapsed time is 0.041148 seconds.
+75600 / 300000 time steps completed. t = 3.779950 s
+Elapsed time is 9.241848 seconds.
+Data saved at t = 3.78 s
+Elapsed time is 0.037505 seconds.
+Data saved at t = 3.79 s
+Elapsed time is 0.038052 seconds.
+Data saved at t = 3.8 s
+Elapsed time is 0.054128 seconds.
+Data saved at t = 3.81 s
+Elapsed time is 0.045463 seconds.
+Data saved at t = 3.82 s
+Elapsed time is 0.033740 seconds.
+Data saved at t = 3.83 s
+Elapsed time is 0.056365 seconds.
+76800 / 300000 time steps completed. t = 3.839950 s
+Elapsed time is 9.178104 seconds.
+Data saved at t = 3.84 s
+Elapsed time is 0.049103 seconds.
+Data saved at t = 3.85 s
+Elapsed time is 0.044459 seconds.
+Data saved at t = 3.86 s
+Elapsed time is 0.040144 seconds.
+Data saved at t = 3.87 s
+Elapsed time is 0.044608 seconds.
+Data saved at t = 3.88 s
+Elapsed time is 0.041294 seconds.
+Data saved at t = 3.89 s
+Elapsed time is 0.048949 seconds.
+78000 / 300000 time steps completed. t = 3.899950 s
+Elapsed time is 9.227730 seconds.
+Data saved at t = 3.9 s
+Elapsed time is 0.047648 seconds.
+Data saved at t = 3.91 s
+Elapsed time is 0.043028 seconds.
+Data saved at t = 3.92 s
+Elapsed time is 0.045382 seconds.
+Data saved at t = 3.93 s
+Elapsed time is 0.039735 seconds.
+Data saved at t = 3.94 s
+Elapsed time is 0.041939 seconds.
+Data saved at t = 3.95 s
+Elapsed time is 0.044360 seconds.
+79200 / 300000 time steps completed. t = 3.959950 s
+Elapsed time is 9.271228 seconds.
+Data saved at t = 3.96 s
+Elapsed time is 0.048641 seconds.
+Data saved at t = 3.97 s
+Elapsed time is 0.044088 seconds.
+Data saved at t = 3.98 s
+Elapsed time is 0.042268 seconds.
+Data saved at t = 3.99 s
+Elapsed time is 0.041636 seconds.
+Data saved at t = 4 s
+Elapsed time is 0.098185 seconds.
+Data saved at t = 4.0099 s
+Elapsed time is 0.044310 seconds.
+80400 / 300000 time steps completed. t = 4.019950 s
+Elapsed time is 9.203611 seconds.
+Data saved at t = 4.0199 s
+Elapsed time is 0.038162 seconds.
+Data saved at t = 4.03 s
+Elapsed time is 0.047047 seconds.
+Data saved at t = 4.04 s
+Elapsed time is 0.044556 seconds.
+Data saved at t = 4.0499 s
+Elapsed time is 0.049921 seconds.
+Data saved at t = 4.0599 s
+Elapsed time is 0.042309 seconds.
+Data saved at t = 4.07 s
+Elapsed time is 0.041442 seconds.
+81600 / 300000 time steps completed. t = 4.079950 s
+Elapsed time is 9.212632 seconds.
+Data saved at t = 4.08 s
+Elapsed time is 0.040103 seconds.
+Data saved at t = 4.0899 s
+Elapsed time is 0.038803 seconds.
+Data saved at t = 4.1 s
+Elapsed time is 0.043864 seconds.
+Data saved at t = 4.11 s
+Elapsed time is 0.051650 seconds.
+Data saved at t = 4.12 s
+Elapsed time is 0.048197 seconds.
+Data saved at t = 4.13 s
+Elapsed time is 0.041499 seconds.
+82800 / 300000 time steps completed. t = 4.139950 s
+Elapsed time is 9.271904 seconds.
+Data saved at t = 4.14 s
+Elapsed time is 0.046830 seconds.
+Data saved at t = 4.15 s
+Elapsed time is 0.039625 seconds.
+Data saved at t = 4.16 s
+Elapsed time is 0.050172 seconds.
+Data saved at t = 4.17 s
+Elapsed time is 0.035625 seconds.
+Data saved at t = 4.18 s
+Elapsed time is 0.039923 seconds.
+Data saved at t = 4.19 s
+Elapsed time is 0.036462 seconds.
+84000 / 300000 time steps completed. t = 4.199950 s
+Elapsed time is 8.961254 seconds.
+Data saved at t = 4.2 s
+Elapsed time is 0.035854 seconds.
+Data saved at t = 4.21 s
+Elapsed time is 0.038950 seconds.
+Data saved at t = 4.22 s
+Elapsed time is 0.047064 seconds.
+Data saved at t = 4.23 s
+Elapsed time is 0.067061 seconds.
+Data saved at t = 4.24 s
+Elapsed time is 0.041718 seconds.
+Data saved at t = 4.25 s
+Elapsed time is 0.058380 seconds.
+85200 / 300000 time steps completed. t = 4.259950 s
+Elapsed time is 9.229200 seconds.
+Data saved at t = 4.26 s
+Elapsed time is 0.042207 seconds.
+Data saved at t = 4.27 s
+Elapsed time is 0.036693 seconds.
+Data saved at t = 4.28 s
+Elapsed time is 0.035367 seconds.
+Data saved at t = 4.29 s
+Elapsed time is 0.046910 seconds.
+Data saved at t = 4.3 s
+Elapsed time is 0.045837 seconds.
+Data saved at t = 4.31 s
+Elapsed time is 0.044332 seconds.
+86400 / 300000 time steps completed. t = 4.319950 s
+Elapsed time is 9.190281 seconds.
+Data saved at t = 4.32 s
+Elapsed time is 0.039573 seconds.
+Data saved at t = 4.33 s
+Elapsed time is 0.039909 seconds.
+Data saved at t = 4.34 s
+Elapsed time is 0.042768 seconds.
+Data saved at t = 4.35 s
+Elapsed time is 0.058057 seconds.
+Data saved at t = 4.36 s
+Elapsed time is 0.070343 seconds.
+Data saved at t = 4.37 s
+Elapsed time is 0.040691 seconds.
+87600 / 300000 time steps completed. t = 4.379950 s
+Elapsed time is 9.179892 seconds.
+Data saved at t = 4.38 s
+Elapsed time is 0.041400 seconds.
+Data saved at t = 4.39 s
+Elapsed time is 0.038478 seconds.
+Data saved at t = 4.4 s
+Elapsed time is 0.038520 seconds.
+Data saved at t = 4.41 s
+Elapsed time is 0.039818 seconds.
+Data saved at t = 4.42 s
+Elapsed time is 0.044745 seconds.
+Data saved at t = 4.43 s
+Elapsed time is 0.036959 seconds.
+88800 / 300000 time steps completed. t = 4.439950 s
+Elapsed time is 9.176674 seconds.
+Data saved at t = 4.44 s
+Elapsed time is 0.037722 seconds.
+Data saved at t = 4.45 s
+Elapsed time is 0.052779 seconds.
+Data saved at t = 4.46 s
+Elapsed time is 0.040705 seconds.
+Data saved at t = 4.47 s
+Elapsed time is 0.036442 seconds.
+Data saved at t = 4.48 s
+Elapsed time is 0.037937 seconds.
+Data saved at t = 4.49 s
+Elapsed time is 0.039825 seconds.
+90000 / 300000 time steps completed. t = 4.499950 s
+Elapsed time is 9.166586 seconds.
+Data saved at t = 4.5 s
+Elapsed time is 0.045991 seconds.
+Data saved at t = 4.51 s
+Elapsed time is 0.057812 seconds.
+Data saved at t = 4.52 s
+Elapsed time is 0.059159 seconds.
+Data saved at t = 4.53 s
+Elapsed time is 0.038455 seconds.
+Data saved at t = 4.54 s
+Elapsed time is 0.110184 seconds.
+Data saved at t = 4.5499 s
+Elapsed time is 0.087798 seconds.
+91200 / 300000 time steps completed. t = 4.559950 s
+Elapsed time is 9.304533 seconds.
+Data saved at t = 4.5599 s
+Elapsed time is 0.101181 seconds.
+Data saved at t = 4.57 s
+Elapsed time is 0.047330 seconds.
+Data saved at t = 4.58 s
+Elapsed time is 0.035538 seconds.
+Data saved at t = 4.5899 s
+Elapsed time is 0.047604 seconds.
+Data saved at t = 4.5999 s
+Elapsed time is 0.037972 seconds.
+Data saved at t = 4.61 s
+Elapsed time is 0.043158 seconds.
+92400 / 300000 time steps completed. t = 4.619950 s
+Elapsed time is 9.194125 seconds.
+Data saved at t = 4.62 s
+Elapsed time is 0.058535 seconds.
+Data saved at t = 4.63 s
+Elapsed time is 0.052874 seconds.
+Data saved at t = 4.64 s
+Elapsed time is 0.040161 seconds.
+Data saved at t = 4.65 s
+Elapsed time is 0.062653 seconds.
+Data saved at t = 4.66 s
+Elapsed time is 0.044767 seconds.
+Data saved at t = 4.67 s
+Elapsed time is 0.064583 seconds.
+93600 / 300000 time steps completed. t = 4.679950 s
+Elapsed time is 9.237131 seconds.
+Data saved at t = 4.68 s
+Elapsed time is 0.035419 seconds.
+Data saved at t = 4.69 s
+Elapsed time is 0.044643 seconds.
+Data saved at t = 4.7 s
+Elapsed time is 0.044170 seconds.
+Data saved at t = 4.71 s
+Elapsed time is 0.052088 seconds.
+Data saved at t = 4.72 s
+Elapsed time is 0.046153 seconds.
+Data saved at t = 4.73 s
+Elapsed time is 0.033606 seconds.
+94800 / 300000 time steps completed. t = 4.739950 s
+Elapsed time is 9.128536 seconds.
+Data saved at t = 4.74 s
+Elapsed time is 0.040519 seconds.
+Data saved at t = 4.75 s
+Elapsed time is 0.043832 seconds.
+Data saved at t = 4.76 s
+Elapsed time is 0.081129 seconds.
+Data saved at t = 4.77 s
+Elapsed time is 0.041172 seconds.
+Data saved at t = 4.78 s
+Elapsed time is 0.053437 seconds.
+Data saved at t = 4.79 s
+Elapsed time is 0.060215 seconds.
+96000 / 300000 time steps completed. t = 4.799950 s
+Elapsed time is 9.252644 seconds.
+Data saved at t = 4.8 s
+Elapsed time is 0.040440 seconds.
+Data saved at t = 4.81 s
+Elapsed time is 0.043390 seconds.
+Data saved at t = 4.82 s
+Elapsed time is 0.057000 seconds.
+Data saved at t = 4.83 s
+Elapsed time is 0.068753 seconds.
+Data saved at t = 4.84 s
+Elapsed time is 0.037559 seconds.
+Data saved at t = 4.85 s
+Elapsed time is 0.042883 seconds.
+97200 / 300000 time steps completed. t = 4.859950 s
+Elapsed time is 9.204348 seconds.
+Data saved at t = 4.86 s
+Elapsed time is 0.037156 seconds.
+Data saved at t = 4.87 s
+Elapsed time is 0.035253 seconds.
+Data saved at t = 4.88 s
+Elapsed time is 0.049425 seconds.
+Data saved at t = 4.89 s
+Elapsed time is 0.067177 seconds.
+Data saved at t = 4.9 s
+Elapsed time is 0.079489 seconds.
+Data saved at t = 4.91 s
+Elapsed time is 0.037943 seconds.
+98400 / 300000 time steps completed. t = 4.919950 s
+Elapsed time is 9.217400 seconds.
+Data saved at t = 4.92 s
+Elapsed time is 0.048248 seconds.
+Data saved at t = 4.93 s
+Elapsed time is 0.043016 seconds.
+Data saved at t = 4.94 s
+Elapsed time is 0.052754 seconds.
+Data saved at t = 4.95 s
+Elapsed time is 0.043566 seconds.
+Data saved at t = 4.96 s
+Elapsed time is 0.045597 seconds.
+Data saved at t = 4.97 s
+Elapsed time is 0.037200 seconds.
+99600 / 300000 time steps completed. t = 4.979950 s
+Elapsed time is 9.227359 seconds.
+Data saved at t = 4.98 s
+Elapsed time is 0.041253 seconds.
+Data saved at t = 4.99 s
+Elapsed time is 0.037717 seconds.
+Data saved at t = 5 s
+Elapsed time is 0.055366 seconds.
+Data saved at t = 5.01 s
+Elapsed time is 0.041705 seconds.
+Data saved at t = 5.02 s
+Elapsed time is 0.071023 seconds.
+Data saved at t = 5.03 s
+Elapsed time is 0.047211 seconds.
+100800 / 300000 time steps completed. t = 5.039950 s
+Elapsed time is 9.290237 seconds.
+Data saved at t = 5.04 s
+Elapsed time is 0.037532 seconds.
+Data saved at t = 5.05 s
+Elapsed time is 0.045037 seconds.
+Data saved at t = 5.06 s
+Elapsed time is 0.046290 seconds.
+Data saved at t = 5.07 s
+Elapsed time is 0.037267 seconds.
+Data saved at t = 5.08 s
+Elapsed time is 0.057392 seconds.
+Data saved at t = 5.09 s
+Elapsed time is 0.040935 seconds.
+102000 / 300000 time steps completed. t = 5.099950 s
+Elapsed time is 9.134169 seconds.
+Data saved at t = 5.0999 s
+Elapsed time is 0.041326 seconds.
+Data saved at t = 5.11 s
+Elapsed time is 0.053231 seconds.
+Data saved at t = 5.12 s
+Elapsed time is 0.040643 seconds.
+Data saved at t = 5.13 s
+Elapsed time is 0.049903 seconds.
+Data saved at t = 5.14 s
+Elapsed time is 0.040988 seconds.
+Data saved at t = 5.15 s
+Elapsed time is 0.054042 seconds.
+103200 / 300000 time steps completed. t = 5.159950 s
+Elapsed time is 9.300185 seconds.
+Data saved at t = 5.16 s
+Elapsed time is 0.039160 seconds.
+Data saved at t = 5.17 s
+Elapsed time is 0.055715 seconds.
+Data saved at t = 5.18 s
+Elapsed time is 0.039261 seconds.
+Data saved at t = 5.19 s
+Elapsed time is 0.048049 seconds.
+Data saved at t = 5.2 s
+Elapsed time is 0.035632 seconds.
+Data saved at t = 5.21 s
+Elapsed time is 0.054538 seconds.
+104400 / 300000 time steps completed. t = 5.219950 s
+Elapsed time is 9.271347 seconds.
+Data saved at t = 5.22 s
+Elapsed time is 0.063049 seconds.
+Data saved at t = 5.23 s
+Elapsed time is 0.046822 seconds.
+Data saved at t = 5.24 s
+Elapsed time is 0.038324 seconds.
+Data saved at t = 5.25 s
+Elapsed time is 0.057461 seconds.
+Data saved at t = 5.26 s
+Elapsed time is 0.041354 seconds.
+Data saved at t = 5.27 s
+Elapsed time is 0.043963 seconds.
+105600 / 300000 time steps completed. t = 5.279950 s
+Elapsed time is 9.237942 seconds.
+Data saved at t = 5.28 s
+Elapsed time is 0.042654 seconds.
+Data saved at t = 5.29 s
+Elapsed time is 0.036319 seconds.
+Data saved at t = 5.3 s
+Elapsed time is 0.045579 seconds.
+Data saved at t = 5.31 s
+Elapsed time is 0.041921 seconds.
+Data saved at t = 5.32 s
+Elapsed time is 0.042458 seconds.
+Data saved at t = 5.33 s
+Elapsed time is 0.038355 seconds.
+106800 / 300000 time steps completed. t = 5.339950 s
+Elapsed time is 9.243169 seconds.
+Data saved at t = 5.34 s
+Elapsed time is 0.045505 seconds.
+Data saved at t = 5.35 s
+Elapsed time is 0.037868 seconds.
+Data saved at t = 5.36 s
+Elapsed time is 0.042698 seconds.
+Data saved at t = 5.37 s
+Elapsed time is 0.037938 seconds.
+Data saved at t = 5.38 s
+Elapsed time is 0.040414 seconds.
+Data saved at t = 5.39 s
+Elapsed time is 0.085724 seconds.
+108000 / 300000 time steps completed. t = 5.399950 s
+Elapsed time is 9.289013 seconds.
+Data saved at t = 5.4 s
+Elapsed time is 0.045540 seconds.
+Data saved at t = 5.41 s
+Elapsed time is 0.075842 seconds.
+Data saved at t = 5.42 s
+Elapsed time is 0.036600 seconds.
+Data saved at t = 5.43 s
+Elapsed time is 0.046672 seconds.
+Data saved at t = 5.44 s
+Elapsed time is 0.035327 seconds.
+Data saved at t = 5.45 s
+Elapsed time is 0.039500 seconds.
+109200 / 300000 time steps completed. t = 5.459950 s
+Elapsed time is 9.259806 seconds.
+Data saved at t = 5.46 s
+Elapsed time is 0.042131 seconds.
+Data saved at t = 5.47 s
+Elapsed time is 0.035570 seconds.
+Data saved at t = 5.48 s
+Elapsed time is 0.049728 seconds.
+Data saved at t = 5.49 s
+Elapsed time is 0.041424 seconds.
+Data saved at t = 5.5 s
+Elapsed time is 0.040517 seconds.
+Data saved at t = 5.51 s
+Elapsed time is 0.043961 seconds.
+110400 / 300000 time steps completed. t = 5.519950 s
+Elapsed time is 9.261145 seconds.
+Data saved at t = 5.52 s
+Elapsed time is 0.039892 seconds.
+Data saved at t = 5.53 s
+Elapsed time is 0.034363 seconds.
+Data saved at t = 5.54 s
+Elapsed time is 0.038901 seconds.
+Data saved at t = 5.55 s
+Elapsed time is 0.084916 seconds.
+Data saved at t = 5.56 s
+Elapsed time is 0.037566 seconds.
+Data saved at t = 5.57 s
+Elapsed time is 0.050127 seconds.
+111600 / 300000 time steps completed. t = 5.579950 s
+Elapsed time is 9.157115 seconds.
+Data saved at t = 5.58 s
+Elapsed time is 0.037706 seconds.
+Data saved at t = 5.59 s
+Elapsed time is 0.040143 seconds.
+Data saved at t = 5.6 s
+Elapsed time is 0.038402 seconds.
+Data saved at t = 5.61 s
+Elapsed time is 0.047686 seconds.
+Data saved at t = 5.62 s
+Elapsed time is 0.042480 seconds.
+Data saved at t = 5.63 s
+Elapsed time is 0.066572 seconds.
+112800 / 300000 time steps completed. t = 5.639950 s
+Elapsed time is 8.933607 seconds.
+Data saved at t = 5.64 s
+Elapsed time is 0.035595 seconds.
+Data saved at t = 5.65 s
+Elapsed time is 0.040899 seconds.
+Data saved at t = 5.66 s
+Elapsed time is 0.104424 seconds.
+Data saved at t = 5.67 s
+Elapsed time is 0.035712 seconds.
+Data saved at t = 5.68 s
+Elapsed time is 0.033169 seconds.
+Data saved at t = 5.69 s
+Elapsed time is 0.033973 seconds.
+114000 / 300000 time steps completed. t = 5.699950 s
+Elapsed time is 8.882071 seconds.
+Data saved at t = 5.7 s
+Elapsed time is 0.036459 seconds.
+Data saved at t = 5.71 s
+Elapsed time is 0.035493 seconds.
+Data saved at t = 5.72 s
+Elapsed time is 0.053476 seconds.
+Data saved at t = 5.73 s
+Elapsed time is 0.039685 seconds.
+Data saved at t = 5.74 s
+Elapsed time is 0.036575 seconds.
+Data saved at t = 5.75 s
+Elapsed time is 0.042295 seconds.
+115200 / 300000 time steps completed. t = 5.759950 s
+Elapsed time is 9.190825 seconds.
+Data saved at t = 5.76 s
+Elapsed time is 0.036447 seconds.
+Data saved at t = 5.77 s
+Elapsed time is 0.040227 seconds.
+Data saved at t = 5.78 s
+Elapsed time is 0.089067 seconds.
+Data saved at t = 5.79 s
+Elapsed time is 0.057596 seconds.
+Data saved at t = 5.8 s
+Elapsed time is 0.040925 seconds.
+Data saved at t = 5.81 s
+Elapsed time is 0.069820 seconds.
+116400 / 300000 time steps completed. t = 5.819950 s
+Elapsed time is 9.262225 seconds.
+Data saved at t = 5.82 s
+Elapsed time is 0.049419 seconds.
+Data saved at t = 5.83 s
+Elapsed time is 0.057338 seconds.
+Data saved at t = 5.84 s
+Elapsed time is 0.037261 seconds.
+Data saved at t = 5.85 s
+Elapsed time is 0.044697 seconds.
+Data saved at t = 5.86 s
+Elapsed time is 0.064282 seconds.
+Data saved at t = 5.87 s
+Elapsed time is 0.047600 seconds.
+117600 / 300000 time steps completed. t = 5.879950 s
+Elapsed time is 9.253904 seconds.
+Data saved at t = 5.88 s
+Elapsed time is 0.047676 seconds.
+Data saved at t = 5.89 s
+Elapsed time is 0.045753 seconds.
+Data saved at t = 5.9 s
+Elapsed time is 0.053012 seconds.
+Data saved at t = 5.91 s
+Elapsed time is 0.033121 seconds.
+Data saved at t = 5.92 s
+Elapsed time is 0.047655 seconds.
+Data saved at t = 5.93 s
+Elapsed time is 0.039550 seconds.
+118800 / 300000 time steps completed. t = 5.939950 s
+Elapsed time is 9.223451 seconds.
+Data saved at t = 5.94 s
+Elapsed time is 0.050176 seconds.
+Data saved at t = 5.95 s
+Elapsed time is 0.041759 seconds.
+Data saved at t = 5.96 s
+Elapsed time is 0.039564 seconds.
+Data saved at t = 5.97 s
+Elapsed time is 0.049750 seconds.
+Data saved at t = 5.98 s
+Elapsed time is 0.037718 seconds.
+Data saved at t = 5.99 s
+Elapsed time is 0.038368 seconds.
+120000 / 300000 time steps completed. t = 5.999950 s
+Elapsed time is 9.110237 seconds.
+Data saved at t = 6 s
+Elapsed time is 0.035354 seconds.
+Data saved at t = 6.01 s
+Elapsed time is 0.040755 seconds.
+Data saved at t = 6.02 s
+Elapsed time is 0.038599 seconds.
+Data saved at t = 6.03 s
+Elapsed time is 0.052397 seconds.
+Data saved at t = 6.04 s
+Elapsed time is 0.078644 seconds.
+Data saved at t = 6.05 s
+Elapsed time is 0.054785 seconds.
+121200 / 300000 time steps completed. t = 6.059950 s
+Elapsed time is 9.197428 seconds.
+Data saved at t = 6.06 s
+Elapsed time is 0.036012 seconds.
+Data saved at t = 6.07 s
+Elapsed time is 0.036114 seconds.
+Data saved at t = 6.08 s
+Elapsed time is 0.049644 seconds.
+Data saved at t = 6.09 s
+Elapsed time is 0.042754 seconds.
+Data saved at t = 6.1 s
+Elapsed time is 0.055753 seconds.
+Data saved at t = 6.11 s
+Elapsed time is 0.037137 seconds.
+122400 / 300000 time steps completed. t = 6.119950 s
+Elapsed time is 9.197193 seconds.
+Data saved at t = 6.12 s
+Elapsed time is 0.047284 seconds.
+Data saved at t = 6.13 s
+Elapsed time is 0.037819 seconds.
+Data saved at t = 6.14 s
+Elapsed time is 0.036680 seconds.
+Data saved at t = 6.15 s
+Elapsed time is 0.048626 seconds.
+Data saved at t = 6.16 s
+Elapsed time is 0.033977 seconds.
+Data saved at t = 6.17 s
+Elapsed time is 0.095550 seconds.
+123600 / 300000 time steps completed. t = 6.179950 s
+Elapsed time is 9.309886 seconds.
+Data saved at t = 6.18 s
+Elapsed time is 0.051673 seconds.
+Data saved at t = 6.19 s
+Elapsed time is 0.037347 seconds.
+Data saved at t = 6.2 s
+Elapsed time is 0.056839 seconds.
+Data saved at t = 6.21 s
+Elapsed time is 0.035879 seconds.
+Data saved at t = 6.22 s
+Elapsed time is 0.047354 seconds.
+Data saved at t = 6.23 s
+Elapsed time is 0.037285 seconds.
+124800 / 300000 time steps completed. t = 6.239950 s
+Elapsed time is 9.261170 seconds.
+Data saved at t = 6.24 s
+Elapsed time is 0.068092 seconds.
+Data saved at t = 6.25 s
+Elapsed time is 0.052353 seconds.
+Data saved at t = 6.26 s
+Elapsed time is 0.081910 seconds.
+Data saved at t = 6.27 s
+Elapsed time is 0.041600 seconds.
+Data saved at t = 6.28 s
+Elapsed time is 0.049653 seconds.
+Data saved at t = 6.29 s
+Elapsed time is 0.033282 seconds.
+126000 / 300000 time steps completed. t = 6.299950 s
+Elapsed time is 9.114210 seconds.
+Data saved at t = 6.3 s
+Elapsed time is 0.044087 seconds.
+Data saved at t = 6.31 s
+Elapsed time is 0.039194 seconds.
+Data saved at t = 6.32 s
+Elapsed time is 0.036622 seconds.
+Data saved at t = 6.33 s
+Elapsed time is 0.044447 seconds.
+Data saved at t = 6.34 s
+Elapsed time is 0.039124 seconds.
+Data saved at t = 6.35 s
+Elapsed time is 0.036832 seconds.
+127200 / 300000 time steps completed. t = 6.359950 s
+Elapsed time is 9.124157 seconds.
+Data saved at t = 6.36 s
+Elapsed time is 0.048128 seconds.
+Data saved at t = 6.37 s
+Elapsed time is 0.034653 seconds.
+Data saved at t = 6.38 s
+Elapsed time is 0.037693 seconds.
+Data saved at t = 6.39 s
+Elapsed time is 0.038105 seconds.
+Data saved at t = 6.4 s
+Elapsed time is 0.052382 seconds.
+Data saved at t = 6.41 s
+Elapsed time is 0.040333 seconds.
+128400 / 300000 time steps completed. t = 6.419950 s
+Elapsed time is 9.171761 seconds.
+Data saved at t = 6.42 s
+Elapsed time is 0.038603 seconds.
+Data saved at t = 6.43 s
+Elapsed time is 0.034512 seconds.
+Data saved at t = 6.44 s
+Elapsed time is 0.048705 seconds.
+Data saved at t = 6.45 s
+Elapsed time is 0.075295 seconds.
+Data saved at t = 6.46 s
+Elapsed time is 0.082379 seconds.
+Data saved at t = 6.4699 s
+Elapsed time is 0.038044 seconds.
+129600 / 300000 time steps completed. t = 6.479950 s
+Elapsed time is 9.219264 seconds.
+Data saved at t = 6.48 s
+Elapsed time is 0.037116 seconds.
+Data saved at t = 6.49 s
+Elapsed time is 0.041051 seconds.
+Data saved at t = 6.5 s
+Elapsed time is 0.053081 seconds.
+Data saved at t = 6.5099 s
+Elapsed time is 0.050854 seconds.
+Data saved at t = 6.52 s
+Elapsed time is 0.041460 seconds.
+Data saved at t = 6.53 s
+Elapsed time is 0.039690 seconds.
+130800 / 300000 time steps completed. t = 6.539950 s
+Elapsed time is 9.256362 seconds.
+Data saved at t = 6.54 s
+Elapsed time is 0.048272 seconds.
+Data saved at t = 6.5499 s
+Elapsed time is 0.037307 seconds.
+Data saved at t = 6.56 s
+Elapsed time is 0.035857 seconds.
+Data saved at t = 6.57 s
+Elapsed time is 0.054628 seconds.
+Data saved at t = 6.58 s
+Elapsed time is 0.043819 seconds.
+Data saved at t = 6.5899 s
+Elapsed time is 0.043294 seconds.
+132000 / 300000 time steps completed. t = 6.599950 s
+Elapsed time is 9.246751 seconds.
+Data saved at t = 6.6 s
+Elapsed time is 0.058457 seconds.
+Data saved at t = 6.61 s
+Elapsed time is 0.058612 seconds.
+Data saved at t = 6.62 s
+Elapsed time is 0.063903 seconds.
+Data saved at t = 6.63 s
+Elapsed time is 0.050171 seconds.
+Data saved at t = 6.64 s
+Elapsed time is 0.052229 seconds.
+Data saved at t = 6.65 s
+Elapsed time is 0.057205 seconds.
+133200 / 300000 time steps completed. t = 6.659950 s
+Elapsed time is 9.275007 seconds.
+Data saved at t = 6.66 s
+Elapsed time is 0.042343 seconds.
+Data saved at t = 6.67 s
+Elapsed time is 0.041203 seconds.
+Data saved at t = 6.68 s
+Elapsed time is 0.074143 seconds.
+Data saved at t = 6.69 s
+Elapsed time is 0.043431 seconds.
+Data saved at t = 6.7 s
+Elapsed time is 0.070144 seconds.
+Data saved at t = 6.71 s
+Elapsed time is 0.050096 seconds.
+134400 / 300000 time steps completed. t = 6.719950 s
+Elapsed time is 9.264705 seconds.
+Data saved at t = 6.72 s
+Elapsed time is 0.050485 seconds.
+Data saved at t = 6.73 s
+Elapsed time is 0.039786 seconds.
+Data saved at t = 6.74 s
+Elapsed time is 0.045568 seconds.
+Data saved at t = 6.75 s
+Elapsed time is 0.041216 seconds.
+Data saved at t = 6.76 s
+Elapsed time is 0.048685 seconds.
+Data saved at t = 6.77 s
+Elapsed time is 0.043110 seconds.
+135600 / 300000 time steps completed. t = 6.779950 s
+Elapsed time is 9.115370 seconds.
+Data saved at t = 6.78 s
+Elapsed time is 0.062116 seconds.
+Data saved at t = 6.79 s
+Elapsed time is 0.179904 seconds.
+Data saved at t = 6.8 s
+Elapsed time is 0.035652 seconds.
+Data saved at t = 6.81 s
+Elapsed time is 0.041623 seconds.
+Data saved at t = 6.82 s
+Elapsed time is 0.047654 seconds.
+Data saved at t = 6.83 s
+Elapsed time is 0.103664 seconds.
+136800 / 300000 time steps completed. t = 6.839950 s
+Elapsed time is 9.241115 seconds.
+Data saved at t = 6.84 s
+Elapsed time is 0.038274 seconds.
+Data saved at t = 6.85 s
+Elapsed time is 0.048214 seconds.
+Data saved at t = 6.86 s
+Elapsed time is 0.039148 seconds.
+Data saved at t = 6.87 s
+Elapsed time is 0.183368 seconds.
+Data saved at t = 6.88 s
+Elapsed time is 0.053257 seconds.
+Data saved at t = 6.89 s
+Elapsed time is 0.061391 seconds.
+138000 / 300000 time steps completed. t = 6.899950 s
+Elapsed time is 9.173849 seconds.
+Data saved at t = 6.9 s
+Elapsed time is 0.073967 seconds.
+Data saved at t = 6.91 s
+Elapsed time is 0.036832 seconds.
+Data saved at t = 6.92 s
+Elapsed time is 0.038003 seconds.
+Data saved at t = 6.93 s
+Elapsed time is 0.047962 seconds.
+Data saved at t = 6.94 s
+Elapsed time is 0.037471 seconds.
+Data saved at t = 6.95 s
+Elapsed time is 0.058939 seconds.
+139200 / 300000 time steps completed. t = 6.959950 s
+Elapsed time is 9.228395 seconds.
+Data saved at t = 6.96 s
+Elapsed time is 0.096241 seconds.
+Data saved at t = 6.97 s
+Elapsed time is 0.046676 seconds.
+Data saved at t = 6.98 s
+Elapsed time is 0.049677 seconds.
+Data saved at t = 6.99 s
+Elapsed time is 0.063109 seconds.
+Data saved at t = 7 s
+Elapsed time is 0.050145 seconds.
+Data saved at t = 7.01 s
+Elapsed time is 0.061817 seconds.
+140400 / 300000 time steps completed. t = 7.019950 s
+Elapsed time is 9.181302 seconds.
+Data saved at t = 7.0199 s
+Elapsed time is 0.034932 seconds.
+Data saved at t = 7.03 s
+Elapsed time is 0.046432 seconds.
+Data saved at t = 7.04 s
+Elapsed time is 0.100453 seconds.
+Data saved at t = 7.05 s
+Elapsed time is 0.164748 seconds.
+Data saved at t = 7.0599 s
+Elapsed time is 0.037484 seconds.
+Data saved at t = 7.07 s
+Elapsed time is 0.075862 seconds.
+141600 / 300000 time steps completed. t = 7.079950 s
+Elapsed time is 9.263065 seconds.
+Data saved at t = 7.08 s
+Elapsed time is 0.043838 seconds.
+Data saved at t = 7.09 s
+Elapsed time is 0.042612 seconds.
+Data saved at t = 7.0999 s
+Elapsed time is 0.042275 seconds.
+Data saved at t = 7.11 s
+Elapsed time is 0.037960 seconds.
+Data saved at t = 7.12 s
+Elapsed time is 0.071185 seconds.
+Data saved at t = 7.13 s
+Elapsed time is 0.034953 seconds.
+142800 / 300000 time steps completed. t = 7.139950 s
+Elapsed time is 8.940905 seconds.
+Data saved at t = 7.1399 s
+Elapsed time is 0.041529 seconds.
+Data saved at t = 7.15 s
+Elapsed time is 0.038106 seconds.
+Data saved at t = 7.16 s
+Elapsed time is 0.038007 seconds.
+Data saved at t = 7.17 s
+Elapsed time is 0.033299 seconds.
+Data saved at t = 7.1799 s
+Elapsed time is 0.122040 seconds.
+Data saved at t = 7.19 s
+Elapsed time is 0.052659 seconds.
+144000 / 300000 time steps completed. t = 7.199950 s
+Elapsed time is 9.220311 seconds.
+Data saved at t = 7.2 s
+Elapsed time is 0.040464 seconds.
+Data saved at t = 7.21 s
+Elapsed time is 0.046685 seconds.
+Data saved at t = 7.22 s
+Elapsed time is 0.064955 seconds.
+Data saved at t = 7.23 s
+Elapsed time is 0.061237 seconds.
+Data saved at t = 7.24 s
+Elapsed time is 0.039334 seconds.
+Data saved at t = 7.25 s
+Elapsed time is 0.085637 seconds.
+145200 / 300000 time steps completed. t = 7.259950 s
+Elapsed time is 9.261985 seconds.
+Data saved at t = 7.26 s
+Elapsed time is 0.073846 seconds.
+Data saved at t = 7.27 s
+Elapsed time is 0.070969 seconds.
+Data saved at t = 7.28 s
+Elapsed time is 0.049240 seconds.
+Data saved at t = 7.29 s
+Elapsed time is 0.043653 seconds.
+Data saved at t = 7.3 s
+Elapsed time is 0.090183 seconds.
+Data saved at t = 7.31 s
+Elapsed time is 0.054118 seconds.
+146400 / 300000 time steps completed. t = 7.319950 s
+Elapsed time is 9.287797 seconds.
+Data saved at t = 7.32 s
+Elapsed time is 0.064590 seconds.
+Data saved at t = 7.33 s
+Elapsed time is 0.045140 seconds.
+Data saved at t = 7.34 s
+Elapsed time is 0.063425 seconds.
+Data saved at t = 7.35 s
+Elapsed time is 0.099403 seconds.
+Data saved at t = 7.36 s
+Elapsed time is 0.058688 seconds.
+Data saved at t = 7.37 s
+Elapsed time is 0.039989 seconds.
+147600 / 300000 time steps completed. t = 7.379950 s
+Elapsed time is 9.262134 seconds.
+Data saved at t = 7.38 s
+Elapsed time is 0.080431 seconds.
+Data saved at t = 7.39 s
+Elapsed time is 0.055475 seconds.
+Data saved at t = 7.4 s
+Elapsed time is 0.040080 seconds.
+Data saved at t = 7.41 s
+Elapsed time is 0.067206 seconds.
+Data saved at t = 7.42 s
+Elapsed time is 0.042096 seconds.
+Data saved at t = 7.43 s
+Elapsed time is 0.040389 seconds.
+148800 / 300000 time steps completed. t = 7.439950 s
+Elapsed time is 9.290206 seconds.
+Data saved at t = 7.44 s
+Elapsed time is 0.037561 seconds.
+Data saved at t = 7.45 s
+Elapsed time is 0.056688 seconds.
+Data saved at t = 7.46 s
+Elapsed time is 0.076742 seconds.
+Data saved at t = 7.47 s
+Elapsed time is 0.057858 seconds.
+Data saved at t = 7.48 s
+Elapsed time is 0.050279 seconds.
+Data saved at t = 7.49 s
+Elapsed time is 0.056905 seconds.
+150000 / 300000 time steps completed. t = 7.499950 s
+Elapsed time is 9.250298 seconds.
+Data saved at t = 7.5 s
+Elapsed time is 0.036348 seconds.
+Data saved at t = 7.51 s
+Elapsed time is 0.037654 seconds.
+Data saved at t = 7.52 s
+Elapsed time is 0.042427 seconds.
+Data saved at t = 7.53 s
+Elapsed time is 0.048636 seconds.
+Data saved at t = 7.54 s
+Elapsed time is 0.081701 seconds.
+Data saved at t = 7.55 s
+Elapsed time is 0.069429 seconds.
+151200 / 300000 time steps completed. t = 7.559950 s
+Elapsed time is 9.252834 seconds.
+Data saved at t = 7.56 s
+Elapsed time is 0.055685 seconds.
+Data saved at t = 7.57 s
+Elapsed time is 0.124575 seconds.
+Data saved at t = 7.58 s
+Elapsed time is 0.052747 seconds.
+Data saved at t = 7.5899 s
+Elapsed time is 0.039756 seconds.
+Data saved at t = 7.6 s
+Elapsed time is 0.047365 seconds.
+Data saved at t = 7.61 s
+Elapsed time is 0.043225 seconds.
+152400 / 300000 time steps completed. t = 7.619950 s
+Elapsed time is 9.075792 seconds.
+Data saved at t = 7.62 s
+Elapsed time is 0.039845 seconds.
+Data saved at t = 7.63 s
+Elapsed time is 0.058496 seconds.
+Data saved at t = 7.64 s
+Elapsed time is 0.075790 seconds.
+Data saved at t = 7.65 s
+Elapsed time is 0.047589 seconds.
+Data saved at t = 7.66 s
+Elapsed time is 0.068205 seconds.
+Data saved at t = 7.67 s
+Elapsed time is 0.041717 seconds.
+153600 / 300000 time steps completed. t = 7.679950 s
+Elapsed time is 9.050675 seconds.
+Data saved at t = 7.68 s
+Elapsed time is 0.050962 seconds.
+Data saved at t = 7.69 s
+Elapsed time is 0.051225 seconds.
+Data saved at t = 7.7 s
+Elapsed time is 0.070245 seconds.
+Data saved at t = 7.71 s
+Elapsed time is 0.042617 seconds.
+Data saved at t = 7.72 s
+Elapsed time is 0.048974 seconds.
+Data saved at t = 7.73 s
+Elapsed time is 0.058694 seconds.
+154800 / 300000 time steps completed. t = 7.739950 s
+Elapsed time is 9.157565 seconds.
+Data saved at t = 7.74 s
+Elapsed time is 0.049804 seconds.
+Data saved at t = 7.75 s
+Elapsed time is 0.054460 seconds.
+Data saved at t = 7.76 s
+Elapsed time is 0.040615 seconds.
+Data saved at t = 7.77 s
+Elapsed time is 0.066512 seconds.
+Data saved at t = 7.78 s
+Elapsed time is 0.036910 seconds.
+Data saved at t = 7.79 s
+Elapsed time is 0.035703 seconds.
+156000 / 300000 time steps completed. t = 7.799950 s
+Elapsed time is 9.172121 seconds.
+Data saved at t = 7.8 s
+Elapsed time is 0.040220 seconds.
+Data saved at t = 7.81 s
+Elapsed time is 0.056538 seconds.
+Data saved at t = 7.82 s
+Elapsed time is 0.039063 seconds.
+Data saved at t = 7.83 s
+Elapsed time is 0.058043 seconds.
+Data saved at t = 7.84 s
+Elapsed time is 0.040679 seconds.
+Data saved at t = 7.85 s
+Elapsed time is 0.045825 seconds.
+157200 / 300000 time steps completed. t = 7.859950 s
+Elapsed time is 9.211698 seconds.
+Data saved at t = 7.86 s
+Elapsed time is 0.068387 seconds.
+Data saved at t = 7.87 s
+Elapsed time is 0.094349 seconds.
+Data saved at t = 7.88 s
+Elapsed time is 0.045534 seconds.
+Data saved at t = 7.89 s
+Elapsed time is 0.064351 seconds.
+Data saved at t = 7.9 s
+Elapsed time is 0.485286 seconds.
+Data saved at t = 7.91 s
+Elapsed time is 0.052779 seconds.
+158400 / 300000 time steps completed. t = 7.919950 s
+Elapsed time is 9.217175 seconds.
+Data saved at t = 7.92 s
+Elapsed time is 0.044270 seconds.
+Data saved at t = 7.93 s
+Elapsed time is 0.062157 seconds.
+Data saved at t = 7.94 s
+Elapsed time is 0.050320 seconds.
+Data saved at t = 7.95 s
+Elapsed time is 0.070350 seconds.
+Data saved at t = 7.96 s
+Elapsed time is 0.037480 seconds.
+Data saved at t = 7.97 s
+Elapsed time is 0.038734 seconds.
+159600 / 300000 time steps completed. t = 7.979950 s
+Elapsed time is 9.212973 seconds.
+Data saved at t = 7.98 s
+Elapsed time is 0.042352 seconds.
+Data saved at t = 7.99 s
+Elapsed time is 0.042202 seconds.
+Data saved at t = 8 s
+Elapsed time is 0.043311 seconds.
+Data saved at t = 8.0099 s
+Elapsed time is 0.112024 seconds.
+Data saved at t = 8.02 s
+Elapsed time is 0.086255 seconds.
+Data saved at t = 8.03 s
+Elapsed time is 0.183787 seconds.
+160800 / 300000 time steps completed. t = 8.039950 s
+Elapsed time is 9.382868 seconds.
+Data saved at t = 8.04 s
+Elapsed time is 0.375331 seconds.
+Data saved at t = 8.05 s
+Elapsed time is 0.137958 seconds.
+Data saved at t = 8.06 s
+Elapsed time is 0.060818 seconds.
+Data saved at t = 8.07 s
+Elapsed time is 0.048490 seconds.
+Data saved at t = 8.08 s
+Elapsed time is 0.038935 seconds.
+Data saved at t = 8.0899 s
+Elapsed time is 0.063847 seconds.
+162000 / 300000 time steps completed. t = 8.099950 s
+Elapsed time is 9.100494 seconds.
+Data saved at t = 8.1 s
+Elapsed time is 0.040474 seconds.
+Data saved at t = 8.11 s
+Elapsed time is 0.042222 seconds.
+Data saved at t = 8.1199 s
+Elapsed time is 0.046215 seconds.
+Data saved at t = 8.13 s
+Elapsed time is 0.134981 seconds.
+Data saved at t = 8.14 s
+Elapsed time is 0.124495 seconds.
+Data saved at t = 8.15 s
+Elapsed time is 0.073075 seconds.
+163200 / 300000 time steps completed. t = 8.159950 s
+Elapsed time is 9.195785 seconds.
+Data saved at t = 8.16 s
+Elapsed time is 0.049870 seconds.
+Data saved at t = 8.17 s
+Elapsed time is 0.057123 seconds.
+Data saved at t = 8.1799 s
+Elapsed time is 0.097859 seconds.
+Data saved at t = 8.19 s
+Elapsed time is 0.042201 seconds.
+Data saved at t = 8.1999 s
+Elapsed time is 0.044539 seconds.
+Data saved at t = 8.21 s
+Elapsed time is 0.056968 seconds.
+164400 / 300000 time steps completed. t = 8.219950 s
+Elapsed time is 9.204110 seconds.
+Data saved at t = 8.22 s
+Elapsed time is 0.046326 seconds.
+Data saved at t = 8.23 s
+Elapsed time is 0.057262 seconds.
+Data saved at t = 8.24 s
+Elapsed time is 0.038201 seconds.
+Data saved at t = 8.25 s
+Elapsed time is 0.048285 seconds.
+Data saved at t = 8.2599 s
+Elapsed time is 0.038441 seconds.
+Data saved at t = 8.27 s
+Elapsed time is 0.045923 seconds.
+165600 / 300000 time steps completed. t = 8.279950 s
+Elapsed time is 9.187139 seconds.
+Data saved at t = 8.28 s
+Elapsed time is 0.041089 seconds.
+Data saved at t = 8.29 s
+Elapsed time is 0.038013 seconds.
+Data saved at t = 8.3 s
+Elapsed time is 0.042167 seconds.
+Data saved at t = 8.31 s
+Elapsed time is 0.035140 seconds.
+Data saved at t = 8.32 s
+Elapsed time is 0.042576 seconds.
+Data saved at t = 8.33 s
+Elapsed time is 0.035950 seconds.
+166800 / 300000 time steps completed. t = 8.339950 s
+Elapsed time is 9.216575 seconds.
+Data saved at t = 8.3399 s
+Elapsed time is 0.048127 seconds.
+Data saved at t = 8.35 s
+Elapsed time is 0.061052 seconds.
+Data saved at t = 8.36 s
+Elapsed time is 0.037202 seconds.
+Data saved at t = 8.37 s
+Elapsed time is 0.041331 seconds.
+Data saved at t = 8.38 s
+Elapsed time is 0.042321 seconds.
+Data saved at t = 8.39 s
+Elapsed time is 0.045117 seconds.
+168000 / 300000 time steps completed. t = 8.399950 s
+Elapsed time is 9.253680 seconds.
+Data saved at t = 8.4 s
+Elapsed time is 0.046982 seconds.
+Data saved at t = 8.41 s
+Elapsed time is 0.047045 seconds.
+Data saved at t = 8.42 s
+Elapsed time is 0.079984 seconds.
+Data saved at t = 8.43 s
+Elapsed time is 0.035354 seconds.
+Data saved at t = 8.44 s
+Elapsed time is 0.036542 seconds.
+Data saved at t = 8.45 s
+Elapsed time is 0.038367 seconds.
+169200 / 300000 time steps completed. t = 8.459950 s
+Elapsed time is 8.879488 seconds.
+Data saved at t = 8.46 s
+Elapsed time is 0.038892 seconds.
+Data saved at t = 8.47 s
+Elapsed time is 0.036984 seconds.
+Data saved at t = 8.48 s
+Elapsed time is 0.046884 seconds.
+Data saved at t = 8.49 s
+Elapsed time is 0.047441 seconds.
+Data saved at t = 8.5 s
+Elapsed time is 0.156529 seconds.
+Data saved at t = 8.51 s
+Elapsed time is 0.061096 seconds.
+170400 / 300000 time steps completed. t = 8.519950 s
+Elapsed time is 9.134377 seconds.
+Data saved at t = 8.52 s
+Elapsed time is 0.041544 seconds.
+Data saved at t = 8.53 s
+Elapsed time is 0.081833 seconds.
+Data saved at t = 8.54 s
+Elapsed time is 0.069408 seconds.
+Data saved at t = 8.55 s
+Elapsed time is 0.041870 seconds.
+Data saved at t = 8.56 s
+Elapsed time is 0.048711 seconds.
+Data saved at t = 8.57 s
+Elapsed time is 0.052117 seconds.
+171600 / 300000 time steps completed. t = 8.579950 s
+Elapsed time is 9.123434 seconds.
+Data saved at t = 8.58 s
+Elapsed time is 0.043349 seconds.
+Data saved at t = 8.59 s
+Elapsed time is 0.037636 seconds.
+Data saved at t = 8.6 s
+Elapsed time is 0.034636 seconds.
+Data saved at t = 8.61 s
+Elapsed time is 0.067082 seconds.
+Data saved at t = 8.62 s
+Elapsed time is 0.042554 seconds.
+Data saved at t = 8.63 s
+Elapsed time is 0.050500 seconds.
+172800 / 300000 time steps completed. t = 8.639950 s
+Elapsed time is 9.153111 seconds.
+Data saved at t = 8.64 s
+Elapsed time is 0.039840 seconds.
+Data saved at t = 8.65 s
+Elapsed time is 0.074959 seconds.
+Data saved at t = 8.66 s
+Elapsed time is 0.039177 seconds.
+Data saved at t = 8.67 s
+Elapsed time is 0.083976 seconds.
+Data saved at t = 8.68 s
+Elapsed time is 0.037937 seconds.
+Data saved at t = 8.6899 s
+Elapsed time is 0.069809 seconds.
+174000 / 300000 time steps completed. t = 8.699950 s
+Elapsed time is 9.080472 seconds.
+Data saved at t = 8.7 s
+Elapsed time is 0.034678 seconds.
+Data saved at t = 8.71 s
+Elapsed time is 0.049981 seconds.
+Data saved at t = 8.72 s
+Elapsed time is 0.038282 seconds.
+Data saved at t = 8.73 s
+Elapsed time is 0.039560 seconds.
+Data saved at t = 8.74 s
+Elapsed time is 0.051415 seconds.
+Data saved at t = 8.75 s
+Elapsed time is 0.053144 seconds.
+175200 / 300000 time steps completed. t = 8.759950 s
+Elapsed time is 9.179963 seconds.
+Data saved at t = 8.76 s
+Elapsed time is 0.035780 seconds.
+Data saved at t = 8.7699 s
+Elapsed time is 0.085920 seconds.
+Data saved at t = 8.78 s
+Elapsed time is 0.035045 seconds.
+Data saved at t = 8.79 s
+Elapsed time is 0.090117 seconds.
+Data saved at t = 8.8 s
+Elapsed time is 0.037516 seconds.
+Data saved at t = 8.81 s
+Elapsed time is 0.117918 seconds.
+176400 / 300000 time steps completed. t = 8.819950 s
+Elapsed time is 9.349484 seconds.
+Data saved at t = 8.82 s
+Elapsed time is 0.061042 seconds.
+Data saved at t = 8.83 s
+Elapsed time is 0.043540 seconds.
+Data saved at t = 8.84 s
+Elapsed time is 0.043430 seconds.
+Data saved at t = 8.8499 s
+Elapsed time is 0.044748 seconds.
+Data saved at t = 8.86 s
+Elapsed time is 0.042110 seconds.
+Data saved at t = 8.87 s
+Elapsed time is 0.051489 seconds.
+177600 / 300000 time steps completed. t = 8.879950 s
+Elapsed time is 9.198802 seconds.
+Data saved at t = 8.88 s
+Elapsed time is 0.043477 seconds.
+Data saved at t = 8.89 s
+Elapsed time is 0.067163 seconds.
+Data saved at t = 8.9 s
+Elapsed time is 0.046646 seconds.
+Data saved at t = 8.91 s
+Elapsed time is 0.048381 seconds.
+Data saved at t = 8.92 s
+Elapsed time is 0.046677 seconds.
+Data saved at t = 8.9299 s
+Elapsed time is 0.085685 seconds.
+178800 / 300000 time steps completed. t = 8.939950 s
+Elapsed time is 9.238151 seconds.
+Data saved at t = 8.94 s
+Elapsed time is 0.034911 seconds.
+Data saved at t = 8.95 s
+Elapsed time is 0.037084 seconds.
+Data saved at t = 8.96 s
+Elapsed time is 0.056172 seconds.
+Data saved at t = 8.97 s
+Elapsed time is 0.085359 seconds.
+Data saved at t = 8.98 s
+Elapsed time is 0.065982 seconds.
+Data saved at t = 8.99 s
+Elapsed time is 0.057006 seconds.
+180000 / 300000 time steps completed. t = 8.999950 s
+Elapsed time is 9.173571 seconds.
+Data saved at t = 9 s
+Elapsed time is 0.068858 seconds.
+Data saved at t = 9.0099 s
+Elapsed time is 0.052874 seconds.
+Data saved at t = 9.02 s
+Elapsed time is 0.072451 seconds.
+Data saved at t = 9.03 s
+Elapsed time is 0.048407 seconds.
+Data saved at t = 9.04 s
+Elapsed time is 0.106365 seconds.
+Data saved at t = 9.05 s
+Elapsed time is 0.056603 seconds.
+181200 / 300000 time steps completed. t = 9.059950 s
+Elapsed time is 9.059943 seconds.
+Data saved at t = 9.06 s
+Elapsed time is 0.043574 seconds.
+Data saved at t = 9.07 s
+Elapsed time is 0.040758 seconds.
+Data saved at t = 9.08 s
+Elapsed time is 0.071250 seconds.
+Data saved at t = 9.0899 s
+Elapsed time is 0.055636 seconds.
+Data saved at t = 9.1 s
+Elapsed time is 0.048951 seconds.
+Data saved at t = 9.11 s
+Elapsed time is 0.034891 seconds.
+182400 / 300000 time steps completed. t = 9.119950 s
+Elapsed time is 9.079757 seconds.
+Data saved at t = 9.12 s
+Elapsed time is 0.047639 seconds.
+Data saved at t = 9.13 s
+Elapsed time is 0.064144 seconds.
+Data saved at t = 9.14 s
+Elapsed time is 0.032723 seconds.
+Data saved at t = 9.15 s
+Elapsed time is 0.066392 seconds.
+Data saved at t = 9.16 s
+Elapsed time is 0.055699 seconds.
+Data saved at t = 9.17 s
+Elapsed time is 0.050939 seconds.
+183600 / 300000 time steps completed. t = 9.179950 s
+Elapsed time is 9.159299 seconds.
+Data saved at t = 9.18 s
+Elapsed time is 0.055136 seconds.
+Data saved at t = 9.19 s
+Elapsed time is 0.048739 seconds.
+Data saved at t = 9.2 s
+Elapsed time is 0.085724 seconds.
+Data saved at t = 9.21 s
+Elapsed time is 0.042815 seconds.
+Data saved at t = 9.22 s
+Elapsed time is 0.077312 seconds.
+Data saved at t = 9.23 s
+Elapsed time is 0.055030 seconds.
+184800 / 300000 time steps completed. t = 9.239950 s
+Elapsed time is 9.207042 seconds.
+Data saved at t = 9.24 s
+Elapsed time is 0.060567 seconds.
+Data saved at t = 9.25 s
+Elapsed time is 0.038138 seconds.
+Data saved at t = 9.2599 s
+Elapsed time is 0.044535 seconds.
+Data saved at t = 9.27 s
+Elapsed time is 0.043371 seconds.
+Data saved at t = 9.2799 s
+Elapsed time is 0.067332 seconds.
+Data saved at t = 9.29 s
+Elapsed time is 0.037775 seconds.
+186000 / 300000 time steps completed. t = 9.299950 s
+Elapsed time is 9.152090 seconds.
+Data saved at t = 9.3 s
+Elapsed time is 0.037719 seconds.
+Data saved at t = 9.31 s
+Elapsed time is 0.037643 seconds.
+Data saved at t = 9.32 s
+Elapsed time is 0.033725 seconds.
+Data saved at t = 9.33 s
+Elapsed time is 0.036031 seconds.
+Data saved at t = 9.3399 s
+Elapsed time is 0.047098 seconds.
+Data saved at t = 9.35 s
+Elapsed time is 0.052263 seconds.
+187200 / 300000 time steps completed. t = 9.359950 s
+Elapsed time is 9.182930 seconds.
+Data saved at t = 9.36 s
+Elapsed time is 0.038913 seconds.
+Data saved at t = 9.37 s
+Elapsed time is 0.039138 seconds.
+Data saved at t = 9.38 s
+Elapsed time is 0.036232 seconds.
+Data saved at t = 9.39 s
+Elapsed time is 0.053610 seconds.
+Data saved at t = 9.4 s
+Elapsed time is 0.055203 seconds.
+Data saved at t = 9.41 s
+Elapsed time is 0.047153 seconds.
+188400 / 300000 time steps completed. t = 9.419950 s
+Elapsed time is 9.162909 seconds.
+Data saved at t = 9.42 s
+Elapsed time is 0.053425 seconds.
+Data saved at t = 9.43 s
+Elapsed time is 0.100254 seconds.
+Data saved at t = 9.44 s
+Elapsed time is 0.072493 seconds.
+Data saved at t = 9.45 s
+Elapsed time is 0.065381 seconds.
+Data saved at t = 9.46 s
+Elapsed time is 0.047196 seconds.
+Data saved at t = 9.47 s
+Elapsed time is 0.050599 seconds.
+189600 / 300000 time steps completed. t = 9.479950 s
+Elapsed time is 9.173037 seconds.
+Data saved at t = 9.48 s
+Elapsed time is 0.050254 seconds.
+Data saved at t = 9.49 s
+Elapsed time is 0.048483 seconds.
+Data saved at t = 9.5 s
+Elapsed time is 0.051431 seconds.
+Data saved at t = 9.51 s
+Elapsed time is 0.051176 seconds.
+Data saved at t = 9.52 s
+Elapsed time is 0.040781 seconds.
+Data saved at t = 9.53 s
+Elapsed time is 0.105835 seconds.
+190800 / 300000 time steps completed. t = 9.539950 s
+Elapsed time is 9.206547 seconds.
+Data saved at t = 9.54 s
+Elapsed time is 0.044609 seconds.
+Data saved at t = 9.55 s
+Elapsed time is 0.078816 seconds.
+Data saved at t = 9.56 s
+Elapsed time is 0.050840 seconds.
+Data saved at t = 9.57 s
+Elapsed time is 0.045223 seconds.
+Data saved at t = 9.58 s
+Elapsed time is 0.058675 seconds.
+Data saved at t = 9.59 s
+Elapsed time is 0.032018 seconds.
+192000 / 300000 time steps completed. t = 9.599950 s
+Elapsed time is 9.096094 seconds.
+Data saved at t = 9.6 s
+Elapsed time is 0.051926 seconds.
+Data saved at t = 9.61 s
+Elapsed time is 0.042529 seconds.
+Data saved at t = 9.62 s
+Elapsed time is 0.047770 seconds.
+Data saved at t = 9.63 s
+Elapsed time is 0.151956 seconds.
+Data saved at t = 9.64 s
+Elapsed time is 0.052998 seconds.
+Data saved at t = 9.65 s
+Elapsed time is 0.036306 seconds.
+193200 / 300000 time steps completed. t = 9.659950 s
+Elapsed time is 9.165379 seconds.
+Data saved at t = 9.66 s
+Elapsed time is 0.038601 seconds.
+Data saved at t = 9.67 s
+Elapsed time is 0.038595 seconds.
+Data saved at t = 9.68 s
+Elapsed time is 0.074114 seconds.
+Data saved at t = 9.69 s
+Elapsed time is 0.221507 seconds.
+Data saved at t = 9.7 s
+Elapsed time is 0.051776 seconds.
+Data saved at t = 9.71 s
+Elapsed time is 0.061470 seconds.
+194400 / 300000 time steps completed. t = 9.719950 s
+Elapsed time is 9.134339 seconds.
+Data saved at t = 9.72 s
+Elapsed time is 0.049876 seconds.
+Data saved at t = 9.73 s
+Elapsed time is 0.051244 seconds.
+Data saved at t = 9.74 s
+Elapsed time is 0.037720 seconds.
+Data saved at t = 9.75 s
+Elapsed time is 0.036950 seconds.
+Data saved at t = 9.76 s
+Elapsed time is 0.035099 seconds.
+Data saved at t = 9.7699 s
+Elapsed time is 0.046811 seconds.
+195600 / 300000 time steps completed. t = 9.779950 s
+Elapsed time is 8.867831 seconds.
+Data saved at t = 9.78 s
+Elapsed time is 0.049159 seconds.
+Data saved at t = 9.79 s
+Elapsed time is 0.050807 seconds.
+Data saved at t = 9.8 s
+Elapsed time is 0.045909 seconds.
+Data saved at t = 9.81 s
+Elapsed time is 0.079738 seconds.
+Data saved at t = 9.82 s
+Elapsed time is 0.053424 seconds.
+Data saved at t = 9.83 s
+Elapsed time is 0.041273 seconds.
+196800 / 300000 time steps completed. t = 9.839950 s
+Elapsed time is 9.187357 seconds.
+Data saved at t = 9.84 s
+Elapsed time is 0.038960 seconds.
+Data saved at t = 9.8499 s
+Elapsed time is 0.034414 seconds.
+Data saved at t = 9.86 s
+Elapsed time is 0.148877 seconds.
+Data saved at t = 9.87 s
+Elapsed time is 0.058418 seconds.
+Data saved at t = 9.88 s
+Elapsed time is 0.050927 seconds.
+Data saved at t = 9.89 s
+Elapsed time is 0.056180 seconds.
+198000 / 300000 time steps completed. t = 9.899950 s
+Elapsed time is 9.141538 seconds.
+Data saved at t = 9.9 s
+Elapsed time is 0.060517 seconds.
+Data saved at t = 9.91 s
+Elapsed time is 0.044007 seconds.
+Data saved at t = 9.92 s
+Elapsed time is 0.073975 seconds.
+Data saved at t = 9.9299 s
+Elapsed time is 0.042230 seconds.
+Data saved at t = 9.94 s
+Elapsed time is 0.070260 seconds.
+Data saved at t = 9.95 s
+Elapsed time is 0.046019 seconds.
+199200 / 300000 time steps completed. t = 9.959950 s
+Elapsed time is 9.194756 seconds.
+Data saved at t = 9.96 s
+Elapsed time is 0.040697 seconds.
+Data saved at t = 9.97 s
+Elapsed time is 0.045156 seconds.
+Data saved at t = 9.98 s
+Elapsed time is 0.113338 seconds.
+Data saved at t = 9.99 s
+Elapsed time is 0.044222 seconds.
+Data saved at t = 10 s
+Elapsed time is 0.037614 seconds.
+Data saved at t = 10.0099 s
+Elapsed time is 0.116018 seconds.
+200400 / 300000 time steps completed. t = 10.019950 s
+Elapsed time is 9.202955 seconds.
+Data saved at t = 10.02 s
+Elapsed time is 0.044362 seconds.
+Data saved at t = 10.03 s
+Elapsed time is 0.118017 seconds.
+Data saved at t = 10.04 s
+Elapsed time is 0.210517 seconds.
+Data saved at t = 10.05 s
+Elapsed time is 0.092046 seconds.
+Data saved at t = 10.06 s
+Elapsed time is 0.077251 seconds.
+Data saved at t = 10.07 s
+Elapsed time is 0.075481 seconds.
+201600 / 300000 time steps completed. t = 10.079950 s
+Elapsed time is 9.094857 seconds.
+Data saved at t = 10.08 s
+Elapsed time is 0.059946 seconds.
+Data saved at t = 10.0899 s
+Elapsed time is 0.081749 seconds.
+Data saved at t = 10.1 s
+Elapsed time is 0.070127 seconds.
+Data saved at t = 10.11 s
+Elapsed time is 0.049543 seconds.
+Data saved at t = 10.12 s
+Elapsed time is 0.073311 seconds.
+Data saved at t = 10.13 s
+Elapsed time is 0.041792 seconds.
+202800 / 300000 time steps completed. t = 10.139950 s
+Elapsed time is 9.117419 seconds.
+Data saved at t = 10.14 s
+Elapsed time is 0.051360 seconds.
+Data saved at t = 10.15 s
+Elapsed time is 0.049770 seconds.
+Data saved at t = 10.16 s
+Elapsed time is 0.153028 seconds.
+Data saved at t = 10.17 s
+Elapsed time is 0.045300 seconds.
+Data saved at t = 10.18 s
+Elapsed time is 0.114421 seconds.
+Data saved at t = 10.19 s
+Elapsed time is 0.092648 seconds.
+204000 / 300000 time steps completed. t = 10.199950 s
+Elapsed time is 9.215784 seconds.
+Data saved at t = 10.2 s
+Elapsed time is 0.034011 seconds.
+Data saved at t = 10.21 s
+Elapsed time is 0.072838 seconds.
+Data saved at t = 10.22 s
+Elapsed time is 0.040421 seconds.
+Data saved at t = 10.23 s
+Elapsed time is 0.039079 seconds.
+Data saved at t = 10.24 s
+Elapsed time is 0.081610 seconds.
+Data saved at t = 10.25 s
+Elapsed time is 0.099423 seconds.
+205200 / 300000 time steps completed. t = 10.259950 s
+Elapsed time is 9.253333 seconds.
+Data saved at t = 10.26 s
+Elapsed time is 0.047391 seconds.
+Data saved at t = 10.27 s
+Elapsed time is 0.037554 seconds.
+Data saved at t = 10.28 s
+Elapsed time is 0.158086 seconds.
+Data saved at t = 10.29 s
+Elapsed time is 0.043557 seconds.
+Data saved at t = 10.3 s
+Elapsed time is 0.043066 seconds.
+Data saved at t = 10.31 s
+Elapsed time is 0.046837 seconds.
+206400 / 300000 time steps completed. t = 10.319950 s
+Elapsed time is 9.237477 seconds.
+Data saved at t = 10.32 s
+Elapsed time is 0.076731 seconds.
+Data saved at t = 10.33 s
+Elapsed time is 0.044393 seconds.
+Data saved at t = 10.3399 s
+Elapsed time is 0.084275 seconds.
+Data saved at t = 10.35 s
+Elapsed time is 0.044317 seconds.
+Data saved at t = 10.36 s
+Elapsed time is 0.376923 seconds.
+Data saved at t = 10.37 s
+Elapsed time is 0.093593 seconds.
+207600 / 300000 time steps completed. t = 10.379950 s
+Elapsed time is 9.231476 seconds.
+Data saved at t = 10.38 s
+Elapsed time is 0.040070 seconds.
+Data saved at t = 10.39 s
+Elapsed time is 0.119687 seconds.
+Data saved at t = 10.4 s
+Elapsed time is 0.165230 seconds.
+Data saved at t = 10.41 s
+Elapsed time is 0.086156 seconds.
+Data saved at t = 10.42 s
+Elapsed time is 0.121805 seconds.
+Data saved at t = 10.43 s
+Elapsed time is 0.036693 seconds.
+208800 / 300000 time steps completed. t = 10.439950 s
+Elapsed time is 9.085260 seconds.
+Data saved at t = 10.44 s
+Elapsed time is 0.077805 seconds.
+Data saved at t = 10.45 s
+Elapsed time is 0.045431 seconds.
+Data saved at t = 10.46 s
+Elapsed time is 0.053647 seconds.
+Data saved at t = 10.47 s
+Elapsed time is 0.064708 seconds.
+Data saved at t = 10.48 s
+Elapsed time is 0.037046 seconds.
+Data saved at t = 10.49 s
+Elapsed time is 0.050852 seconds.
+210000 / 300000 time steps completed. t = 10.499950 s
+Elapsed time is 9.144440 seconds.
+Data saved at t = 10.5 s
+Elapsed time is 0.069594 seconds.
+Data saved at t = 10.51 s
+Elapsed time is 0.074799 seconds.
+Data saved at t = 10.52 s
+Elapsed time is 0.039294 seconds.
+Data saved at t = 10.53 s
+Elapsed time is 0.124625 seconds.
+Data saved at t = 10.54 s
+Elapsed time is 0.042894 seconds.
+Data saved at t = 10.55 s
+Elapsed time is 0.049184 seconds.
+211200 / 300000 time steps completed. t = 10.559950 s
+Elapsed time is 9.119905 seconds.
+Data saved at t = 10.56 s
+Elapsed time is 0.079077 seconds.
+Data saved at t = 10.57 s
+Elapsed time is 0.050453 seconds.
+Data saved at t = 10.58 s
+Elapsed time is 0.179918 seconds.
+Data saved at t = 10.59 s
+Elapsed time is 0.067207 seconds.
+Data saved at t = 10.6 s
+Elapsed time is 0.123105 seconds.
+Data saved at t = 10.61 s
+Elapsed time is 0.036970 seconds.
+212400 / 300000 time steps completed. t = 10.619950 s
+Elapsed time is 9.171669 seconds.
+Data saved at t = 10.62 s
+Elapsed time is 0.035431 seconds.
+Data saved at t = 10.63 s
+Elapsed time is 0.077260 seconds.
+Data saved at t = 10.64 s
+Elapsed time is 0.109798 seconds.
+Data saved at t = 10.65 s
+Elapsed time is 0.041614 seconds.
+Data saved at t = 10.66 s
+Elapsed time is 0.060179 seconds.
+Data saved at t = 10.67 s
+Elapsed time is 0.044484 seconds.
+213600 / 300000 time steps completed. t = 10.679950 s
+Elapsed time is 9.247046 seconds.
+Data saved at t = 10.68 s
+Elapsed time is 0.039402 seconds.
+Data saved at t = 10.69 s
+Elapsed time is 0.037866 seconds.
+Data saved at t = 10.7 s
+Elapsed time is 0.059393 seconds.
+Data saved at t = 10.71 s
+Elapsed time is 0.048550 seconds.
+Data saved at t = 10.72 s
+Elapsed time is 0.059209 seconds.
+Data saved at t = 10.73 s
+Elapsed time is 0.051416 seconds.
+214800 / 300000 time steps completed. t = 10.739950 s
+Elapsed time is 9.202345 seconds.
+Data saved at t = 10.74 s
+Elapsed time is 0.089378 seconds.
+Data saved at t = 10.75 s
+Elapsed time is 0.037309 seconds.
+Data saved at t = 10.76 s
+Elapsed time is 0.048757 seconds.
+Data saved at t = 10.77 s
+Elapsed time is 0.057663 seconds.
+Data saved at t = 10.78 s
+Elapsed time is 0.034146 seconds.
+Data saved at t = 10.79 s
+Elapsed time is 0.036279 seconds.
+216000 / 300000 time steps completed. t = 10.799950 s
+Elapsed time is 9.205553 seconds.
+Data saved at t = 10.8 s
+Elapsed time is 0.036262 seconds.
+Data saved at t = 10.81 s
+Elapsed time is 0.109337 seconds.
+Data saved at t = 10.82 s
+Elapsed time is 0.068629 seconds.
+Data saved at t = 10.83 s
+Elapsed time is 0.040757 seconds.
+Data saved at t = 10.84 s
+Elapsed time is 0.043835 seconds.
+Data saved at t = 10.85 s
+Elapsed time is 0.041018 seconds.
+217200 / 300000 time steps completed. t = 10.859950 s
+Elapsed time is 9.220514 seconds.
+Data saved at t = 10.86 s
+Elapsed time is 0.037798 seconds.
+Data saved at t = 10.87 s
+Elapsed time is 0.059203 seconds.
+Data saved at t = 10.88 s
+Elapsed time is 0.096112 seconds.
+Data saved at t = 10.89 s
+Elapsed time is 0.035336 seconds.
+Data saved at t = 10.9 s
+Elapsed time is 0.040501 seconds.
+Data saved at t = 10.91 s
+Elapsed time is 0.045548 seconds.
+218400 / 300000 time steps completed. t = 10.919950 s
+Elapsed time is 9.236782 seconds.
+Data saved at t = 10.92 s
+Elapsed time is 0.038920 seconds.
+Data saved at t = 10.9299 s
+Elapsed time is 0.038138 seconds.
+Data saved at t = 10.94 s
+Elapsed time is 0.043319 seconds.
+Data saved at t = 10.95 s
+Elapsed time is 0.037221 seconds.
+Data saved at t = 10.96 s
+Elapsed time is 0.063964 seconds.
+Data saved at t = 10.97 s
+Elapsed time is 0.035218 seconds.
+219600 / 300000 time steps completed. t = 10.979950 s
+Elapsed time is 9.226414 seconds.
+Data saved at t = 10.98 s
+Elapsed time is 0.066370 seconds.
+Data saved at t = 10.99 s
+Elapsed time is 0.039448 seconds.
+Data saved at t = 11 s
+Elapsed time is 0.036946 seconds.
+Data saved at t = 11.0099 s
+Elapsed time is 0.067142 seconds.
+Data saved at t = 11.02 s
+Elapsed time is 0.047516 seconds.
+Data saved at t = 11.03 s
+Elapsed time is 0.032557 seconds.
+220800 / 300000 time steps completed. t = 11.039950 s
+Elapsed time is 9.160498 seconds.
+Data saved at t = 11.04 s
+Elapsed time is 0.067643 seconds.
+Data saved at t = 11.05 s
+Elapsed time is 0.068331 seconds.
+Data saved at t = 11.06 s
+Elapsed time is 0.035367 seconds.
+Data saved at t = 11.07 s
+Elapsed time is 0.074098 seconds.
+Data saved at t = 11.08 s
+Elapsed time is 0.048118 seconds.
+Data saved at t = 11.0899 s
+Elapsed time is 0.044802 seconds.
+222000 / 300000 time steps completed. t = 11.099950 s
+Elapsed time is 9.119062 seconds.
+Data saved at t = 11.1 s
+Elapsed time is 0.059617 seconds.
+Data saved at t = 11.11 s
+Elapsed time is 0.054586 seconds.
+Data saved at t = 11.12 s
+Elapsed time is 0.068080 seconds.
+Data saved at t = 11.13 s
+Elapsed time is 0.077857 seconds.
+Data saved at t = 11.14 s
+Elapsed time is 0.050330 seconds.
+Data saved at t = 11.15 s
+Elapsed time is 0.037652 seconds.
+223200 / 300000 time steps completed. t = 11.159950 s
+Elapsed time is 9.093632 seconds.
+Data saved at t = 11.16 s
+Elapsed time is 0.036995 seconds.
+Data saved at t = 11.17 s
+Elapsed time is 0.042730 seconds.
+Data saved at t = 11.18 s
+Elapsed time is 0.043649 seconds.
+Data saved at t = 11.19 s
+Elapsed time is 0.040750 seconds.
+Data saved at t = 11.2 s
+Elapsed time is 0.063083 seconds.
+Data saved at t = 11.21 s
+Elapsed time is 0.057193 seconds.
+224400 / 300000 time steps completed. t = 11.219950 s
+Elapsed time is 9.137400 seconds.
+Data saved at t = 11.22 s
+Elapsed time is 0.033480 seconds.
+Data saved at t = 11.23 s
+Elapsed time is 0.074245 seconds.
+Data saved at t = 11.24 s
+Elapsed time is 0.040696 seconds.
+Data saved at t = 11.25 s
+Elapsed time is 0.041153 seconds.
+Data saved at t = 11.26 s
+Elapsed time is 0.045579 seconds.
+Data saved at t = 11.27 s
+Elapsed time is 0.035155 seconds.
+225600 / 300000 time steps completed. t = 11.279950 s
+Elapsed time is 9.236167 seconds.
+Data saved at t = 11.28 s
+Elapsed time is 0.043973 seconds.
+Data saved at t = 11.29 s
+Elapsed time is 0.049715 seconds.
+Data saved at t = 11.3 s
+Elapsed time is 0.040266 seconds.
+Data saved at t = 11.31 s
+Elapsed time is 0.047640 seconds.
+Data saved at t = 11.32 s
+Elapsed time is 0.040602 seconds.
+Data saved at t = 11.33 s
+Elapsed time is 0.053233 seconds.
+226800 / 300000 time steps completed. t = 11.339950 s
+Elapsed time is 9.210739 seconds.
+Data saved at t = 11.34 s
+Elapsed time is 0.050022 seconds.
+Data saved at t = 11.35 s
+Elapsed time is 0.040652 seconds.
+Data saved at t = 11.36 s
+Elapsed time is 0.045139 seconds.
+Data saved at t = 11.37 s
+Elapsed time is 0.040663 seconds.
+Data saved at t = 11.38 s
+Elapsed time is 0.076971 seconds.
+Data saved at t = 11.39 s
+Elapsed time is 0.033417 seconds.
+228000 / 300000 time steps completed. t = 11.399950 s
+Elapsed time is 9.000424 seconds.
+Data saved at t = 11.4 s
+Elapsed time is 0.037646 seconds.
+Data saved at t = 11.41 s
+Elapsed time is 0.080765 seconds.
+Data saved at t = 11.42 s
+Elapsed time is 0.079496 seconds.
+Data saved at t = 11.43 s
+Elapsed time is 0.041844 seconds.
+Data saved at t = 11.44 s
+Elapsed time is 0.089505 seconds.
+Data saved at t = 11.45 s
+Elapsed time is 0.081995 seconds.
+229200 / 300000 time steps completed. t = 11.459950 s
+Elapsed time is 9.292987 seconds.
+Data saved at t = 11.46 s
+Elapsed time is 0.071274 seconds.
+Data saved at t = 11.47 s
+Elapsed time is 0.042705 seconds.
+Data saved at t = 11.48 s
+Elapsed time is 0.067289 seconds.
+Data saved at t = 11.49 s
+Elapsed time is 0.040642 seconds.
+Data saved at t = 11.5 s
+Elapsed time is 0.088251 seconds.
+Data saved at t = 11.51 s
+Elapsed time is 0.049366 seconds.
+230400 / 300000 time steps completed. t = 11.519950 s
+Elapsed time is 9.252477 seconds.
+Data saved at t = 11.52 s
+Elapsed time is 0.048637 seconds.
+Data saved at t = 11.53 s
+Elapsed time is 0.084399 seconds.
+Data saved at t = 11.54 s
+Elapsed time is 0.047932 seconds.
+Data saved at t = 11.55 s
+Elapsed time is 0.037438 seconds.
+Data saved at t = 11.56 s
+Elapsed time is 0.037832 seconds.
+Data saved at t = 11.57 s
+Elapsed time is 0.036225 seconds.
+231600 / 300000 time steps completed. t = 11.579950 s
+Elapsed time is 9.192561 seconds.
+Data saved at t = 11.58 s
+Elapsed time is 0.035248 seconds.
+Data saved at t = 11.59 s
+Elapsed time is 0.101130 seconds.
+Data saved at t = 11.6 s
+Elapsed time is 0.045238 seconds.
+Data saved at t = 11.61 s
+Elapsed time is 0.051898 seconds.
+Data saved at t = 11.62 s
+Elapsed time is 0.039179 seconds.
+Data saved at t = 11.63 s
+Elapsed time is 0.059869 seconds.
+232800 / 300000 time steps completed. t = 11.639950 s
+Elapsed time is 9.199914 seconds.
+Data saved at t = 11.64 s
+Elapsed time is 0.039364 seconds.
+Data saved at t = 11.65 s
+Elapsed time is 0.045750 seconds.
+Data saved at t = 11.66 s
+Elapsed time is 0.045603 seconds.
+Data saved at t = 11.67 s
+Elapsed time is 0.054868 seconds.
+Data saved at t = 11.68 s
+Elapsed time is 0.069320 seconds.
+Data saved at t = 11.69 s
+Elapsed time is 0.066115 seconds.
+234000 / 300000 time steps completed. t = 11.699950 s
+Elapsed time is 9.227330 seconds.
+Data saved at t = 11.7 s
+Elapsed time is 0.042464 seconds.
+Data saved at t = 11.71 s
+Elapsed time is 0.034276 seconds.
+Data saved at t = 11.72 s
+Elapsed time is 0.043077 seconds.
+Data saved at t = 11.73 s
+Elapsed time is 0.037859 seconds.
+Data saved at t = 11.74 s
+Elapsed time is 0.044987 seconds.
+Data saved at t = 11.75 s
+Elapsed time is 0.077036 seconds.
+235200 / 300000 time steps completed. t = 11.759950 s
+Elapsed time is 9.309990 seconds.
+Data saved at t = 11.76 s
+Elapsed time is 0.107589 seconds.
+Data saved at t = 11.77 s
+Elapsed time is 0.046684 seconds.
+Data saved at t = 11.78 s
+Elapsed time is 0.033047 seconds.
+Data saved at t = 11.79 s
+Elapsed time is 0.109649 seconds.
+Data saved at t = 11.8 s
+Elapsed time is 0.041723 seconds.
+Data saved at t = 11.81 s
+Elapsed time is 0.089769 seconds.
+236400 / 300000 time steps completed. t = 11.819950 s
+Elapsed time is 9.251572 seconds.
+Data saved at t = 11.82 s
+Elapsed time is 0.049214 seconds.
+Data saved at t = 11.83 s
+Elapsed time is 0.040457 seconds.
+Data saved at t = 11.84 s
+Elapsed time is 0.036460 seconds.
+Data saved at t = 11.85 s
+Elapsed time is 0.061235 seconds.
+Data saved at t = 11.86 s
+Elapsed time is 0.043809 seconds.
+Data saved at t = 11.87 s
+Elapsed time is 0.113294 seconds.
+237600 / 300000 time steps completed. t = 11.879950 s
+Elapsed time is 9.320393 seconds.
+Data saved at t = 11.88 s
+Elapsed time is 0.042528 seconds.
+Data saved at t = 11.89 s
+Elapsed time is 0.042228 seconds.
+Data saved at t = 11.9 s
+Elapsed time is 0.045146 seconds.
+Data saved at t = 11.91 s
+Elapsed time is 0.051257 seconds.
+Data saved at t = 11.92 s
+Elapsed time is 0.044432 seconds.
+Data saved at t = 11.93 s
+Elapsed time is 0.042230 seconds.
+238800 / 300000 time steps completed. t = 11.939950 s
+Elapsed time is 9.129293 seconds.
+Data saved at t = 11.94 s
+Elapsed time is 0.077607 seconds.
+Data saved at t = 11.95 s
+Elapsed time is 0.045218 seconds.
+Data saved at t = 11.96 s
+Elapsed time is 0.036442 seconds.
+Data saved at t = 11.97 s
+Elapsed time is 0.049906 seconds.
+Data saved at t = 11.98 s
+Elapsed time is 0.053206 seconds.
+Data saved at t = 11.99 s
+Elapsed time is 0.069495 seconds.
+240000 / 300000 time steps completed. t = 11.999950 s
+Elapsed time is 9.195559 seconds.
+Data saved at t = 12 s
+Elapsed time is 0.113983 seconds.
+Data saved at t = 12.0099 s
+Elapsed time is 0.045174 seconds.
+Data saved at t = 12.02 s
+Elapsed time is 0.047407 seconds.
+Data saved at t = 12.03 s
+Elapsed time is 0.054697 seconds.
+Data saved at t = 12.04 s
+Elapsed time is 0.039236 seconds.
+Data saved at t = 12.05 s
+Elapsed time is 0.041972 seconds.
+241200 / 300000 time steps completed. t = 12.059950 s
+Elapsed time is 9.175502 seconds.
+Data saved at t = 12.06 s
+Elapsed time is 0.133072 seconds.
+Data saved at t = 12.07 s
+Elapsed time is 0.035685 seconds.
+Data saved at t = 12.08 s
+Elapsed time is 0.059602 seconds.
+Data saved at t = 12.0899 s
+Elapsed time is 0.048432 seconds.
+Data saved at t = 12.1 s
+Elapsed time is 0.054024 seconds.
+Data saved at t = 12.11 s
+Elapsed time is 0.044553 seconds.
+242400 / 300000 time steps completed. t = 12.119950 s
+Elapsed time is 9.276954 seconds.
+Data saved at t = 12.12 s
+Elapsed time is 0.041026 seconds.
+Data saved at t = 12.13 s
+Elapsed time is 0.044065 seconds.
+Data saved at t = 12.14 s
+Elapsed time is 0.048458 seconds.
+Data saved at t = 12.15 s
+Elapsed time is 0.037455 seconds.
+Data saved at t = 12.16 s
+Elapsed time is 0.089719 seconds.
+Data saved at t = 12.17 s
+Elapsed time is 0.049614 seconds.
+243600 / 300000 time steps completed. t = 12.179950 s
+Elapsed time is 9.216236 seconds.
+Data saved at t = 12.18 s
+Elapsed time is 0.045284 seconds.
+Data saved at t = 12.19 s
+Elapsed time is 0.152535 seconds.
+Data saved at t = 12.2 s
+Elapsed time is 0.053687 seconds.
+Data saved at t = 12.21 s
+Elapsed time is 0.047978 seconds.
+Data saved at t = 12.22 s
+Elapsed time is 0.034542 seconds.
+Data saved at t = 12.23 s
+Elapsed time is 0.037938 seconds.
+244800 / 300000 time steps completed. t = 12.239950 s
+Elapsed time is 9.274269 seconds.
+Data saved at t = 12.24 s
+Elapsed time is 0.039220 seconds.
+Data saved at t = 12.25 s
+Elapsed time is 0.043002 seconds.
+Data saved at t = 12.26 s
+Elapsed time is 0.042932 seconds.
+Data saved at t = 12.27 s
+Elapsed time is 0.034544 seconds.
+Data saved at t = 12.28 s
+Elapsed time is 0.043063 seconds.
+Data saved at t = 12.29 s
+Elapsed time is 0.053712 seconds.
+246000 / 300000 time steps completed. t = 12.299950 s
+Elapsed time is 9.262303 seconds.
+Data saved at t = 12.3 s
+Elapsed time is 0.036204 seconds.
+Data saved at t = 12.31 s
+Elapsed time is 0.036919 seconds.
+Data saved at t = 12.32 s
+Elapsed time is 0.041305 seconds.
+Data saved at t = 12.33 s
+Elapsed time is 0.135084 seconds.
+Data saved at t = 12.34 s
+Elapsed time is 0.051909 seconds.
+Data saved at t = 12.35 s
+Elapsed time is 0.039877 seconds.
+247200 / 300000 time steps completed. t = 12.359950 s
+Elapsed time is 9.212863 seconds.
+Data saved at t = 12.36 s
+Elapsed time is 0.040403 seconds.
+Data saved at t = 12.37 s
+Elapsed time is 0.058779 seconds.
+Data saved at t = 12.38 s
+Elapsed time is 0.041556 seconds.
+Data saved at t = 12.39 s
+Elapsed time is 0.036675 seconds.
+Data saved at t = 12.4 s
+Elapsed time is 0.040557 seconds.
+Data saved at t = 12.41 s
+Elapsed time is 0.043985 seconds.
+248400 / 300000 time steps completed. t = 12.419950 s
+Elapsed time is 9.019076 seconds.
+Data saved at t = 12.42 s
+Elapsed time is 0.045451 seconds.
+Data saved at t = 12.43 s
+Elapsed time is 0.051490 seconds.
+Data saved at t = 12.44 s
+Elapsed time is 0.036832 seconds.
+Data saved at t = 12.45 s
+Elapsed time is 0.038744 seconds.
+Data saved at t = 12.46 s
+Elapsed time is 0.054847 seconds.
+Data saved at t = 12.47 s
+Elapsed time is 0.054080 seconds.
+249600 / 300000 time steps completed. t = 12.479950 s
+Elapsed time is 9.143368 seconds.
+Data saved at t = 12.48 s
+Elapsed time is 0.041339 seconds.
+Data saved at t = 12.49 s
+Elapsed time is 0.099786 seconds.
+Data saved at t = 12.5 s
+Elapsed time is 0.047093 seconds.
+Data saved at t = 12.51 s
+Elapsed time is 0.098732 seconds.
+Data saved at t = 12.52 s
+Elapsed time is 0.045982 seconds.
+Data saved at t = 12.53 s
+Elapsed time is 0.044139 seconds.
+250800 / 300000 time steps completed. t = 12.539950 s
+Elapsed time is 8.948177 seconds.
+Data saved at t = 12.54 s
+Elapsed time is 0.032421 seconds.
+Data saved at t = 12.55 s
+Elapsed time is 0.049193 seconds.
+Data saved at t = 12.56 s
+Elapsed time is 0.037326 seconds.
+Data saved at t = 12.57 s
+Elapsed time is 0.035260 seconds.
+Data saved at t = 12.58 s
+Elapsed time is 0.040769 seconds.
+Data saved at t = 12.59 s
+Elapsed time is 0.099745 seconds.
+252000 / 300000 time steps completed. t = 12.599950 s
+Elapsed time is 9.026396 seconds.
+Data saved at t = 12.6 s
+Elapsed time is 0.039680 seconds.
+Data saved at t = 12.61 s
+Elapsed time is 0.059194 seconds.
+Data saved at t = 12.62 s
+Elapsed time is 0.049448 seconds.
+Data saved at t = 12.63 s
+Elapsed time is 0.039093 seconds.
+Data saved at t = 12.64 s
+Elapsed time is 0.074004 seconds.
+Data saved at t = 12.65 s
+Elapsed time is 0.042444 seconds.
+253200 / 300000 time steps completed. t = 12.659950 s
+Elapsed time is 8.976300 seconds.
+Data saved at t = 12.66 s
+Elapsed time is 0.045680 seconds.
+Data saved at t = 12.67 s
+Elapsed time is 0.061752 seconds.
+Data saved at t = 12.68 s
+Elapsed time is 0.033476 seconds.
+Data saved at t = 12.6899 s
+Elapsed time is 0.034366 seconds.
+Data saved at t = 12.7 s
+Elapsed time is 0.045240 seconds.
+Data saved at t = 12.71 s
+Elapsed time is 0.035995 seconds.
+254400 / 300000 time steps completed. t = 12.719950 s
+Elapsed time is 9.015923 seconds.
+Data saved at t = 12.72 s
+Elapsed time is 0.036316 seconds.
+Data saved at t = 12.73 s
+Elapsed time is 0.045536 seconds.
+Data saved at t = 12.74 s
+Elapsed time is 0.042884 seconds.
+Data saved at t = 12.75 s
+Elapsed time is 0.043356 seconds.
+Data saved at t = 12.76 s
+Elapsed time is 0.036900 seconds.
+Data saved at t = 12.7699 s
+Elapsed time is 0.054406 seconds.
+255600 / 300000 time steps completed. t = 12.779950 s
+Elapsed time is 9.006322 seconds.
+Data saved at t = 12.78 s
+Elapsed time is 0.034311 seconds.
+Data saved at t = 12.79 s
+Elapsed time is 0.048528 seconds.
+Data saved at t = 12.8 s
+Elapsed time is 0.041406 seconds.
+Data saved at t = 12.81 s
+Elapsed time is 0.054683 seconds.
+Data saved at t = 12.82 s
+Elapsed time is 0.038411 seconds.
+Data saved at t = 12.83 s
+Elapsed time is 0.039008 seconds.
+256800 / 300000 time steps completed. t = 12.839950 s
+Elapsed time is 9.084589 seconds.
+Data saved at t = 12.84 s
+Elapsed time is 0.043758 seconds.
+Data saved at t = 12.8499 s
+Elapsed time is 0.044308 seconds.
+Data saved at t = 12.86 s
+Elapsed time is 0.035959 seconds.
+Data saved at t = 12.87 s
+Elapsed time is 0.045444 seconds.
+Data saved at t = 12.88 s
+Elapsed time is 0.045121 seconds.
+Data saved at t = 12.89 s
+Elapsed time is 0.055637 seconds.
+258000 / 300000 time steps completed. t = 12.899950 s
+Elapsed time is 8.903037 seconds.
+Data saved at t = 12.9 s
+Elapsed time is 0.064505 seconds.
+Data saved at t = 12.91 s
+Elapsed time is 0.045649 seconds.
+Data saved at t = 12.92 s
+Elapsed time is 0.056249 seconds.
+Data saved at t = 12.9299 s
+Elapsed time is 0.040792 seconds.
+Data saved at t = 12.94 s
+Elapsed time is 0.051087 seconds.
+Data saved at t = 12.95 s
+Elapsed time is 0.039317 seconds.
+259200 / 300000 time steps completed. t = 12.959950 s
+Elapsed time is 8.933649 seconds.
+Data saved at t = 12.96 s
+Elapsed time is 0.059946 seconds.
+Data saved at t = 12.97 s
+Elapsed time is 0.036299 seconds.
+Data saved at t = 12.98 s
+Elapsed time is 0.046555 seconds.
+Data saved at t = 12.99 s
+Elapsed time is 0.043885 seconds.
+Data saved at t = 13 s
+Elapsed time is 0.058915 seconds.
+Data saved at t = 13.0099 s
+Elapsed time is 0.042684 seconds.
+260400 / 300000 time steps completed. t = 13.019950 s
+Elapsed time is 8.968703 seconds.
+Data saved at t = 13.02 s
+Elapsed time is 0.060177 seconds.
+Data saved at t = 13.03 s
+Elapsed time is 0.032802 seconds.
+Data saved at t = 13.04 s
+Elapsed time is 0.053409 seconds.
+Data saved at t = 13.05 s
+Elapsed time is 0.049147 seconds.
+Data saved at t = 13.06 s
+Elapsed time is 0.037631 seconds.
+Data saved at t = 13.07 s
+Elapsed time is 0.036242 seconds.
+261600 / 300000 time steps completed. t = 13.079950 s
+Elapsed time is 8.885354 seconds.
+Data saved at t = 13.08 s
+Elapsed time is 0.051360 seconds.
+Data saved at t = 13.0899 s
+Elapsed time is 0.032786 seconds.
+Data saved at t = 13.1 s
+Elapsed time is 0.046492 seconds.
+Data saved at t = 13.11 s
+Elapsed time is 0.044450 seconds.
+Data saved at t = 13.1199 s
+Elapsed time is 0.046653 seconds.
+Data saved at t = 13.13 s
+Elapsed time is 0.036134 seconds.
+262800 / 300000 time steps completed. t = 13.139950 s
+Elapsed time is 8.595898 seconds.
+Data saved at t = 13.14 s
+Elapsed time is 0.040270 seconds.
+Data saved at t = 13.15 s
+Elapsed time is 0.036042 seconds.
+Data saved at t = 13.16 s
+Elapsed time is 0.043419 seconds.
+Data saved at t = 13.17 s
+Elapsed time is 0.038377 seconds.
+Data saved at t = 13.18 s
+Elapsed time is 0.035377 seconds.
+Data saved at t = 13.19 s
+Elapsed time is 0.055679 seconds.
+264000 / 300000 time steps completed. t = 13.199950 s
+Elapsed time is 8.929355 seconds.
+Data saved at t = 13.1999 s
+Elapsed time is 0.036118 seconds.
+Data saved at t = 13.21 s
+Elapsed time is 0.059831 seconds.
+Data saved at t = 13.22 s
+Elapsed time is 0.040652 seconds.
+Data saved at t = 13.23 s
+Elapsed time is 0.048601 seconds.
+Data saved at t = 13.24 s
+Elapsed time is 0.036988 seconds.
+Data saved at t = 13.25 s
+Elapsed time is 0.046922 seconds.
+265200 / 300000 time steps completed. t = 13.259950 s
+Elapsed time is 8.902992 seconds.
+Data saved at t = 13.26 s
+Elapsed time is 0.043223 seconds.
+Data saved at t = 13.27 s
+Elapsed time is 0.039600 seconds.
+Data saved at t = 13.2799 s
+Elapsed time is 0.047249 seconds.
+Data saved at t = 13.29 s
+Elapsed time is 0.038480 seconds.
+Data saved at t = 13.3 s
+Elapsed time is 0.056042 seconds.
+Data saved at t = 13.31 s
+Elapsed time is 0.035375 seconds.
+266400 / 300000 time steps completed. t = 13.319950 s
+Elapsed time is 8.972961 seconds.
+Data saved at t = 13.32 s
+Elapsed time is 0.059487 seconds.
+Data saved at t = 13.33 s
+Elapsed time is 0.035534 seconds.
+Data saved at t = 13.34 s
+Elapsed time is 0.040804 seconds.
+Data saved at t = 13.35 s
+Elapsed time is 0.045602 seconds.
+Data saved at t = 13.3599 s
+Elapsed time is 0.039636 seconds.
+Data saved at t = 13.37 s
+Elapsed time is 0.046237 seconds.
+267600 / 300000 time steps completed. t = 13.379950 s
+Elapsed time is 9.005587 seconds.
+Data saved at t = 13.38 s
+Elapsed time is 0.040534 seconds.
+Data saved at t = 13.39 s
+Elapsed time is 0.036132 seconds.
+Data saved at t = 13.4 s
+Elapsed time is 0.032955 seconds.
+Data saved at t = 13.41 s
+Elapsed time is 0.040830 seconds.
+Data saved at t = 13.42 s
+Elapsed time is 0.043514 seconds.
+Data saved at t = 13.43 s
+Elapsed time is 0.039042 seconds.
+268800 / 300000 time steps completed. t = 13.439950 s
+Elapsed time is 8.958046 seconds.
+Data saved at t = 13.4399 s
+Elapsed time is 0.035385 seconds.
+Data saved at t = 13.45 s
+Elapsed time is 0.050274 seconds.
+Data saved at t = 13.46 s
+Elapsed time is 0.046149 seconds.
+Data saved at t = 13.47 s
+Elapsed time is 0.048561 seconds.
+Data saved at t = 13.48 s
+Elapsed time is 0.047697 seconds.
+Data saved at t = 13.49 s
+Elapsed time is 0.040500 seconds.
+270000 / 300000 time steps completed. t = 13.499950 s
+Elapsed time is 8.910452 seconds.
+Data saved at t = 13.5 s
+Elapsed time is 0.046492 seconds.
+Data saved at t = 13.51 s
+Elapsed time is 0.038347 seconds.
+Data saved at t = 13.52 s
+Elapsed time is 0.036821 seconds.
+Data saved at t = 13.53 s
+Elapsed time is 0.049517 seconds.
+Data saved at t = 13.54 s
+Elapsed time is 0.046935 seconds.
+Data saved at t = 13.55 s
+Elapsed time is 0.036277 seconds.
+271200 / 300000 time steps completed. t = 13.559950 s
+Elapsed time is 8.842265 seconds.
+Data saved at t = 13.56 s
+Elapsed time is 0.038891 seconds.
+Data saved at t = 13.57 s
+Elapsed time is 0.043095 seconds.
+Data saved at t = 13.58 s
+Elapsed time is 0.048370 seconds.
+Data saved at t = 13.59 s
+Elapsed time is 0.049105 seconds.
+Data saved at t = 13.6 s
+Elapsed time is 0.041242 seconds.
+Data saved at t = 13.61 s
+Elapsed time is 0.063952 seconds.
+272400 / 300000 time steps completed. t = 13.619950 s
+Elapsed time is 8.904761 seconds.
+Data saved at t = 13.62 s
+Elapsed time is 0.036089 seconds.
+Data saved at t = 13.63 s
+Elapsed time is 0.036488 seconds.
+Data saved at t = 13.64 s
+Elapsed time is 0.055758 seconds.
+Data saved at t = 13.65 s
+Elapsed time is 0.036298 seconds.
+Data saved at t = 13.66 s
+Elapsed time is 0.036809 seconds.
+Data saved at t = 13.67 s
+Elapsed time is 0.039022 seconds.
+273600 / 300000 time steps completed. t = 13.679950 s
+Elapsed time is 9.268614 seconds.
+Data saved at t = 13.68 s
+Elapsed time is 0.044616 seconds.
+Data saved at t = 13.69 s
+Elapsed time is 0.034080 seconds.
+Data saved at t = 13.7 s
+Elapsed time is 0.056640 seconds.
+Data saved at t = 13.71 s
+Elapsed time is 0.040606 seconds.
+Data saved at t = 13.72 s
+Elapsed time is 0.040891 seconds.
+Data saved at t = 13.73 s
+Elapsed time is 0.042758 seconds.
+274800 / 300000 time steps completed. t = 13.739950 s
+Elapsed time is 8.885762 seconds.
+Data saved at t = 13.74 s
+Elapsed time is 0.037929 seconds.
+Data saved at t = 13.75 s
+Elapsed time is 0.038312 seconds.
+Data saved at t = 13.76 s
+Elapsed time is 0.044004 seconds.
+Data saved at t = 13.77 s
+Elapsed time is 0.033075 seconds.
+Data saved at t = 13.78 s
+Elapsed time is 0.050546 seconds.
+Data saved at t = 13.79 s
+Elapsed time is 0.060423 seconds.
+276000 / 300000 time steps completed. t = 13.799950 s
+Elapsed time is 8.938270 seconds.
+Data saved at t = 13.8 s
+Elapsed time is 0.033821 seconds.
+Data saved at t = 13.81 s
+Elapsed time is 0.065179 seconds.
+Data saved at t = 13.82 s
+Elapsed time is 0.037793 seconds.
+Data saved at t = 13.83 s
+Elapsed time is 0.054220 seconds.
+Data saved at t = 13.84 s
+Elapsed time is 0.054357 seconds.
+Data saved at t = 13.85 s
+Elapsed time is 0.039365 seconds.
+277200 / 300000 time steps completed. t = 13.859950 s
+Elapsed time is 8.900265 seconds.
+Data saved at t = 13.86 s
+Elapsed time is 0.039155 seconds.
+Data saved at t = 13.87 s
+Elapsed time is 0.046366 seconds.
+Data saved at t = 13.88 s
+Elapsed time is 0.047657 seconds.
+Data saved at t = 13.89 s
+Elapsed time is 0.041249 seconds.
+Data saved at t = 13.9 s
+Elapsed time is 0.046932 seconds.
+Data saved at t = 13.91 s
+Elapsed time is 0.036232 seconds.
+278400 / 300000 time steps completed. t = 13.919950 s
+Elapsed time is 8.774626 seconds.
+Data saved at t = 13.92 s
+Elapsed time is 0.041384 seconds.
+Data saved at t = 13.93 s
+Elapsed time is 0.050844 seconds.
+Data saved at t = 13.94 s
+Elapsed time is 0.039349 seconds.
+Data saved at t = 13.95 s
+Elapsed time is 0.048893 seconds.
+Data saved at t = 13.96 s
+Elapsed time is 0.036305 seconds.
+Data saved at t = 13.97 s
+Elapsed time is 0.046303 seconds.
+279600 / 300000 time steps completed. t = 13.979950 s
+Elapsed time is 8.816679 seconds.
+Data saved at t = 13.98 s
+Elapsed time is 0.038156 seconds.
+Data saved at t = 13.99 s
+Elapsed time is 0.045165 seconds.
+Data saved at t = 14 s
+Elapsed time is 0.040834 seconds.
+Data saved at t = 14.01 s
+Elapsed time is 0.056312 seconds.
+Data saved at t = 14.02 s
+Elapsed time is 0.040159 seconds.
+Data saved at t = 14.03 s
+Elapsed time is 0.037299 seconds.
+280800 / 300000 time steps completed. t = 14.039950 s
+Elapsed time is 8.817453 seconds.
+Data saved at t = 14.04 s
+Elapsed time is 0.039961 seconds.
+Data saved at t = 14.05 s
+Elapsed time is 0.035504 seconds.
+Data saved at t = 14.06 s
+Elapsed time is 0.046051 seconds.
+Data saved at t = 14.07 s
+Elapsed time is 0.067890 seconds.
+Data saved at t = 14.08 s
+Elapsed time is 0.043268 seconds.
+Data saved at t = 14.09 s
+Elapsed time is 0.040991 seconds.
+282000 / 300000 time steps completed. t = 14.099950 s
+Elapsed time is 8.979009 seconds.
+Data saved at t = 14.1 s
+Elapsed time is 0.037851 seconds.
+Data saved at t = 14.11 s
+Elapsed time is 0.226059 seconds.
+Data saved at t = 14.12 s
+Elapsed time is 0.033595 seconds.
+Data saved at t = 14.13 s
+Elapsed time is 0.040493 seconds.
+Data saved at t = 14.14 s
+Elapsed time is 0.042213 seconds.
+Data saved at t = 14.15 s
+Elapsed time is 0.050327 seconds.
+283200 / 300000 time steps completed. t = 14.159950 s
+Elapsed time is 8.846416 seconds.
+Data saved at t = 14.16 s
+Elapsed time is 0.038681 seconds.
+Data saved at t = 14.17 s
+Elapsed time is 0.052330 seconds.
+Data saved at t = 14.1799 s
+Elapsed time is 0.045933 seconds.
+Data saved at t = 14.19 s
+Elapsed time is 0.040302 seconds.
+Data saved at t = 14.2 s
+Elapsed time is 0.047960 seconds.
+Data saved at t = 14.21 s
+Elapsed time is 0.036375 seconds.
+284400 / 300000 time steps completed. t = 14.219950 s
+Elapsed time is 8.656439 seconds.
+Data saved at t = 14.22 s
+Elapsed time is 0.036263 seconds.
+Data saved at t = 14.23 s
+Elapsed time is 0.041316 seconds.
+Data saved at t = 14.24 s
+Elapsed time is 0.053376 seconds.
+Data saved at t = 14.25 s
+Elapsed time is 0.034222 seconds.
+Data saved at t = 14.2599 s
+Elapsed time is 0.040626 seconds.
+Data saved at t = 14.27 s
+Elapsed time is 0.040873 seconds.
+285600 / 300000 time steps completed. t = 14.279950 s
+Elapsed time is 8.782702 seconds.
+Data saved at t = 14.28 s
+Elapsed time is 0.042652 seconds.
+Data saved at t = 14.29 s
+Elapsed time is 0.049388 seconds.
+Data saved at t = 14.3 s
+Elapsed time is 0.056351 seconds.
+Data saved at t = 14.31 s
+Elapsed time is 0.035867 seconds.
+Data saved at t = 14.32 s
+Elapsed time is 0.049539 seconds.
+Data saved at t = 14.33 s
+Elapsed time is 0.048802 seconds.
+286800 / 300000 time steps completed. t = 14.339950 s
+Elapsed time is 8.845245 seconds.
+Data saved at t = 14.3399 s
+Elapsed time is 0.070180 seconds.
+Data saved at t = 14.35 s
+Elapsed time is 0.040682 seconds.
+Data saved at t = 14.36 s
+Elapsed time is 0.043913 seconds.
+Data saved at t = 14.37 s
+Elapsed time is 0.053717 seconds.
+Data saved at t = 14.38 s
+Elapsed time is 0.035535 seconds.
+Data saved at t = 14.39 s
+Elapsed time is 0.045327 seconds.
+288000 / 300000 time steps completed. t = 14.399950 s
+Elapsed time is 8.734727 seconds.
+Data saved at t = 14.4 s
+Elapsed time is 0.041490 seconds.
+Data saved at t = 14.41 s
+Elapsed time is 0.054319 seconds.
+Data saved at t = 14.42 s
+Elapsed time is 0.038711 seconds.
+Data saved at t = 14.43 s
+Elapsed time is 0.037526 seconds.
+Data saved at t = 14.44 s
+Elapsed time is 0.041064 seconds.
+Data saved at t = 14.45 s
+Elapsed time is 0.040163 seconds.
+289200 / 300000 time steps completed. t = 14.459950 s
+Elapsed time is 8.615467 seconds.
+Data saved at t = 14.46 s
+Elapsed time is 0.046807 seconds.
+Data saved at t = 14.47 s
+Elapsed time is 0.039669 seconds.
+Data saved at t = 14.48 s
+Elapsed time is 0.034912 seconds.
+Data saved at t = 14.49 s
+Elapsed time is 0.064613 seconds.
+Data saved at t = 14.5 s
+Elapsed time is 0.042822 seconds.
+Data saved at t = 14.51 s
+Elapsed time is 0.044774 seconds.
+290400 / 300000 time steps completed. t = 14.519950 s
+Elapsed time is 8.668957 seconds.
+Data saved at t = 14.52 s
+Elapsed time is 0.040788 seconds.
+Data saved at t = 14.53 s
+Elapsed time is 0.040559 seconds.
+Data saved at t = 14.54 s
+Elapsed time is 0.042075 seconds.
+Data saved at t = 14.55 s
+Elapsed time is 0.058491 seconds.
+Data saved at t = 14.56 s
+Elapsed time is 0.045713 seconds.
+Data saved at t = 14.57 s
+Elapsed time is 0.063454 seconds.
+291600 / 300000 time steps completed. t = 14.579950 s
+Elapsed time is 8.620787 seconds.
+Data saved at t = 14.58 s
+Elapsed time is 0.034792 seconds.
+Data saved at t = 14.59 s
+Elapsed time is 0.031947 seconds.
+Data saved at t = 14.6 s
+Elapsed time is 0.034983 seconds.
+Data saved at t = 14.61 s
+Elapsed time is 0.041144 seconds.
+Data saved at t = 14.62 s
+Elapsed time is 0.035429 seconds.
+Data saved at t = 14.63 s
+Elapsed time is 0.037050 seconds.
+292800 / 300000 time steps completed. t = 14.639950 s
+Elapsed time is 8.658751 seconds.
+Data saved at t = 14.64 s
+Elapsed time is 0.031264 seconds.
+Data saved at t = 14.65 s
+Elapsed time is 0.036543 seconds.
+Data saved at t = 14.66 s
+Elapsed time is 0.039268 seconds.
+Data saved at t = 14.67 s
+Elapsed time is 0.034856 seconds.
+Data saved at t = 14.68 s
+Elapsed time is 0.033178 seconds.
+Data saved at t = 14.69 s
+Elapsed time is 0.033460 seconds.
+294000 / 300000 time steps completed. t = 14.699950 s
+Elapsed time is 8.291569 seconds.
+Data saved at t = 14.7 s
+Elapsed time is 0.139858 seconds.
+Data saved at t = 14.71 s
+Elapsed time is 0.086151 seconds.
+Data saved at t = 14.72 s
+Elapsed time is 0.046964 seconds.
+Data saved at t = 14.73 s
+Elapsed time is 0.043493 seconds.
+Data saved at t = 14.74 s
+Elapsed time is 0.044785 seconds.
+Data saved at t = 14.75 s
+Elapsed time is 0.056598 seconds.
+295200 / 300000 time steps completed. t = 14.759950 s
+Elapsed time is 8.605187 seconds.
+Data saved at t = 14.76 s
+Elapsed time is 0.037747 seconds.
+Data saved at t = 14.7699 s
+Elapsed time is 0.030200 seconds.
+Data saved at t = 14.78 s
+Elapsed time is 0.048964 seconds.
+Data saved at t = 14.79 s
+Elapsed time is 0.033608 seconds.
+Data saved at t = 14.8 s
+Elapsed time is 0.036007 seconds.
+Data saved at t = 14.81 s
+Elapsed time is 0.061975 seconds.
+296400 / 300000 time steps completed. t = 14.819950 s
+Elapsed time is 8.592455 seconds.
+Data saved at t = 14.82 s
+Elapsed time is 0.038654 seconds.
+Data saved at t = 14.83 s
+Elapsed time is 0.034996 seconds.
+Data saved at t = 14.84 s
+Elapsed time is 0.083345 seconds.
+Data saved at t = 14.8499 s
+Elapsed time is 0.041582 seconds.
+Data saved at t = 14.86 s
+Elapsed time is 0.049267 seconds.
+Data saved at t = 14.87 s
+Elapsed time is 0.043336 seconds.
+297600 / 300000 time steps completed. t = 14.879950 s
+Elapsed time is 8.572663 seconds.
+Data saved at t = 14.88 s
+Elapsed time is 0.048492 seconds.
+Data saved at t = 14.89 s
+Elapsed time is 0.045021 seconds.
+Data saved at t = 14.9 s
+Elapsed time is 0.053941 seconds.
+Data saved at t = 14.91 s
+Elapsed time is 0.050619 seconds.
+Data saved at t = 14.92 s
+Elapsed time is 0.052170 seconds.
+Data saved at t = 14.9299 s
+Elapsed time is 0.063947 seconds.
+298800 / 300000 time steps completed. t = 14.939950 s
+Elapsed time is 8.575778 seconds.
+Data saved at t = 14.94 s
+Elapsed time is 0.043306 seconds.
+Data saved at t = 14.95 s
+Elapsed time is 0.041427 seconds.
+Data saved at t = 14.96 s
+Elapsed time is 0.045056 seconds.
+Data saved at t = 14.97 s
+Elapsed time is 0.035678 seconds.
+Data saved at t = 14.98 s
+Elapsed time is 0.035219 seconds.
+Data saved at t = 14.99 s
+Elapsed time is 0.043817 seconds.
+300000 / 300000 time steps completed. t = 14.999950 s
+Elapsed time is 8.921176 seconds.
+Data saved at t = 15 s
+Elapsed time is 0.035039 seconds.
+[2026-07-07T16:46:43.685] error: *** JOB 36519070 ON c0704a-s28 CANCELLED AT 2026-07-07T16:46:43 DUE to SIGNAL Terminated ***
