@@ -1,4 +1,5 @@
 #include "grid/multigrid.h"
+#include "axi.h"
 #include "navier-stokes/centered.h"
 
 #include "two-phase-clsvof.h"
@@ -13,6 +14,8 @@
 //#include "reduced.h"
 #include "view.h"
 //vector h[];
+
+#include "hdf5_headers/output_xdmf.h"
 
 double t_out = 0.01;
 double t_dump = 0.1;
@@ -32,13 +35,13 @@ int AR = 32, zoomy = 32;
 
 int MAXlevel = 12;
 //double uemax = 0.0001;
-#define NXCOL (1 << MAXlevel)
 
-double angle = 6.4*pi/180.;
+double angle = 90*pi/180.;
 double au = 0.03, freq = 1.5;
+double t_start = 1.0, t_slope = 10; //Ramp to prevent initial high amp wave
 scalar f0[], profile[];
 
-u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
+u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])*sigmoid(t_start, t_slope)); 
 //u.n[left]  = dirichlet(f0[]*profile[]);
 u.t[left]  = dirichlet(0);
 //p[left]   = neumann(0);
@@ -63,7 +66,6 @@ u.t[top] = dirichlet(0.);
 p[top] = dirichlet(0.);*/
 
 void read_params(const char * fname);
-void compute_derivative( double a[], double ax[], double axx[], double axxx[], int N, double dx);
 
 int main (int argc, char * argv[])
 {
@@ -109,7 +111,12 @@ int main (int argc, char * argv[])
   char comm[80];
   sprintf(comm, "mkdir -p images");
   system(comm);
+  
+  sprintf(comm, "mkdir -p output");
+  system(comm);
 
+  sprintf(comm, "mkdir -p infc");
+  system(comm);
 
   fprintf(stderr, "LX: %.8f\n", LX);
   fprintf(stderr, "MAXlevel: %d\n", MAXlevel);
@@ -143,43 +150,19 @@ void read_params(const char * fname)
       else if (strcmp(key, "AMP") == 0)       { au        = atof(val);         }
       else if (strcmp(key, "T_OUT") == 0)     { t_out     = atof(val);         }
       else if (strcmp(key, "T_END") == 0)     { t_end     = atof(val);         }
+      else if (strcmp(key, "SIGMOID_T1") == 0){ t_start   = atof(val);         }
+      else if (strcmp(key, "SIGMOID_K") == 0) { t_slope   = atof(val);         }
     }
     fclose(fp);
   } else {
     fprintf(stdout, "file %s not found\n", fname);
-    exit(0);
+    //exit(0);
   }
 }
 
-void compute_derivatives (
-  double a[], double ax[], double axx[], double axxx[],
-  int N, double dx
-) {
-  // Interior points
-  for (int i = 2; i < N - 2; i++) {
-    ax[i] =
-      (a[i+1] - a[i-1])/(2.0*dx);
-
-    axx[i] =
-      (a[i+1] - 2.0*a[i] + a[i-1])/(dx*dx);
-
-    axxx[i] =
-      (a[i+2] - 2.0*a[i+1] + 2.0*a[i-1] - a[i-2])
-      /(2.0*dx*dx*dx);
-  }
-
-  // Boundary treatment: Copying nearest value
-  ax[0] = ax[1] = ax[2];
-  ax[N-2] = ax[N-1] = ax[N-3];
-
-  axx[0] = axx[1] = axx[2];
-  axx[N-2] = axx[N-1] = axx[N-3];
-
-  axxx[0] = axxx[1] = axxx[2];
-  axxx[N-2] = axxx[N-1] = axxx[N-3];
+double sigmoid(double t1, double k) {
+  return 1.0 / (1.0 + exp(-k * (t -t1));
 }
-
-
 
 event init (t = 0) {
   if (!restore (file = "dump")) { 
@@ -255,16 +238,6 @@ event logfile (i++) {
   fflush (stdout);
 }
 
-/*event damp (i++) {
-  coord Uinf = {US, 0, 0};
-  foreach() {
-    if (LX - x < LX/10.)
-      foreach_dimension()
-        u.x[] += dt*(Uinf.x*profile[]*f0[] - u.x[])/2.;
-  }
-  boundary ((scalar*){u});
-}*/
-
 
 event interfacevel (t += t_out)
 {
@@ -299,79 +272,16 @@ event interfacevel (t += t_out)
 event interface (t += t_out) {
 
    char names[80];
-   sprintf(names, "interface%d", pid());
+   sprintf(names, "infc/interface%d", pid());
    FILE * fp = fopen (names, "w");
    output_facets (f,fp);
    fclose(fp);
    char command[80];
-   sprintf(command, "LC_ALL=C  cat interfa* > infc%05.4f.dat",t);
+   sprintf(command, "LC_ALL=C  cat infc/interfa* > infc/infc%05.4f.dat",t);
    system(command);
 }
 
-event closure_quantities (t+=0.001) {
-
-  double h[NXCOL], q[NXCOL];
-
-  for (int i = 0; i < NXCOL; i++) {
-    h[i] = 0.;
-    q[i] = 0.;
-  }
-
-  double xmin = 0.;
-  double xmax = L0;
-  double dxcol = (xmax - xmin)/NXCOL;
-
-  foreach(reduction(+:h[:NXCOL]) reduction(+:q[:NXCOL])) {
-
-    double xleft  = x - Delta/2.;
-    double xright = x + Delta/2.;
-
-    int i0 = floor((xleft  - xmin)/dxcol);
-    int i1 = floor((xright - xmin)/dxcol);
-
-    if (i0 < 0) i0 = 0;
-    if (i1 >= NXCOL) i1 = NXCOL - 1;
-
-    for (int i = i0; i <= i1; i++) {
-      h[i] += f[]*Delta;
-      q[i] += f[]*u.x[]*Delta;
-    }
-  }
-
-  double hx[NXCOL], hxx[NXCOL], hxxx[NXCOL];
-  double qx[NXCOL], qxx[NXCOL], qxxx[NXCOL];
-
-  compute_derivatives(h, hx, hxx, hxxx, NXCOL, dxcol);
-  compute_derivatives(q, qx, qxx, qxxx, NXCOL, dxcol);
-
-  if (pid() == 0) {
-    char name[80];
-    sprintf(name, "hq-%g.dat", t);
-
-    FILE * fp = fopen(name, "w");
-
-    fprintf(fp,
-      "# t x h q hx hxx hxxx qx qxx qxxx\n"
-    );
-
-    for (int i = 0; i < NXCOL; i++) {
-      double xc = xmin + (i + 0.5)*dxcol;
-
-      fprintf(fp,
-        "%.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g %.12g\n",
-        t, xc,
-        h[i], q[i],
-        hx[i], hxx[i], hxxx[i],
-        qx[i], qxx[i], qxxx[i]
-      );
-    }
-
-    fclose(fp);
-  } 
-} 
-
-
-/*event velocityprofile (t += 0.0001) {
+/* event velocityprofile (t += 0.0001) {
 
    char names[80];
    sprintf(names, "velocity%d", pid());
@@ -387,69 +297,7 @@ event closure_quantities (t+=0.001) {
    char command[80];
    sprintf(command, "LC_ALL=C  cat velocity* > ux-vel%07.4f.dat",t);
    system(command);
-   } */
-
-
-/*event velocityprofile (t += 0.0001) {
-
-  char name[80];
-  sprintf(name, "vel-%07.4f.vtu", t);
-
-  FILE * fp = fopen(name, "w");
-
-  scalar omega[];
-  vorticity(u, omega);
-
-  output_vtu_ascii_foreach(
-    (scalar *) {f, d, p, omega},
-    (vector *) {u},
-    fp
-  );
-
-  fclose(fp);
-  }*/
-
-
-/* event movie (t += 1e-2)
-{
-#if dimension == 2
-  scalar omega[];
-  vorticity (u, omega);
-  view (tx = -0.5);
-  clear();
-  draw_vof ("f");
-  squares ("omega", linear = true, spread = 10);
-  box ();
-#else // 3D
-  scalar pid[];
-  foreach()
-    pid[] = fmod(pid()*(npe() + 37), npe());
-  view (camera = "iso",
-	fov = 14.5, tx = -0.418, ty = 0.288,
-	width = 1600, height = 1200);
-  clear();
-  draw_vof ("f");
-#endif // 3D
-  save ("movie.mp4");
-  } */
-
-/*event snapshot (t = 0; t += 10; t <= 300) {
-  char name[80];
-  sprintf (name, "snapshot-%g", t);
-  scalar pid[];
-  foreach()
-    pid[] = fmod(pid()*(npe() + 37), npe());
-  dump (name);
-  } */
-
-/*event snapshot (t += t_out; t<=t_end) {
-  char name[80];
-  scalar kappa[];
-  curvature(f, kappa);
-  sprintf (name, "dump-%06.4f", t);
-  p.nodump = false;
-  dump (file = name); // so that we can restart
-}*/
+} */
 
 event finalize(t += t_dump; t <= t_end)
 {
@@ -460,6 +308,114 @@ event finalize(t += t_dump; t <= t_end)
   p.nodump = false;
   dump (file = name); // so that we can restart
 }
+
+event output_h5(t += t_out; t<=t_end)
+{
+  char fname[256];
+  sprintf(fname, "output/snapshot_%06.4f", t);
+
+  output_xmf((scalar *){f,p}, (vector *){u}, fname);
+}
+
+
+
+/*event output_h5(t += t_out; t <= t_end)
+{
+  int NXOUT = 1 << MAXlevel;
+  int NYOUT = NXOUT/AR;
+  double xmin_out = X0;
+  double ymin_out = Y0;
+  double xmax_out = X0 + L0;
+  double ymax_out = Y0 + L0/AR;
+  
+  double *xout = calloc(NXOUT, sizeof(double));
+  double *yout = calloc(NYOUT, sizeof(double));
+
+  double *uout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *vout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *pout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *fout = calloc(NXOUT*NYOUT, sizeof(double));
+
+  double *h    = calloc(NXOUT, sizeof(double));
+  double *q    = calloc(NXOUT, sizeof(double));
+  double *tauw = calloc(NXOUT, sizeof(double));
+
+  double dx = (xmax_out - xmin_out)/(NXOUT - 1);
+  double dy = (ymax_out - ymin_out)/(NYOUT - 1);
+
+  for (int i = 0; i < NXOUT; i++)
+    xout[i] = xmin_out + i*dx;
+
+  for (int j = 0; j < NYOUT; j++)
+    yout[j] = ymin_out + j*dy;
+
+  for (int j = 0; j < NYOUT; j++) {
+    for (int i = 0; i < NXOUT; i++) {
+      double xp = xout[i];
+      double yp = yout[j];
+      int id = j*NXOUT + i;
+
+      uout[id] = interpolate(u.x, xp, yp);
+      vout[id] = interpolate(u.y, xp, yp);
+      pout[id] = interpolate(p,   xp, yp);
+      fout[id] = interpolate(f,   xp, yp);
+    }
+  }
+
+  for (int i = 0; i < NXOUT; i++) {
+    double xi = xout[i];
+
+    for (int j = 0; j < NYOUT - 1; j++) {
+      double yj = yout[j];
+
+      double fj = interpolate(f,   xi, yj);
+      double uj = interpolate(u.x, xi, yj);
+
+      h[i] += fj*dy;
+      q[i] += fj*uj*dy;
+    }
+
+    double u0 = interpolate(u.x, xi, ymin_out);
+    double u1 = interpolate(u.x, xi, ymin_out + dy);
+
+    tauw[i] = mu1*(u1 - u0)/dy;
+  }
+
+  char fname[256];
+  sprintf(fname, "output/snapshot_%06.4f.h5", t);
+
+  hid_t file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+  H5Gcreate(file, "/grid",      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/fields",    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/interface", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/closures",  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  write_1d_h5(file, "/grid/x", xout, NXOUT);
+  write_1d_h5(file, "/grid/y", yout, NYOUT);
+
+  write_2d_h5(file, "/fields/u", uout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/v", vout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/p", pout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/f", fout, NYOUT, NXOUT);
+
+  write_1d_h5(file, "/interface/h", h, NXOUT);
+  write_1d_h5(file, "/closures/q", q, NXOUT);
+  write_1d_h5(file, "/closures/tau_wall", tauw, NXOUT);
+
+  H5Fclose(file);
+
+  free(xout);
+  free(yout);
+  free(uout);
+  free(vout);
+  free(pout);
+  free(fout);
+  free(h);
+  free(q);
+  free(tauw); 
+}*/
+
 
 /*event runtime (i += 10) {
   mpi_all_reduce (perf.t, MPI_DOUBLE, MPI_MAX);
