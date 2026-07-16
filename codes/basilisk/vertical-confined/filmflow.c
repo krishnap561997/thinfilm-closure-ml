@@ -30,6 +30,7 @@ double grav = 9.81;
 
 double G[2];
 double LX = 0.2;
+double LY, Hi;
 int AR = 32, zoomy = 32;
 
 int MAXlevel = 12;
@@ -39,13 +40,13 @@ double angle = 6.4*pi/180.;
 double au = 0.03, freq = 1.5;
 scalar f0[], profile[];
 
-u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
+u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*profile[]); // + (1-f0[]))));
 //u.n[left]  = dirichlet(f0[]*profile[]);
 u.t[left]  = dirichlet(0);
 //p[left]   = neumann(0);
 //pf[left]   = neumann(0);
 //f[left]    = dirichlet(f0[]); 
-d[left] = dirichlet(H0-y);
+d[left] = dirichlet(y-Hi);
 
 u.n[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
 u.t[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
@@ -54,10 +55,10 @@ p[right] = dirichlet(0);
 pf[right] = dirichlet(0); 
 //f[right] = neumann(0);
 
-u.n[bottom] = dirichlet(0);
-u.t[bottom] = dirichlet(0);
+u.n[top] = dirichlet(0);
+u.t[top] = dirichlet(0);
 //f[bottom] = dirichlet(1);
-d[bottom] = dirichlet(H0-y);
+d[top] = dirichlet(y-Hi);
 
 /*u.n[top] = dirichlet(0.);
 u.t[top] = dirichlet(0.);
@@ -82,7 +83,9 @@ int main (int argc, char * argv[])
   US = grav*sin(angle)*H0*H0*RHO_L/MU_L/2.0;
   RE = US*H0*RHO_L/MU_L;
   CA = MU_L*US/GAMMA;
-  T0 = 1/freq;  
+  T0 = 1/freq; 
+  LY = LX/((double)AR);
+  Hi = LY - H0;
 
   size(LX);
   dimensions(nx = AR, ny = 1);
@@ -104,7 +107,7 @@ int main (int argc, char * argv[])
   //G.y = -grav*cos(angle);
   //Z.y = H0;
   G[0] = grav*sin(angle);
-  G[1] = -grav*cos(angle);
+  G[1] = grav*cos(angle);
 
   char comm[80];
   sprintf(comm, "mkdir -p images");
@@ -160,12 +163,12 @@ void read_params(const char * fname)
 
 event init (t = 0) {
   if (!restore (file = "dump")) { 
-    fraction (f0, H0 - y);
+    fraction (f0, y-Hi);
     //f0.refine = f0.prolongation = fraction_refine;
     restriction ({f0}); // for boundary conditions on levels
 
     foreach(){
-      profile[] = (y/H0)*(2.0-(y/H0));
+      profile[] = f0[]*((LY-y)/H0)*(2.0-((LY-y)/H0));
     }
     //profile.refine = profile.prolongation = refine_linear;
     //profile.refine = profile.prolongation = fraction_refine;
@@ -174,8 +177,8 @@ event init (t = 0) {
    
     foreach() {
       //f[] = f0[];
-      d[] = H0 - y;
-      u.x[] = US*(f0[]*profile[]); // + 1-f0[]);
+      d[] = y-Hi;
+      u.x[] = US*profile[]; // + 1-f0[]);
       u.y[] = 0;
     }
     boundary({d, u});
@@ -237,7 +240,7 @@ event interfacevel (t += t_out)
 {
   char name[80];
 
-  if (i==0)
+  /*if (i==0)
   {
 	clear();
         view (tx = -0.5, ty = -0.5, sx = zoomy, sy = 2*zoomy);
@@ -246,7 +249,8 @@ event interfacevel (t += t_out)
 	sprintf (name, "images/dimcheck-%5.4f.png", t);
 	save (name);      
   }
-  clear();
+  clear();*/
+
   view (tx = -0.5, ty = -0.5, sy = zoomy);
   draw_vof ("f", lw = 2);
   squares ("u.x", min = 0, max = 1.5*US, linear = true);
@@ -256,7 +260,7 @@ event interfacevel (t += t_out)
   save (name);
 
   clear();
-  view (tx = -0.5, ty = -0.5, sy = 2*zoomy);
+  view (tx = -0.5, ty = -0.5, sy = zoomy);
   draw_vof ("f", lw = 2);
   squares ("p", linear = true, spread=10);
   sprintf (name, "images/pfp-%5.4f.png", t);
