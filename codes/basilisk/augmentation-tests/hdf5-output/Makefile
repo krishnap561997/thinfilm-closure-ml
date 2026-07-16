@@ -29,10 +29,10 @@ RELEASEFLAGS = -O3 -fno-strict-aliasing -march=x86-64-v3 -disable-dimensions
 
 ifeq ($(BUILD),letitride)
 TARGET   = filmflow
-QCCFLAGS = $(DEBUGFLAGS)
+QCCFLAGS = $(RELEASEFLAGS)
 else
 TARGET   = filmflow_debug
-QCCFLAGS = $(RELEASEFLAGS)
+QCCFLAGS = $(DEBUGFLAGS)
 endif
 
 OPENGLIBS = \
