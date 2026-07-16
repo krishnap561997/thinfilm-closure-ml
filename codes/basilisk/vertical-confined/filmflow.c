@@ -1,5 +1,4 @@
 #include "grid/multigrid.h"
-#include "axi.h"
 #include "navier-stokes/centered.h"
 
 #include "two-phase-clsvof.h"
@@ -32,7 +31,6 @@ double grav = 9.81;
 double G[2];
 double LX = 0.2;
 int AR = 32, zoomy = 32;
-double LY;
 
 int MAXlevel = 12;
 //double uemax = 0.0001;
@@ -47,7 +45,7 @@ u.t[left]  = dirichlet(0);
 //p[left]   = neumann(0);
 //pf[left]   = neumann(0);
 //f[left]    = dirichlet(f0[]); 
-d[left] = dirichlet(y + H0 - LY);
+d[left] = dirichlet(H0-y);
 
 u.n[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
 u.t[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
@@ -56,10 +54,10 @@ p[right] = dirichlet(0);
 pf[right] = dirichlet(0); 
 //f[right] = neumann(0);
 
-u.n[top] = dirichlet(0);
-u.t[top] = dirichlet(0);
+u.n[bottom] = dirichlet(0);
+u.t[bottom] = dirichlet(0);
 //f[bottom] = dirichlet(1);
-d[top] = dirichlet(y + H0 - LY);
+d[bottom] = dirichlet(H0-y);
 
 /*u.n[top] = dirichlet(0.);
 u.t[top] = dirichlet(0.);
@@ -85,7 +83,6 @@ int main (int argc, char * argv[])
   RE = US*H0*RHO_L/MU_L;
   CA = MU_L*US/GAMMA;
   T0 = 1/freq;  
-  LY = LX/((double)AR);
 
   size(LX);
   dimensions(nx = AR, ny = 1);
@@ -106,8 +103,8 @@ int main (int argc, char * argv[])
   //G.x = grav*sin(angle);
   //G.y = -grav*cos(angle);
   //Z.y = H0;
-  G[0] = grav;
-  G[1] = 0;
+  G[0] = grav*sin(angle);
+  G[1] = -grav*cos(angle);
 
   char comm[80];
   sprintf(comm, "mkdir -p images");
@@ -125,7 +122,6 @@ int main (int argc, char * argv[])
   fprintf(stderr, "Re: %.8f\n", RE);
   fprintf(stderr, "Ca: %.8f\n", CA);
   fprintf(stderr, "T0: %.8f\n", T0);
-  fprintf(stderr, "LY: %.8f\n", LY);
 
   run();
 }
@@ -164,12 +160,12 @@ void read_params(const char * fname)
 
 event init (t = 0) {
   if (!restore (file = "dump")) { 
-    fraction (f0, y + H0 - LY);
+    fraction (f0, H0 - y);
     //f0.refine = f0.prolongation = fraction_refine;
     restriction ({f0}); // for boundary conditions on levels
 
     foreach(){
-      profile[] = ((LY - y)/H0)*(2.0-((LY - y)/H0));
+      profile[] = (y/H0)*(2.0-(y/H0));
     }
     //profile.refine = profile.prolongation = refine_linear;
     //profile.refine = profile.prolongation = fraction_refine;
@@ -178,7 +174,7 @@ event init (t = 0) {
    
     foreach() {
       //f[] = f0[];
-      d[] = y + H0 - LY;
+      d[] = H0 - y;
       u.x[] = US*(f0[]*profile[]); // + 1-f0[]);
       u.y[] = 0;
     }
@@ -310,9 +306,17 @@ event finalize(t += t_dump; t <= t_end)
 /*event output_h5(t += t_out; t<=t_end)
 {
   char fname[256];
+  scalar kappa[];
+
   sprintf(fname, "output/snapshot_%06.4f", t);
 
   output_xmf((scalar *){f,p}, (vector *){u}, fname);
+  
+  sprintf(fname, "output/interface_%06.4f", t);
+  foreach()
+        kappa[] = distance_curvature (point, d);
+
+  output_facets_xmf(f, kappa, fname);
 }*/
 
 
@@ -414,12 +418,4 @@ event finalize(t += t_dump; t <= t_end)
   free(tauw); 
 }*/
 
-
-/*event runtime (i += 10) {
-  mpi_all_reduce (perf.t, MPI_DOUBLE, MPI_MAX);
-  if (perf.t/60 >= maxruntime) {
-    dump (file = "dump"); // so that we can restart
-    return 1; // exit
-  }
-  }*/
 

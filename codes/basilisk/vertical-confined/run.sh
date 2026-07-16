@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=h5test
+#SBATCH --job-name=vert
 #SBATCH -o run_%j.out
 #SBATCH --mail-type=ALL
 #!SBATCH --mail-user=krishnap561997@gmail.com
