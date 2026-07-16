@@ -36,7 +36,7 @@ int AR = 32, zoomy = 32;
 int MAXlevel = 12;
 //double uemax = 0.0001;
 
-double angle = 6.4*pi/180.;
+double angle = 90*pi/180.;
 double au = 0.03, freq = 1.5;
 scalar f0[], profile[];
 
@@ -106,8 +106,8 @@ int main (int argc, char * argv[])
   //G.x = grav*sin(angle);
   //G.y = -grav*cos(angle);
   //Z.y = H0;
-  G[0] = grav*sin(angle);
-  G[1] = grav*cos(angle);
+  G[0] = grav;
+  G[1] = 0; //grav*cos(angle);
 
   char comm[80];
   sprintf(comm, "mkdir -p images");
