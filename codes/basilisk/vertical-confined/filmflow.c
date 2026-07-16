@@ -1,4 +1,5 @@
 #include "grid/multigrid.h"
+#include "axi.h"
 #include "navier-stokes/centered.h"
 
 #include "two-phase-clsvof.h"
@@ -38,10 +39,13 @@ int MAXlevel = 12;
 
 double angle = 90*pi/180.;
 double au = 0.03, freq = 1.5;
+double t_start = 0.5, t_slope = 100;
 scalar f0[], profile[];
 
-u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*profile[]); // + (1-f0[]))));
-//u.n[left]  = dirichlet(f0[]*profile[]);
+double sigmoid(double t1, double k);
+//u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*f0[]*profile[]); 
+u.n[left]  = dirichlet((1 + au*sigmoid(t_start, t_slope)*sin(2*pi*freq*t))*profile[]);
+//u.n[left]  = dirichlet(profile[]); 
 u.t[left]  = dirichlet(0);
 //p[left]   = neumann(0);
 //pf[left]   = neumann(0);
@@ -79,13 +83,12 @@ int main (int argc, char * argv[])
   DT = 5e-5;
 
   read_params(fname);
-  
-  US = grav*sin(angle)*H0*H0*RHO_L/MU_L/2.0;
+  LY = LX/((double)AR);
+  Hi = LY - H0;
+  US = (RHO_L*grav/4/MU_L) * ((pow(LY,2) - pow(Hi,2)) + 2*pow(Hi,2)*log(Hi/LY));
   RE = US*H0*RHO_L/MU_L;
   CA = MU_L*US/GAMMA;
   T0 = 1/freq; 
-  LY = LX/((double)AR);
-  Hi = LY - H0;
 
   size(LX);
   dimensions(nx = AR, ny = 1);
@@ -151,6 +154,8 @@ void read_params(const char * fname)
       else if (strcmp(key, "AMP") == 0)       { au        = atof(val);         }
       else if (strcmp(key, "T_OUT") == 0)     { t_out     = atof(val);         }
       else if (strcmp(key, "T_END") == 0)     { t_end     = atof(val);         }
+      else if (strcmp(key, "SIGMOID_T1") == 0){ t_start   = atof(val);         }
+      else if (strcmp(key, "SIGMOID_K") == 0) { t_slope   = atof(val);         }
     }
     fclose(fp);
   } else {
@@ -159,16 +164,23 @@ void read_params(const char * fname)
   }
 }
 
+double sigmoid(double t1, double k) {
+  return 1.0 / (1.0 + exp(-k * (t -t1)));
+}
 
 
 event init (t = 0) {
-  if (!restore (file = "dump")) { 
+  if (!restore (file = "dump")) {
     fraction (f0, y-Hi);
     //f0.refine = f0.prolongation = fraction_refine;
     restriction ({f0}); // for boundary conditions on levels
 
     foreach(){
-      profile[] = f0[]*((LY-y)/H0)*(2.0-((LY-y)/H0));
+      //profile[] = ((LY-y)/H0)*(2.0-((LY-y)/H0));
+      if (y > 0.8*Hi)
+        profile[] = f0[] * (RHO_L*grav/4/MU_L) * ((pow(LY,2) - pow(y,2)) + 2*pow(Hi,2)*log(y/LY));
+      else
+        profile[] = 0.;
     }
     //profile.refine = profile.prolongation = refine_linear;
     //profile.refine = profile.prolongation = fraction_refine;
@@ -178,7 +190,7 @@ event init (t = 0) {
     foreach() {
       //f[] = f0[];
       d[] = y-Hi;
-      u.x[] = US*profile[]; // + 1-f0[]);
+      u.x[] = profile[]; 
       u.y[] = 0;
     }
     boundary({d, u});
@@ -206,9 +218,9 @@ event acceleration (i++) {
   foreach_face(x){
     av.x[] += G[0];
   }
-  foreach_face(y){
+/*  foreach_face(y){
     av.y[] += G[1];
-  }
+  }*/
 }
 
 void mg_print (mgstats mg)
