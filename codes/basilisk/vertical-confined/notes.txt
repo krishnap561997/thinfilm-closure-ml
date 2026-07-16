@@ -1,0 +1,4 @@
+	Detail				Information Gleaned
+1.	No inlet fluctuation.		Initial condition has an issue close to the interface where velocity is not max as cell doesn't match interface location. 
+ 					This might cause an initial wave.
+					Maybe initialize with velocity for air as well.
