@@ -306,9 +306,17 @@ event finalize(t += t_dump; t <= t_end)
 event output_h5(t += t_out; t<=t_end)
 {
   char fname[256];
+  scalar kappa[];
+
   sprintf(fname, "output/snapshot_%06.4f", t);
 
   output_xmf((scalar *){f,p}, (vector *){u}, fname);
+  
+  sprintf(fname, "output/interface_%06.4f", t);
+  foreach()
+        kappa[] = distance_curvature (point, d);
+
+  output_facets_xmf(f, kappa, fname);
 }
 
 
@@ -410,12 +418,4 @@ event output_h5(t += t_out; t<=t_end)
   free(tauw); 
 }*/
 
-
-/*event runtime (i += 10) {
-  mpi_all_reduce (perf.t, MPI_DOUBLE, MPI_MAX);
-  if (perf.t/60 >= maxruntime) {
-    dump (file = "dump"); // so that we can restart
-    return 1; // exit
-  }
-  }*/
 

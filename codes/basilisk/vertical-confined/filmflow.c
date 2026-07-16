@@ -15,13 +15,13 @@
 #include "view.h"
 //vector h[];
 
-#include "hdf5_headers/output_xdmf.h"
+//#include "hdf5_headers/output_xdmf.h"
 
 double t_out = 0.01;
 double t_dump = 0.1;
 double t_end = 2.8;
 double H0 = 0.001279;
-double RE, CA, US, T0, U0;
+double RE, CA, US, T0;
 double GAMMA = 0.067;
 double RHO_L = 1072,
   RHO_G = 1.225,
@@ -30,27 +30,24 @@ double RHO_L = 1072,
 double grav = 9.81;
 
 double G[2];
-double LX = 128;
-double LY;
+double LX = 0.2;
 int AR = 32, zoomy = 32;
+double LY;
 
 int MAXlevel = 12;
 //double uemax = 0.0001;
 
-double angle = 90*pi/180.;
+double angle = 6.4*pi/180.;
 double au = 0.03, freq = 1.5;
-double t_start = 1.0, t_slope = 10; //Ramp to prevent initial high amp wave
 scalar f0[], profile[];
 
-double sigmoid(double t1, double k);
-
-u.n[left]  = dirichlet((1 + au*sigmoid(t_start/T0, t_slope*T0)*sin(2*pi*freq*t*T0))*(f0[]*profile[])); 
+u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
 //u.n[left]  = dirichlet(f0[]*profile[]);
 u.t[left]  = dirichlet(0);
 //p[left]   = neumann(0);
 //pf[left]   = neumann(0);
 //f[left]    = dirichlet(f0[]); 
-d[left] = dirichlet(y + 1.0 - LY);
+d[left] = dirichlet(y + H0 - LY);
 
 u.n[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
 u.t[right] = f[] > 1e-6 ? neumann(0.):dirichlet(0.) ;
@@ -59,10 +56,10 @@ p[right] = dirichlet(0);
 pf[right] = dirichlet(0); 
 //f[right] = neumann(0);
 
-//u.n[top] = dirichlet(0);
-//u.t[top] = dirichlet(0);
+u.n[top] = dirichlet(0);
+u.t[top] = dirichlet(0);
 //f[bottom] = dirichlet(1);
-//d[bottom] = dirichlet(y + 1.0 - LY));
+d[top] = dirichlet(y + H0 - LY);
 
 /*u.n[top] = dirichlet(0.);
 u.t[top] = dirichlet(0.);
@@ -80,15 +77,14 @@ int main (int argc, char * argv[])
   NITERMIN = 2;
   NITERMAX = 100;
   CFL = 0.25;
-  //  DT = 5e-5;
+  DT = 5e-5;
 
   read_params(fname);
   
   US = grav*sin(angle)*H0*H0*RHO_L/MU_L/2.0;
-  U0 = 2.0*US/3.0;
-  RE = U0*H0*RHO_L/MU_L;
-  CA = MU_L*U0/GAMMA;
-  T0 = H0/U0;
+  RE = US*H0*RHO_L/MU_L;
+  CA = MU_L*US/GAMMA;
+  T0 = 1/freq;  
   LY = LX/((double)AR);
 
   size(LX);
@@ -99,12 +95,10 @@ int main (int argc, char * argv[])
   Y0 = 0;
 
   
-  rho1 = RE;
-  rho2 = RHO_G*rho1/RHO_L;
-  mu1 = 1.0;
-  mu2 = MU_G/MU_L;
+  rho1 = RHO_L, rho2 = RHO_G;
+  mu1 = MU_L, mu2 = MU_G;
 
-  const scalar sigma[] = 1.0/CA;
+  const scalar sigma[] = GAMMA;
   d.sigmaf = sigma;
   /*f.sigma = GAMMA;
     f.height = h;*/
@@ -112,9 +106,9 @@ int main (int argc, char * argv[])
   //G.x = grav*sin(angle);
   //G.y = -grav*cos(angle);
   //Z.y = H0;
-  G[0] = 3.0/RE;
-  G[1] = 0.;
-  
+  G[0] = grav;
+  G[1] = 0;
+
   char comm[80];
   sprintf(comm, "mkdir -p images");
   system(comm);
@@ -131,6 +125,7 @@ int main (int argc, char * argv[])
   fprintf(stderr, "Re: %.8f\n", RE);
   fprintf(stderr, "Ca: %.8f\n", CA);
   fprintf(stderr, "T0: %.8f\n", T0);
+  fprintf(stderr, "LY: %.8f\n", LY);
 
   run();
 }
@@ -156,10 +151,7 @@ void read_params(const char * fname)
       else if (strcmp(key, "FREQ") == 0)      { freq      = atof(val);         }
       else if (strcmp(key, "AMP") == 0)       { au        = atof(val);         }
       else if (strcmp(key, "T_OUT") == 0)     { t_out     = atof(val);         }
-      else if (strcmp(key, "T_DUMP") == 0)    { t_dump    = atof(val);         }
       else if (strcmp(key, "T_END") == 0)     { t_end     = atof(val);         }
-      else if (strcmp(key, "SIGMOID_T1") == 0){ t_start   = atof(val);         }
-      else if (strcmp(key, "SIGMOID_K") == 0) { t_slope   = atof(val);         }
     }
     fclose(fp);
   } else {
@@ -168,18 +160,16 @@ void read_params(const char * fname)
   }
 }
 
-double sigmoid(double t1, double k) {
-  return 1.0 / (1.0 + exp(-k * (t -t1)));
-}
+
 
 event init (t = 0) {
   if (!restore (file = "dump")) { 
-    fraction (f0, y - 1.0 + LY);
+    fraction (f0, y + H0 - LY);
     //f0.refine = f0.prolongation = fraction_refine;
     restriction ({f0}); // for boundary conditions on levels
 
     foreach(){
-      profile[] = 1.5*(LY-y)*(2.0-(LY-y));
+      profile[] = ((LY - y)/H0)*(2.0-((LY - y)/H0));
     }
     //profile.refine = profile.prolongation = refine_linear;
     //profile.refine = profile.prolongation = fraction_refine;
@@ -188,8 +178,8 @@ event init (t = 0) {
    
     foreach() {
       //f[] = f0[];
-      d[] = y + 1.0 - LY;
-      u.x[] = f0[]*profile[]; // + 1-f0[]);
+      d[] = y + H0 - LY;
+      u.x[] = US*(f0[]*profile[]); // + 1-f0[]);
       u.y[] = 0;
     }
     boundary({d, u});
@@ -247,7 +237,7 @@ event logfile (i++) {
 }
 
 
-event interfacevel (t += t_out/T0)
+event interfacevel (t += t_out)
 {
   char name[80];
 
@@ -263,8 +253,8 @@ event interfacevel (t += t_out/T0)
   clear();
   view (tx = -0.5, ty = -0.5, sy = zoomy);
   draw_vof ("f", lw = 2);
-  squares ("u.x", min = 0, max = 3, linear = true);
-  colorbar(min = 0, max = 3);
+  squares ("u.x", min = 0, max = 1.5*US, linear = true);
+  colorbar(min = 0, max = 1.5*US);
   //isoline ("u.x", 1., lc = {1,1,1}, lw = 2);
   sprintf (name, "images/ux-%5.4f.png", t);
   save (name);
@@ -277,7 +267,7 @@ event interfacevel (t += t_out/T0)
   save (name);
 }
 
-event interface (t += t_out/T0) {
+event interface (t += t_out) {
 
    char names[80];
    sprintf(names, "infc/interface%d", pid());
@@ -307,7 +297,7 @@ event interface (t += t_out/T0) {
    system(command);
 } */
 
-event finalize(t += t_dump/T0; t <= t_end/T0)
+event finalize(t += t_dump; t <= t_end)
 {
   char name[80];
   //scalar kappa[];
@@ -317,13 +307,113 @@ event finalize(t += t_dump/T0; t <= t_end/T0)
   dump (file = name); // so that we can restart
 }
 
-event output_h5(t += t_out/T0; t<=t_end/T0)
+/*event output_h5(t += t_out; t<=t_end)
 {
   char fname[256];
   sprintf(fname, "output/snapshot_%06.4f", t);
 
   output_xmf((scalar *){f,p}, (vector *){u}, fname);
-}
+}*/
+
+
+
+/*event output_h5(t += t_out; t <= t_end)
+{
+  int NXOUT = 1 << MAXlevel;
+  int NYOUT = NXOUT/AR;
+  double xmin_out = X0;
+  double ymin_out = Y0;
+  double xmax_out = X0 + L0;
+  double ymax_out = Y0 + L0/AR;
+  
+  double *xout = calloc(NXOUT, sizeof(double));
+  double *yout = calloc(NYOUT, sizeof(double));
+
+  double *uout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *vout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *pout = calloc(NXOUT*NYOUT, sizeof(double));
+  double *fout = calloc(NXOUT*NYOUT, sizeof(double));
+
+  double *h    = calloc(NXOUT, sizeof(double));
+  double *q    = calloc(NXOUT, sizeof(double));
+  double *tauw = calloc(NXOUT, sizeof(double));
+
+  double dx = (xmax_out - xmin_out)/(NXOUT - 1);
+  double dy = (ymax_out - ymin_out)/(NYOUT - 1);
+
+  for (int i = 0; i < NXOUT; i++)
+    xout[i] = xmin_out + i*dx;
+
+  for (int j = 0; j < NYOUT; j++)
+    yout[j] = ymin_out + j*dy;
+
+  for (int j = 0; j < NYOUT; j++) {
+    for (int i = 0; i < NXOUT; i++) {
+      double xp = xout[i];
+      double yp = yout[j];
+      int id = j*NXOUT + i;
+
+      uout[id] = interpolate(u.x, xp, yp);
+      vout[id] = interpolate(u.y, xp, yp);
+      pout[id] = interpolate(p,   xp, yp);
+      fout[id] = interpolate(f,   xp, yp);
+    }
+  }
+
+  for (int i = 0; i < NXOUT; i++) {
+    double xi = xout[i];
+
+    for (int j = 0; j < NYOUT - 1; j++) {
+      double yj = yout[j];
+
+      double fj = interpolate(f,   xi, yj);
+      double uj = interpolate(u.x, xi, yj);
+
+      h[i] += fj*dy;
+      q[i] += fj*uj*dy;
+    }
+
+    double u0 = interpolate(u.x, xi, ymin_out);
+    double u1 = interpolate(u.x, xi, ymin_out + dy);
+
+    tauw[i] = mu1*(u1 - u0)/dy;
+  }
+
+  char fname[256];
+  sprintf(fname, "output/snapshot_%06.4f.h5", t);
+
+  hid_t file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+
+  H5Gcreate(file, "/grid",      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/fields",    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/interface", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Gcreate(file, "/closures",  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+  write_1d_h5(file, "/grid/x", xout, NXOUT);
+  write_1d_h5(file, "/grid/y", yout, NYOUT);
+
+  write_2d_h5(file, "/fields/u", uout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/v", vout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/p", pout, NYOUT, NXOUT);
+  write_2d_h5(file, "/fields/f", fout, NYOUT, NXOUT);
+
+  write_1d_h5(file, "/interface/h", h, NXOUT);
+  write_1d_h5(file, "/closures/q", q, NXOUT);
+  write_1d_h5(file, "/closures/tau_wall", tauw, NXOUT);
+
+  H5Fclose(file);
+
+  free(xout);
+  free(yout);
+  free(uout);
+  free(vout);
+  free(pout);
+  free(fout);
+  free(h);
+  free(q);
+  free(tauw); 
+}*/
+
 
 /*event runtime (i += 10) {
   mpi_all_reduce (perf.t, MPI_DOUBLE, MPI_MAX);
