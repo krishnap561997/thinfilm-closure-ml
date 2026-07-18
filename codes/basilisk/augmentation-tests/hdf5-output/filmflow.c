@@ -14,13 +14,13 @@
 #include "view.h"
 //vector h[];
 
-#include "hdf5_headers/output_xdmf.h"
+#include "hdf5_headers/output_xdmf_params.h"
 
 double t_out = 0.01;
 double t_dump = 0.1;
 double t_end = 2.8;
 double H0 = 0.001279;
-double RE, CA, US, T0;
+double RE, CA, US, U0, T0;
 double GAMMA = 0.067;
 double RHO_L = 1072,
   RHO_G = 1.225,
@@ -38,6 +38,10 @@ int MAXlevel = 12;
 double angle = 6.4*pi/180.;
 double au = 0.03, freq = 1.5;
 scalar f0[], profile[];
+
+scalar f_minus[], p_minus[], d_minus[];
+vector u_minus[];
+double t_minus = 0.;
 
 u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
 //u.n[left]  = dirichlet(f0[]*profile[]);
@@ -80,9 +84,10 @@ int main (int argc, char * argv[])
   read_params(fname);
   
   US = grav*sin(angle)*H0*H0*RHO_L/MU_L/2.0;
-  RE = US*H0*RHO_L/MU_L;
-  CA = MU_L*US/GAMMA;
-  T0 = 1/freq;  
+  U0 = grav*sin(angle)*H0*H0*RHO_L/MU_L/3.0;
+  RE = U0*H0*RHO_L/MU_L;
+  CA = MU_L*U0/GAMMA;
+  T0 = H0/U0;  
 
   size(LX);
   dimensions(nx = AR, ny = 1);
@@ -263,7 +268,7 @@ event interfacevel (t += t_out)
   save (name);
 }
 
-event interface (t += t_out) {
+/*event interface (t += t_out) {
 
    char names[80];
    sprintf(names, "infc/interface%d", pid());
@@ -273,7 +278,7 @@ event interface (t += t_out) {
    char command[80];
    sprintf(command, "LC_ALL=C  cat infc/interfa* > infc/infc%05.4f.dat",t);
    system(command);
-}
+}*/
 
 /* event velocityprofile (t += 0.0001) {
 
@@ -306,116 +311,74 @@ event finalize(t += t_dump; t <= t_end)
 event output_h5(t += t_out; t<=t_end)
 {
   char fname[256];
-  scalar kappa[];
+  scalar kappa[], kappa_minus[];
 
   sprintf(fname, "output/snapshot_%06.4f", t);
 
-  output_xmf((scalar *){f,p}, (vector *){u}, fname);
-  
-  sprintf(fname, "output/interface_%06.4f", t);
+  output_xmf((scalar *){f,d,p,f_minus, d_minus, p_minus}, (vector *){u, u_minus}, fname);
+
+  /*
+   * Then reopen the same HDF5 file and append parameters.
+   */
+  const char *parameter_names[] = {
+    "Re",
+    "Ca",
+    "h0",
+    "u0",
+    "t0",
+    "angle",
+    "time",
+    "t-dt",
+    "dt"
+  };
+
+  double parameter_values[] = {
+    RE,
+    CA,
+    H0,
+    U0,
+    T0,
+    angle,
+    t,
+    t_minus,
+    dt
+  };
+
+  int number_of_parameters =
+    sizeof(parameter_values)/sizeof(parameter_values[0]);
+
+  if (append_xmf_parameters (fname,
+                             parameter_names,
+                             parameter_values,
+                             number_of_parameters) < 0) {
+    if (pid() == 0)
+      fprintf (stderr,
+               "Could not append parameters to %s.h5\n",
+               fname);
+  }
+
+  sprintf(fname, "infc/interface_%06.4f", t);
   foreach()
         kappa[] = distance_curvature (point, d);
 
   output_facets_xmf(f, kappa, fname);
+  
+  sprintf(fname, "infc/interface_minus_%06.4f", t);
+  foreach()
+        kappa_minus[] = distance_curvature (point, d_minus);
+
+  output_facets_xmf(f, kappa_minus, fname);
 }
 
 
-
-/*event output_h5(t += t_out; t <= t_end)
+event save_previous (i++)
 {
-  int NXOUT = 1 << MAXlevel;
-  int NYOUT = NXOUT/AR;
-  double xmin_out = X0;
-  double ymin_out = Y0;
-  double xmax_out = X0 + L0;
-  double ymax_out = Y0 + L0/AR;
-  
-  double *xout = calloc(NXOUT, sizeof(double));
-  double *yout = calloc(NYOUT, sizeof(double));
+  t_minus = t;
 
-  double *uout = calloc(NXOUT*NYOUT, sizeof(double));
-  double *vout = calloc(NXOUT*NYOUT, sizeof(double));
-  double *pout = calloc(NXOUT*NYOUT, sizeof(double));
-  double *fout = calloc(NXOUT*NYOUT, sizeof(double));
-
-  double *h    = calloc(NXOUT, sizeof(double));
-  double *q    = calloc(NXOUT, sizeof(double));
-  double *tauw = calloc(NXOUT, sizeof(double));
-
-  double dx = (xmax_out - xmin_out)/(NXOUT - 1);
-  double dy = (ymax_out - ymin_out)/(NYOUT - 1);
-
-  for (int i = 0; i < NXOUT; i++)
-    xout[i] = xmin_out + i*dx;
-
-  for (int j = 0; j < NYOUT; j++)
-    yout[j] = ymin_out + j*dy;
-
-  for (int j = 0; j < NYOUT; j++) {
-    for (int i = 0; i < NXOUT; i++) {
-      double xp = xout[i];
-      double yp = yout[j];
-      int id = j*NXOUT + i;
-
-      uout[id] = interpolate(u.x, xp, yp);
-      vout[id] = interpolate(u.y, xp, yp);
-      pout[id] = interpolate(p,   xp, yp);
-      fout[id] = interpolate(f,   xp, yp);
-    }
+  foreach() {
+    f_minus[] = f[];
+    p_minus[] = p[];
+    foreach_dimension()
+      u_minus.x[] = u.x[];
   }
-
-  for (int i = 0; i < NXOUT; i++) {
-    double xi = xout[i];
-
-    for (int j = 0; j < NYOUT - 1; j++) {
-      double yj = yout[j];
-
-      double fj = interpolate(f,   xi, yj);
-      double uj = interpolate(u.x, xi, yj);
-
-      h[i] += fj*dy;
-      q[i] += fj*uj*dy;
-    }
-
-    double u0 = interpolate(u.x, xi, ymin_out);
-    double u1 = interpolate(u.x, xi, ymin_out + dy);
-
-    tauw[i] = mu1*(u1 - u0)/dy;
-  }
-
-  char fname[256];
-  sprintf(fname, "output/snapshot_%06.4f.h5", t);
-
-  hid_t file = H5Fcreate(fname, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-
-  H5Gcreate(file, "/grid",      H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  H5Gcreate(file, "/fields",    H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  H5Gcreate(file, "/interface", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  H5Gcreate(file, "/closures",  H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-  write_1d_h5(file, "/grid/x", xout, NXOUT);
-  write_1d_h5(file, "/grid/y", yout, NYOUT);
-
-  write_2d_h5(file, "/fields/u", uout, NYOUT, NXOUT);
-  write_2d_h5(file, "/fields/v", vout, NYOUT, NXOUT);
-  write_2d_h5(file, "/fields/p", pout, NYOUT, NXOUT);
-  write_2d_h5(file, "/fields/f", fout, NYOUT, NXOUT);
-
-  write_1d_h5(file, "/interface/h", h, NXOUT);
-  write_1d_h5(file, "/closures/q", q, NXOUT);
-  write_1d_h5(file, "/closures/tau_wall", tauw, NXOUT);
-
-  H5Fclose(file);
-
-  free(xout);
-  free(yout);
-  free(uout);
-  free(vout);
-  free(pout);
-  free(fout);
-  free(h);
-  free(q);
-  free(tauw); 
-}*/
-
-
+}

@@ -6,7 +6,7 @@
 
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                  # ONE task only
-#SBATCH --cpus-per-task=16          # OpenMP threads (adjust!)
+#SBATCH --cpus-per-task=2           # OpenMP threads (adjust!)
 #!SBATCH --mem-per-cpu=4gb
 #SBATCH -t 0-02:10:00
 
