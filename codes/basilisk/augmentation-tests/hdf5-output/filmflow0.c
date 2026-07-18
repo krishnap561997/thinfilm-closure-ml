@@ -14,7 +14,7 @@
 #include "view.h"
 //vector h[];
 
-#include "hdf5_headers/output_xdmf_params.h"
+#include "hdf5_headers/output_xdmf.h"
 
 double t_out = 0.01;
 double t_dump = 0.1;
@@ -38,10 +38,6 @@ int MAXlevel = 12;
 double angle = 6.4*pi/180.;
 double au = 0.03, freq = 1.5;
 scalar f0[], profile[];
-
-scalar f_minus[], p_minus[], d_minus[];
-vector u_minus[];
-double t_minus = 0.;
 
 u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
 //u.n[left]  = dirichlet(f0[]*profile[]);
@@ -268,7 +264,7 @@ event interfacevel (t += t_out)
   save (name);
 }
 
-/*event interface (t += t_out) {
+event interface (t += t_out) {
 
    char names[80];
    sprintf(names, "infc/interface%d", pid());
@@ -278,7 +274,7 @@ event interfacevel (t += t_out)
    char command[80];
    sprintf(command, "LC_ALL=C  cat infc/interfa* > infc/infc%05.4f.dat",t);
    system(command);
-}*/
+}
 
 /* event velocityprofile (t += 0.0001) {
 
@@ -311,74 +307,34 @@ event finalize(t += t_dump; t <= t_end)
 event output_h5(t += t_out; t<=t_end)
 {
   char fname[256];
-  scalar kappa[], kappa_minus[];
+  scalar kappa[];
 
   sprintf(fname, "output/snapshot_%06.4f", t);
 
-  output_xmf((scalar *){f,d,p,f_minus, d_minus, p_minus}, (vector *){u, u_minus}, fname);
+  //output_xmf((scalar *){f,p}, (vector *){u}, fname);
+  output_xmf_kp((scalar *){f,p}, (vector *){u}, (double[]){Re, We, Ca, H0, U0, angle, t, dt}, 8, fname);
+  
 
-  /*
-   * Then reopen the same HDF5 file and append parameters.
-   */
-  const char *parameter_names[] = {
-    "Re",
-    "Ca",
-    "h0",
-    "u0",
-    "t0",
-    "angle",
-    "time",
-    "t-dt",
-    "dt"
-  };
-
-  double parameter_values[] = {
-    RE,
-    CA,
-    H0,
-    U0,
-    T0,
-    angle,
-    t,
-    t_minus,
-    dt
-  };
-
-  int number_of_parameters =
-    sizeof(parameter_values)/sizeof(parameter_values[0]);
-
-  if (append_xmf_parameters (fname,
-                             parameter_names,
-                             parameter_values,
-                             number_of_parameters) < 0) {
-    if (pid() == 0)
-      fprintf (stderr,
-               "Could not append parameters to %s.h5\n",
-               fname);
-  }
-
-  sprintf(fname, "infc/interface_%06.4f", t);
+  sprintf(fname, "output/interface_%06.4f", t);
   foreach()
         kappa[] = distance_curvature (point, d);
 
   output_facets_xmf(f, kappa, fname);
-  
-  sprintf(fname, "infc/interface_minus_%06.4f", t);
-  foreach()
-        kappa_minus[] = distance_curvature (point, d_minus);
-
-  output_facets_xmf(f, kappa_minus, fname);
 }
 
-
-event save_previous (i++)
+event output_h5(t += t_out; t<=t_end)
 {
-  t_minus = t;
+  char fname[256];
+  scalar kappa[];
 
-  foreach() {
-    f_minus[] = f[];
-    p_minus[] = p[];
-    foreach_dimension()
-      u_minus.x[] = u.x[];
-  }
+  sprintf(fname, "output/snapshot_%06.4f", t);
+
+  output_xmf((scalar *){f,p}, (vector *){u}, fname);
+
+  sprintf(fname, "output/interface_%06.4f", t);
+  foreach()
+        kappa[] = distance_curvature (point, d);
+
+  output_facets_xmf(f, kappa, fname);
 }
+

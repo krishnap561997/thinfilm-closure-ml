@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE Xdmf SYSTEM "Xdmf.dtd" [
+<!ENTITY HeavyData "infc/interface_minus_0.8000.h5:">
+]>
+<Xdmf xmlns:xi="http://www.w3.org/2003/XInclude" Version="3.0">
+	<Domain>
+		<Grid Name="Unstructured Grid" GridType="Uniform">
+			<Time Type="Single" Value="0.8" />
+			<Topology TopologyType="Mixed" NumberOfElements="34">
+				<DataItem Format="HDF" Dimensions="136" DataType="Int" Precision="8" >
+					&HeavyData;/Topology
+				</DataItem>
+			</Topology>
+			<Geometry GeometryType="XYZ">
+				<DataItem Format="HDF" NumberType="Float" Dimensions="68 3" Precision="8" >
+					&HeavyData;/Geometry/Points
+				</DataItem>
+			</Geometry>
+			<Attribute Name="kappa_minus" AttributeType="Scalar" Center="Cell">
+				<DataItem Dimensions="34" NumberType="Float" Precision="8" Format="HDF">
+					&HeavyData;/Cells/kappa_minus
+				</DataItem>
+			</Attribute>
+		</Grid>
+	</Domain>
+</Xdmf>
