@@ -43,30 +43,7 @@ scalar f_minus[], p_minus[], d_minus[];
 vector u_minus[];
 double t_minus = 0.;
 
-// White-band noise at inlet
-int MNOISE = 1000;
-double F0_noise = 0.025;      // RMS-scale inlet noise, F0 = A sqrt(M/2).
-double fcut_noise = 28.0;     // Hz, cutoff frequency.
-double * noise_phase = NULL;
-double inlet_F = 0.;
-double inlet_U = 0.;
-int noise_seed = 12345;
-
-double chang_noise_signal (double tt)
-{
-  double F = 0.;
-  double df = fcut_noise/((double) MNOISE);
-
-  for (int k = 1; k <= MNOISE; k++) {
-    double fk = k*df;
-    F += cos(2.*pi*fk*tt + noise_phase[k-1]);
-  }
-
-  // Normalized so F0_noise is approximately the RMS amplitude.
-  return F0_noise*sqrt(2./((double) MNOISE))*F;
-}
-
-u.n[left]  = dirichlet(inlet_U*(f0[]*profile[]));
+u.n[left]  = dirichlet(US*(1 + au*sin(2*pi*freq*t))*(f0[]*profile[])); // + (1-f0[]))));
 //u.n[left]  = dirichlet(f0[]*profile[]);
 u.t[left]  = dirichlet(0);
 //p[left]   = neumann(0);
@@ -105,19 +82,6 @@ int main (int argc, char * argv[])
   DT = 5e-5;
 
   read_params(fname);
-
-  if (MNOISE <= 0) {
-    fprintf(stderr, "MNOISE must be greater than zero\n");
-    return 1;
-  }
-
-  noise_phase = malloc(MNOISE*sizeof(double));
-  if (noise_phase == NULL) {
-    fprintf(stderr,
-	    "Could not allocate noise_phase for MNOISE = %d\n",
-	    MNOISE);
-    return 1;
-  }
   
   US = grav*sin(angle)*H0*H0*RHO_L/MU_L/2.0;
   U0 = grav*sin(angle)*H0*H0*RHO_L/MU_L/3.0;
@@ -176,23 +140,19 @@ void read_params(const char * fname)
 
     while(fgets(line,100,fp)) {
       sscanf(line, "%15s = %15s", key, val);
-      if (strcmp(key,"LX") == 0)              { LX         =  atof(val);        }
-      else if (strcmp(key, "MAXLEVEL") == 0)  { MAXlevel   = atoi(val);         }
-      else if (strcmp(key, "AR") == 0)        { AR         = atoi(val);         }
-      else if (strcmp(key, "Zoom") == 0)      { zoomy      = atoi(val);         }
-      else if (strcmp(key, "CFL") == 0)       { CFL        = atof(val);         }
-      else if (strcmp(key, "DT") == 0)        { DT         = atof(val);         }
-      else if (strcmp(key, "TOLERANCE") == 0) { TOLERANCE  = atof(val);         }
-      else if (strcmp(key, "H0") == 0)        { H0         = atof(val);         }
-      else if (strcmp(key, "ANGLE_DEG") == 0) { angle      = atof(val)*pi/180.; }
-      else if (strcmp(key, "FREQ") == 0)      { freq       = atof(val);         }
-      else if (strcmp(key, "AMP") == 0)       { au         = atof(val);         }
-      else if (strcmp(key, "T_OUT") == 0)     { t_out      = atof(val);         }
-      else if (strcmp(key, "T_END") == 0)     { t_end      = atof(val);         }
-      else if (strcmp(key, "F0_NOISE") == 0)  { F0_noise   = atof(val);         }
-      else if (strcmp(key, "FCUT_NOISE") == 0){ fcut_noise = atof(val);         }
-      else if (strcmp(key, "NOISE_SEED") == 0){ noise_seed = atoi(val);         }
-      else if (strcmp(key, "MNOISE") == 0)    { MNOISE     = atoi(val);         }
+      if (strcmp(key,"LX") == 0)              { LX        = atof(val);         }
+      else if (strcmp(key, "MAXLEVEL") == 0)  { MAXlevel  = atoi(val);         }
+      else if (strcmp(key, "AR") == 0)        { AR        = atoi(val);         }
+      else if (strcmp(key, "Zoom") == 0)      { zoomy     = atoi(val);         }
+      else if (strcmp(key, "CFL") == 0)       { CFL       = atof(val);         }
+      else if (strcmp(key, "DT") == 0)        { DT        = atof(val);         }
+      else if (strcmp(key, "TOLERANCE") == 0) { TOLERANCE = atof(val);         }
+      else if (strcmp(key, "H0") == 0)        { H0        = atof(val);         }
+      else if (strcmp(key, "ANGLE_DEG") == 0) { angle     = atof(val)*pi/180.; }
+      else if (strcmp(key, "FREQ") == 0)      { freq      = atof(val);         }
+      else if (strcmp(key, "AMP") == 0)       { au        = atof(val);         }
+      else if (strcmp(key, "T_OUT") == 0)     { t_out     = atof(val);         }
+      else if (strcmp(key, "T_END") == 0)     { t_end     = atof(val);         }
     }
     fclose(fp);
   } else {
@@ -225,39 +185,6 @@ event init (t = 0) {
     }
     boundary({d, u});
     
-  }
-}
-
-event init_noise (i = 0)
-{
-  srand(noise_seed);
-
-  for (int k = 0; k < MNOISE; k++)
-    noise_phase[k] = 2.*pi*(rand()/((double) RAND_MAX));
-
-  inlet_F = chang_noise_signal(t);
-  inlet_U = US*(1. + inlet_F);
-}
-
-event update_inlet_noise (i++)
-{
-  inlet_F = chang_noise_signal(t);
-  inlet_U = US*(1. + inlet_F);
-}
-
-event inlet_signal_output (i++)
-{
-  if (pid() == 0) {
-    static FILE * fp = NULL;
-
-    if (fp == NULL) {
-      fp = fopen("inlet_signal.dat", "w");
-      fprintf(fp, "# t inlet_F inlet_U US\n");
-    }
-
-    fprintf(fp, "%.12e %.12e %.12e %.12e\n",
-            t, inlet_F, inlet_U, US);
-    fflush(fp);
   }
 }
 
@@ -401,7 +328,7 @@ event output_h5(t += t_out; t<=t_end)
     "t0",
     "angle",
     "time",
-    "time_minus",
+    "t-dt",
     "dt"
   };
 
@@ -440,7 +367,7 @@ event output_h5(t += t_out; t<=t_end)
   foreach()
         kappa_minus[] = distance_curvature (point, d_minus);
 
-  output_facets_xmf(f_minus, kappa_minus, fname);
+  output_facets_xmf(f, kappa_minus, fname);
 }
 
 
@@ -451,7 +378,6 @@ event save_previous (i++)
   foreach() {
     f_minus[] = f[];
     p_minus[] = p[];
-    d_minus[] = d[];
     foreach_dimension()
       u_minus.x[] = u.x[];
   }
