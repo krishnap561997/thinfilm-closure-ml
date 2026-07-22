@@ -48,6 +48,7 @@ HDFLIBS = \
 
 LIBS = \
 		-I$(BASILISK) \
+		-I/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/software/headers \
 		$(OPENGLIBS) \
 		$(HDFLIBS) \
 		-lm
