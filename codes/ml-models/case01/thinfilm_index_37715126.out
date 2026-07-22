@@ -1,0 +1,54 @@
+============================================================
+Thin-film dataset indexing
+============================================================
+Host:              c0710a-s30.ufhpc
+Working directory: /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/case01
+Python script:     /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/case01/build_thinfilm_dataset.py
+Data root:         /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep
+Output directory:  /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep/dataset_index
+Python executable: /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/software/envs/thinfilm-ml-py311/bin/python
+============================================================
+Python 3.11.15
+NumPy version: 2.4.6
+h5py version:  3.16.0
+Found 30 simulations
+Selected simulation-level split; balance score = 0.095
+[01/30] Ca_0.001_Re_5_theta_6.4 -> test
+[02/30] Ca_0.001_Re_5_theta_45 -> validation
+[03/30] Ca_0.001_Re_20_theta_6.4 -> train
+[04/30] Ca_0.001_Re_20_theta_45 -> test
+[05/30] Ca_0.001_Re_40_theta_6.4 -> train
+[06/30] Ca_0.001_Re_40_theta_45 -> train
+[07/30] Ca_0.001_Re_60_theta_6.4 -> train
+[08/30] Ca_0.001_Re_60_theta_45 -> train
+[09/30] Ca_0.001_Re_80_theta_6.4 -> train
+[10/30] Ca_0.001_Re_80_theta_45 -> train
+[11/30] Ca_0.01_Re_5_theta_6.4 -> train
+[12/30] Ca_0.01_Re_5_theta_45 -> train
+[13/30] Ca_0.01_Re_20_theta_6.4 -> train
+[14/30] Ca_0.01_Re_20_theta_45 -> train
+[15/30] Ca_0.01_Re_40_theta_6.4 -> train
+[16/30] Ca_0.01_Re_40_theta_45 -> validation
+[17/30] Ca_0.01_Re_60_theta_6.4 -> test
+[18/30] Ca_0.01_Re_60_theta_45 -> validation
+[19/30] Ca_0.01_Re_80_theta_6.4 -> train
+[20/30] Ca_0.01_Re_80_theta_45 -> train
+[21/30] Ca_0.1_Re_5_theta_6.4 -> train
+[22/30] Ca_0.1_Re_5_theta_45 -> train
+[23/30] Ca_0.1_Re_20_theta_6.4 -> validation
+[24/30] Ca_0.1_Re_20_theta_45 -> train
+[25/30] Ca_0.1_Re_40_theta_6.4 -> test
+[26/30] Ca_0.1_Re_40_theta_45 -> train
+[27/30] Ca_0.1_Re_60_theta_6.4 -> train
+[28/30] Ca_0.1_Re_60_theta_45 -> train
+[29/30] Ca_0.1_Re_80_theta_6.4 -> validation
+[30/30] Ca_0.1_Re_80_theta_45 -> test
+
+Wrote metadata: /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep/dataset_index/simulations_metadata.csv
+Wrote split record: /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep/dataset_index/splits.json
+Wrote sample-index files under: /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep/dataset_index/indices
+============================================================
+Dataset indexing completed successfully.
+Output written to:
+  /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep/dataset_index
+============================================================
