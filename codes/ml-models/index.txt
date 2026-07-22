@@ -1,0 +1,2 @@
+Case          Description
+01            Utilizes ROM data. Partitions data and uses it to train FFNN
