@@ -4,24 +4,22 @@ clear chang_noise_signal append_thinfilm_h5; %% To clear the persistent variable
 
 %% Read input
 fileID = fopen('input.txt','r');
-C = textscan(fileID,'%f %f %f %f %f %f %f %f %f %f %f %f %f','Delimiter','\n');
+C = textscan(fileID,'%f %f %f %f %f %f %f %f %f %f %f %f','Delimiter','\n');
 
-fcut_dim  = C{1}
-t_end_dim = C{2}
-Ldim      = C{3}
-N         = C{4}
-MNOISE    = C{5}
-F0_noise  = C{6}
-Re_input  = C{7}
-theta_deg = C{8}
-rho       = C{9}
-mu        = C{10}
-Ca_input  = C{11}
-t_save    = C{12}
-dt_dim    = C{13}
+f_dim     = C{1}
+F0        = C{2}
+t_end_dim = C{3}
+Ldim      = C{4}
+N         = C{5}
+Re_input  = C{6}
+theta_deg = C{7}
+rho       = C{8}
+mu        = C{9}
+Ca_input  = C{10}
+t_save    = C{11}
+dt_dim    = C{12}
 fclose(fileID);
 
-MNOISE = round(MNOISE);
 theta = theta_deg*pi/180;
 %% Default values
 % fcut_dim  = 14;
@@ -53,14 +51,14 @@ F2 = uN^2/(g*hN);
 Ca = We/Re;
 gamma = rho*hN*uN^2/We;
 
-fcut_noise = fcut_dim*TN;
+freq  = f_dim*TN;
 
 fprintf('hN = %.4e m\n', hN);
 fprintf('uN = %.4e m/s\n', uN);
 fprintf('TN = %.4e s\n', TN);
 fprintf('mu = %.4f, rho = %.4f, gamma = %.4f, theta = %.4f\n', mu, rho, gamma, theta);
 fprintf('F2 = %.4f, We = %.4f, Re = %.4f, Ca = %.4f\n', F2, We, Re, Ca);
-fprintf('fcut_noise nondim = %.4e\n', fcut_noise);
+fprintf('f nondim = %.4e\n', freq);
 
 %% Domain
 L = Ldim/hN;
@@ -73,7 +71,6 @@ x_dim = x*hN;
 
 %% Time
 t_end = t_end_dim/TN;
-%dt_dim = 5e-5;
 dt = dt_dim/TN;
 
 nsteps = ceil(t_end/dt);
@@ -105,12 +102,13 @@ for n = 1:nsteps
 
     h_old = h;
     q_old = q;
+    r_old = r;
 
     t = (n-1)*dt;
 
 
     %% Store inlet signal at physical time step
-    F_now = chang_noise_signal(t, MNOISE, fcut_noise, F0_noise);
+    F_now = inlet_signal(t, freq, F0);
     t_nd_signal(n) = t;
     t_dim_signal(n) = t*TN;
     F_signal(n) = F_now;
@@ -120,7 +118,7 @@ for n = 1:nsteps
     %% RK4 stage 1
     [k1h,k1q,k1r] = solveRHS( ...
         h,q,r,dx,ng,Re,F2,We,theta, ...
-        MNOISE,fcut_noise,F0_noise,t);
+        freq,F0,t);
 
     h2 = h + 0.5*dt*k1h;
     q2 = q + 0.5*dt*k1q;
@@ -131,7 +129,7 @@ for n = 1:nsteps
     %% RK4 stage 2
     [k2h,k2q,k2r] = solveRHS( ...
         h2,q2,r2,dx,ng,Re,F2,We,theta, ...
-        MNOISE,fcut_noise,F0_noise,t + 0.5*dt);
+        freq,F0,t + 0.5*dt);
 
     h3 = h + 0.5*dt*k2h;
     q3 = q + 0.5*dt*k2q;
@@ -142,7 +140,7 @@ for n = 1:nsteps
     %% RK4 stage 3
     [k3h,k3q,k3r] = solveRHS( ...
         h3,q3,r3,dx,ng,Re,F2,We,theta, ...
-        MNOISE,fcut_noise,F0_noise,t + 0.5*dt);
+        freq,F0,t + 0.5*dt);
 
     h4 = h + dt*k3h;
     q4 = q + dt*k3q;
@@ -153,7 +151,7 @@ for n = 1:nsteps
     %% RK4 stage 4
     [k4h,k4q,k4r] = solveRHS( ...
         h4,q4,r4,dx,ng,Re,F2,We,theta, ...
-        MNOISE,fcut_noise,F0_noise,t + dt);
+        freq,F0,t + dt);
 
     %% Final RK4 update
     h = h + (dt/6)*(k1h + 2*k2h + 2*k3h + k4h);
@@ -182,9 +180,9 @@ for n = 1:nsteps
     if mod(n,save_every)==0
         tic
 
-        hi = h(ng+1:ng+N);
-        qi = q(ng+1:ng+N);
-        ri = r(ng+1:ng+N);
+        hi = h_old(ng+1:ng+N);
+        qi = q_old(ng+1:ng+N);
+        ri = r_old(ng+1:ng+N);
         
         dhdt = (h - h_old)/dt;
         dqdt = (q - q_old)/dt;
@@ -192,7 +190,7 @@ for n = 1:nsteps
         dhdt = dhdt(ng+1:ng+N);
         dqdt = dqdt(ng+1:ng+N);
 
-        F_now = chang_noise_signal(t+dt, MNOISE, fcut_noise, F0_noise);
+        F_now = inlet_signal(t, freq, F0);
         q_inlet_now = 1.0 + F_now;
     
         params.Re = Re;
@@ -207,10 +205,8 @@ for n = 1:nsteps
         params.TN = TN;
         params.theta = theta;
         params.theta_deg = theta_deg;
-        params.fcut_dim = fcut_dim;
-        params.fcut_noise = fcut_noise;
-        params.F0_noise = F0_noise;
-        params.MNOISE = MNOISE;
+        params.f_dim = f_dim;
+        params.F0 = F0;
     
         append_thinfilm_h5('thinfilm_training_data.h5', ...
             x, t, hi, qi, ri, dhdt, dqdt, F_now, q_inlet_now, params);
@@ -222,7 +218,7 @@ end
 %% Save inlet signal
 save('inlet_signal.mat', ...
      't_dim_signal', 't_nd_signal', 'F_signal', 'q_inlet_signal', ...
-     'fcut_dim', 'fcut_noise', 'F0_noise', 'MNOISE', 'TN');
+     'f_dim', 'F0', 'TN');
 
 
 %% Final fields

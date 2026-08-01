@@ -1,12 +1,9 @@
 clc; clear; close all;
 
 %% Parameter values to sweep
-Ca_list    = [0.001, 0.01, 0.1];
-Re_list    = [5, 20, 40, 60, 80];
-
 Ca_list    = [0.001];
 Re_list    = [5, 20, 40, 60, 80];
-theta_list = [6.4, 45];   % degrees, unless your solver expects radians
+theta_list = [6.4, 45];   % degrees
 
 %% Fixed input parameters
 fcut_dim  = 20;
@@ -19,13 +16,24 @@ rho       = 1072;
 mu        = 0.00673;
 t_save    = 0.01;
 dt_dim    = 2e-5;
+
 %% Paths
-parentFolder = 'blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/Data_Ca_Re_sweep';
 
-src_main = '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/inclined-whitenoise/main_whitenoise';
-src_run  = '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/inclined-whitenoise/run.sh';
+% Location where the simulation folders will be created
+parentFolder = ...
+    '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/ROM_Ca_Re_sweep';
 
-mkdir(parentFolder);
+% Location containing the source executable and run script
+sourceFolder = ...
+    '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/inclined-whitenoise';
+
+src_main = fullfile(sourceFolder, 'main_whitenoise');
+src_run  = fullfile(sourceFolder, 'run.sh');
+
+%% Create parent folder
+if ~exist(parentFolder, 'dir')
+    mkdir(parentFolder);
+end
 
 %% Create mscript
 mscript_path = fullfile(parentFolder, 'mscript');
@@ -45,13 +53,14 @@ for iCa = 1:length(Ca_list)
                               Ca_input, Re_input, theta);
 
             dir_path = fullfile(parentFolder, dirtext);
-            mkdir(dir_path);
 
-            %% Go to folder
-            cd(dir_path);
+            if ~exist(dir_path, 'dir')
+                mkdir(dir_path);
+            end
 
-            %% Write input.txt
-            fid = fopen('input.txt', 'wt');
+            %% Write input.txt directly into case folder
+            input_path = fullfile(dir_path, 'input.txt');
+            fid = fopen(input_path, 'wt');
 
             fprintf(fid, '%.12g\n', fcut_dim);
             fprintf(fid, '%.12g\n', t_end_dim);
@@ -70,8 +79,8 @@ for iCa = 1:length(Ca_list)
             fclose(fid);
 
             %% Copy executable/script files
-            copyfile(src_main, 'main_whitenoise');
-            copyfile(src_run,  'run.sh');
+            copyfile(src_main, fullfile(dir_path, 'main_whitenoise'));
+            copyfile(src_run,  fullfile(dir_path, 'run.sh'));
 
             %% Append commands to mscript
             fprintf(fid_mscript, 'cd %s\n', dir_path);
@@ -83,10 +92,10 @@ end
 
 fclose(fid_mscript);
 
-cd(parentFolder);
-
 fprintf('Generated %d cases.\n', ...
     length(Ca_list)*length(Re_list)*length(theta_list));
 
+fprintf('Cases created in:\n%s\n', parentFolder);
+
 fprintf('Run all jobs using:\n');
-fprintf('bash mscript\n');
+fprintf('bash %s\n', mscript_path);

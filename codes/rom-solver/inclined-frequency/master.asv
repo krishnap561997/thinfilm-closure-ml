@@ -1,0 +1,297 @@
+clc;
+clear;
+close all;
+
+%% ================================================================
+%% PARAMETER SWEEP
+%% ================================================================
+
+Ca_list = [0.001, 0.01, 0.1];
+Re_list = [5, 20, 40, 60, 80];
+
+% Inclination angles in degrees
+theta_list = [6.4, 45.0];
+
+%% ================================================================
+%% FIXED PARAMETERS
+%% ================================================================
+
+F0        = 0.05;
+t_end_dim = 15.0;      % Dimensional simulation time [s]
+Ldim      = 2.0;       % Dimensional domain length [m]
+N         = 8000;      % Number of physical cells
+
+rho       = 1072.0;    % Density [kg/m^3]
+mu        = 0.00673;   % Dynamic viscosity [Pa.s]
+
+t_save    = 0.01;      % Dimensional output interval [s]
+
+%% ================================================================
+%% DIRECTORY PATHS
+%% ================================================================
+
+% Parent directory where all simulation folders will be created
+parentFolder = ...
+    '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/' + ...
+    "thinfilm-closure-ml/datasets/frequency_Ca_Re_theta_sweep";
+
+% Directory containing main_frequency and run.sh
+sourceFolder = ...
+    '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/' + ...
+    "thinfilm-closure-ml/codes/rom-solver/inclined-frequency";
+
+% Full source paths
+src_main = fullfile(sourceFolder, 'main_frequency');
+src_run  = fullfile(sourceFolder, 'run.sh');
+
+% Convert string objects to character vectors
+parentFolder = char(parentFolder);
+sourceFolder = char(sourceFolder);
+src_main = char(src_main);
+src_run = char(src_run);
+
+%% ================================================================
+%% CHECK SOURCE FILES
+%% ================================================================
+
+if ~isfile(src_main)
+    error('Could not find executable:\n%s', src_main);
+end
+
+if ~isfile(src_run)
+    error('Could not find run script:\n%s', src_run);
+end
+
+%% ================================================================
+%% CREATE PARENT DIRECTORY
+%% ================================================================
+
+if ~isfolder(parentFolder)
+    [status, message] = mkdir(parentFolder);
+
+    if ~status
+        error('Could not create parent directory:\n%s\n%s', ...
+              parentFolder, message);
+    end
+end
+
+%% ================================================================
+%% CREATE JOB-SUBMISSION SCRIPT
+%% ================================================================
+
+mscript_path = fullfile(parentFolder, 'mscript');
+
+fid_mscript = fopen(mscript_path, 'wt');
+
+if fid_mscript == -1
+    error('Could not create submission script:\n%s', mscript_path);
+end
+
+% Add shell header
+fprintf(fid_mscript, '#!/bin/bash\n\n');
+
+%% ================================================================
+%% GENERATE CASES
+%% ================================================================
+
+case_counter = 0;
+
+for iCa = 1:length(Ca_list)
+
+    for iRe = 1:length(Re_list)
+
+        for iTheta = 1:length(theta_list)
+
+            Ca_input  = Ca_list(iCa);
+            Re_input  = Re_list(iRe);
+            theta_deg = theta_list(iTheta);
+
+            %% --------------------------------------------------------
+            %% Set dimensional inlet frequency based on inclination
+            %% --------------------------------------------------------
+
+            if abs(theta_deg - 6.4) < 1e-10
+
+                f_dim = 3.0;     % Hz
+
+            elseif abs(theta_deg - 45.0) < 1e-10
+
+                f_dim = 10.0;    % Hz
+
+            else
+
+                fclose(fid_mscript);
+
+                error( ...
+                    'No inlet frequency specified for theta = %.6g degrees.', ...
+                    theta_deg);
+            end
+
+            %% --------------------------------------------------------
+            %% Create case directory
+            %% --------------------------------------------------------
+
+            dirtext = sprintf( ...
+                'Ca_%07.4f_Re_%07.3f_theta_%06.3f_f_%05.2fHz', ...
+                Ca_input, Re_input, theta_deg, f_dim);
+
+            dir_path = fullfile(parentFolder, dirtext);
+
+            if ~isfolder(dir_path)
+
+                [status, message] = mkdir(dir_path);
+
+                if ~status
+                    fclose(fid_mscript);
+
+                    error('Could not create directory:\n%s\n%s', ...
+                          dir_path, message);
+                end
+            end
+
+            %% --------------------------------------------------------
+            %% Write input.txt
+            %%
+            %% Input order expected by main_frequency:
+            %%
+            %%  1. f_dim
+            %%  2. F0
+            %%  3. t_end_dim
+            %%  4. Ldim
+            %%  5. N
+            %%  6. Re_input
+            %%  7. theta_deg
+            %%  8. rho
+            %%  9. mu
+            %% 10. Ca_input
+            %% 11. t_save
+            %% --------------------------------------------------------
+
+            input_path = fullfile(dir_path, 'input.txt');
+
+            fid_input = fopen(input_path, 'wt');
+
+            if fid_input == -1
+                fclose(fid_mscript);
+
+                error('Could not create input file:\n%s', input_path);
+            end
+
+            fprintf(fid_input, '%.12g\n', f_dim);
+            fprintf(fid_input, '%.12g\n', F0);
+            fprintf(fid_input, '%.12g\n', t_end_dim);
+            fprintf(fid_input, '%.12g\n', Ldim);
+            fprintf(fid_input, '%d\n',    N);
+            fprintf(fid_input, '%.12g\n', Re_input);
+            fprintf(fid_input, '%.12g\n', theta_deg);
+            fprintf(fid_input, '%.12g\n', rho);
+            fprintf(fid_input, '%.12g\n', mu);
+            fprintf(fid_input, '%.12g\n', Ca_input);
+            fprintf(fid_input, '%.12g\n', t_save);
+
+            fclose(fid_input);
+
+            %% --------------------------------------------------------
+            %% Copy executable
+            %% --------------------------------------------------------
+
+            destination_main = fullfile(dir_path, 'main_frequency');
+
+            [copy_status, copy_message] = copyfile( ...
+                src_main, destination_main, 'f');
+
+            if ~copy_status
+                fclose(fid_mscript);
+
+                error( ...
+                    'Failed to copy executable to:\n%s\n%s', ...
+                    destination_main, copy_message);
+            end
+
+            %% --------------------------------------------------------
+            %% Copy Slurm run script
+            %% --------------------------------------------------------
+
+            destination_run = fullfile(dir_path, 'run.sh');
+
+            [copy_status, copy_message] = copyfile( ...
+                src_run, destination_run, 'f');
+
+            if ~copy_status
+                fclose(fid_mscript);
+
+                error( ...
+                    'Failed to copy run script to:\n%s\n%s', ...
+                    destination_run, copy_message);
+            end
+
+            %% --------------------------------------------------------
+            %% Set executable permissions
+            %% --------------------------------------------------------
+
+            main_command = sprintf('chmod +x "%s"', destination_main);
+            run_command  = sprintf('chmod +x "%s"', destination_run);
+
+            main_status = system(main_command);
+            run_status  = system(run_command);
+
+            if main_status ~= 0
+                warning( ...
+                    'Could not set executable permission for:\n%s', ...
+                    destination_main);
+            end
+
+            if run_status ~= 0
+                warning( ...
+                    'Could not set executable permission for:\n%s', ...
+                    destination_run);
+            end
+
+            %% --------------------------------------------------------
+            %% Append commands to master submission script
+            %% --------------------------------------------------------
+
+            fprintf(fid_mscript, 'cd "%s"\n', dir_path);
+            fprintf(fid_mscript, 'sbatch run.sh\n\n');
+
+            case_counter = case_counter + 1;
+
+        end
+    end
+end
+
+fclose(fid_mscript);
+
+%% ================================================================
+%% MAKE SUBMISSION SCRIPT EXECUTABLE
+%% ================================================================
+
+system(sprintf('chmod +x "%s"', mscript_path));
+
+%% ================================================================
+%% PRINT SUMMARY
+%% ================================================================
+
+fprintf('\n============================================================\n');
+fprintf('Case generation completed.\n');
+fprintf('============================================================\n');
+
+fprintf('Generated %d cases.\n\n', case_counter);
+
+fprintf('Parameter combinations:\n');
+fprintf('  Ca values    : %d\n', length(Ca_list));
+fprintf('  Re values    : %d\n', length(Re_list));
+fprintf('  Theta values : %d\n\n', length(theta_list));
+
+fprintf('Frequency selection:\n');
+fprintf('  theta = 6.4 degrees  -> f_dim = 1.5 Hz\n');
+fprintf('  theta = 45 degrees   -> f_dim = 10 Hz\n\n');
+
+fprintf('Dataset directory:\n%s\n\n', parentFolder);
+
+fprintf('Source executable:\n%s\n\n', src_main);
+
+fprintf('Source run script:\n%s\n\n', src_run);
+
+fprintf('Submit all cases using:\n');
+fprintf('bash "%s"\n', mscript_path);
