@@ -4,7 +4,7 @@ clear chang_noise_signal append_thinfilm_h5; %% To clear the persistent variable
 
 %% Read input
 fileID = fopen('input.txt','r');
-C = textscan(fileID,'%f %f %f %f %f %f %f %f %f %f %f %f','Delimiter','\n');
+C = textscan(fileID,'%f %f %f %f %f %f %f %f %f %f %f %f %f','Delimiter','\n');
 
 fcut_dim  = C{1}
 t_end_dim = C{2}
@@ -18,6 +18,7 @@ rho       = C{9}
 mu        = C{10}
 Ca_input  = C{11}
 t_save    = C{12}
+dt_dim    = C{13}
 fclose(fileID);
 
 MNOISE = round(MNOISE);
@@ -72,7 +73,7 @@ x_dim = x*hN;
 
 %% Time
 t_end = t_end_dim/TN;
-dt_dim = 5e-5;
+%dt_dim = 5e-5;
 dt = dt_dim/TN;
 
 nsteps = ceil(t_end/dt);

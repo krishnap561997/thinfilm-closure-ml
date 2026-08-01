@@ -3,6 +3,9 @@ clc; clear; close all;
 %% Parameter values to sweep
 Ca_list    = [0.001, 0.01, 0.1];
 Re_list    = [5, 20, 40, 60, 80];
+
+Ca_list    = [0.001];
+Re_list    = [5, 20, 40, 60, 80];
 theta_list = [6.4, 45];   % degrees, unless your solver expects radians
 
 %% Fixed input parameters
@@ -15,12 +18,12 @@ F0_noise  = 0.025;
 rho       = 1072;
 mu        = 0.00673;
 t_save    = 0.01;
-
+dt_dim    = 2e-5;
 %% Paths
-parentFolder = '/blue/bala1s/krishnap.kalivel/ThinFilmFlow/thinfilm-closure-ml/rom-solver/Data_Ca_Re_sweep';
+parentFolder = 'blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/Data_Ca_Re_sweep';
 
-src_main = '/blue/bala1s/krishnap.kalivel/ThinFilmFlow/thinfilm-closure-ml/rom-solver/inclined-whitenoise/main_whitenoise';
-src_run  = '/blue/bala1s/krishnap.kalivel/ThinFilmFlow/thinfilm-closure-ml/rom-solver/inclined-whitenoise/run.sh';
+src_main = '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/inclined-whitenoise/main_whitenoise';
+src_run  = '/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/rom-solver/inclined-whitenoise/run.sh';
 
 mkdir(parentFolder);
 
@@ -62,6 +65,7 @@ for iCa = 1:length(Ca_list)
             fprintf(fid, '%.12g\n', mu);
             fprintf(fid, '%.12g\n', Ca_input);
             fprintf(fid, '%.12g\n', t_save);
+            fprintf(fid, '%.12g\n', dt_dim);
 
             fclose(fid);
 
