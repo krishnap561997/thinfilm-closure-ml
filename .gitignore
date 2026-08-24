@@ -14,6 +14,7 @@ restart*
 *.hdf5
 *.mat
 *.xdmf
+*.xmf 
 
 # Visualization
 *.vtk
@@ -39,9 +40,14 @@ build/
 # Python
 __pycache__/
 *.pyc
+.ipynb_checkpoints
 
 # VS Code
 .vscode/
 
 # OS files
 .DS_Store
+
+# Log Files
+*.err
+*.out
