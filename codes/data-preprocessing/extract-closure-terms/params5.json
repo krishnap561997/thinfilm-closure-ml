@@ -1,0 +1,20 @@
+{
+    "snapshot_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/Re120_Ca0_010_theta45/output",
+
+    "output_file": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/Re120_Ca0_010_theta45/thinfilm_closure_data.h5",
+
+    "start_time": 10,
+    "end_time": 300,
+    "delta_time": 10,
+
+    "snapshot_prefix": "snapshot_",
+    "snapshot_suffix": ".h5",
+    "filename_width": 6,
+    "filename_decimals": 0,
+
+    "wall_shear_mu": 1.0,
+    "lower_boundary": 0.0,
+
+    "compression": "gzip",
+    "compression_level": 4
+}
