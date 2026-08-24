@@ -41,6 +41,7 @@ build/
 __pycache__/
 *.pyc
 .ipynb_checkpoints
+*.pt
 
 # VS Code
 .vscode/
@@ -51,3 +52,4 @@ __pycache__/
 # Log Files
 *.err
 *.out
+core*
