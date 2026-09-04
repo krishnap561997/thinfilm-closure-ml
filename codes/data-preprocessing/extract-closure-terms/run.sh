@@ -32,7 +32,7 @@ echo "============================================================"
 
 export PATH=/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/software/envs/thinfilm-ml-py311/bin:$PATH
 
-PYTHON_SCRIPT="extract_closure_data.py"
+PYTHON_SCRIPT="extract_closure_data_v2.py"
 CONFIG_FILE="${1:-params.json}"
 
 echo "Job ID      : ${SLURM_JOB_ID}"

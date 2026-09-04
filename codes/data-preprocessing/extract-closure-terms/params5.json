@@ -4,7 +4,7 @@
     "output_file": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/Re120_Ca0_010_theta45/thinfilm_closure_data.h5",
 
     "start_time": 10,
-    "end_time": 300,
+    "end_time": 1900,
     "delta_time": 10,
 
     "snapshot_prefix": "snapshot_",
