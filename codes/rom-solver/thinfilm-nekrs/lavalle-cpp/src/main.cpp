@@ -17,10 +17,34 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         const std::string input=(argc>1)?argv[1]:"input.txt"; //Default to input.txt if not my_input.txt not provided
 
         Parameters p=Parameters::from_file(input);
-        std::cout<<std::scientific<<std::setprecision(4)
-                 <<"hN = "<<p.hN<<" m\nuN = "<<p.uN<<" m/s\nTN = "<<p.TN<<" s\n"
-                 <<"F2 = "<<p.F2<<", We = "<<p.We<<", Re = "<<p.Re<<", Ca = "<<p.Ca<<"\n"
-                 <<"dx = "<<p.dx<<", dt = "<<p.dt<<", nsteps = "<<p.nsteps<<"\n";   //Print simulation info
+
+
+        std::cout
+          << std::scientific
+          << std::setprecision(6)
+          << "\n--- Physical scales ---\n"
+          << "hN          = " << p.hN << " m\n"
+          << "uN          = " << p.uN << " m/s\n"
+          << "TN          = " << p.TN << " s\n"
+          << "\n--- Domain ---\n"
+          << "L           = " << p.L << '\n'
+          << "Ldim        = " << p.Ldim << " m\n"
+          << "N           = " << p.in.N << '\n'
+          << "dx          = " << p.dx << '\n'
+          << "\n--- Time ---\n"
+          << "t_end       = " << p.t_end << '\n'
+          << "t_end_dim   = " << p.t_end_dim << " s\n"
+          << "dt          = " << p.dt << '\n'
+          << "dt_dim      = " << p.dt_dim << " s\n"
+          << "nsteps      = " << p.nsteps << '\n'
+          << "t_save      = " << p.t_save << '\n'
+          << "t_save_dim  = " << p.t_save_dim << " s\n"
+          << "\n--- Dimensionless groups ---\n"
+          << "Re          = " << p.Re << '\n'
+          << "Ca          = " << p.Ca << '\n'
+          << "We          = " << p.We << '\n'
+          << "F2          = " << p.F2 << '\n'
+          << std::endl;
 
         State state(static_cast<std::size_t>(p.Nx));  //Create a solution state, State ( Fields h,q,r)
 
