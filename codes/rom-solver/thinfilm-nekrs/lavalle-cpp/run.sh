@@ -13,8 +13,8 @@
 
 #SBATCH --time=4-00:00:00
 
-#SBATCH --account=bala1s
-#SBATCH --qos=bala1s
+#SBATCH --account=ccmt
+#SBATCH --qos=ccmt
 
 # -------------------------
 # Move to submit directory
