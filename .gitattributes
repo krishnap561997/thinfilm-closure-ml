@@ -1,0 +1,16 @@
+# Normalise line endings: LF in the repo, native on checkout.
+* text=auto
+# Scripts and build files must stay LF so they run on HiPerGator even if edited on Windows.
+*.sh       text eol=lf
+Makefile*  text eol=lf
+*.in       text eol=lf
+*.c        text eol=lf
+*.h        text eol=lf
+*.cpp      text eol=lf
+*.hpp      text eol=lf
+*.py       text eol=lf
+*.ipynb    text eol=lf
+# Binary
+*.pdf  binary
+*.png  binary
+*.h5   binary

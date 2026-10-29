@@ -1,9 +1,0 @@
-simulation,qoi,region,field,n_points,status,peak_offset,peak_distance,peak_correlation,peak_absolute_correlation,left_limit,right_limit,left_reason,right_reason
-Re080_Ca0_010_theta90,dudy_wall,Highlands,h,600640,ok,35,1.708984375,-0.7150529534205129,0.7150529534205129,-0.9661796395202138,4.8828125,interpolated_zero,available_boundary
-Re080_Ca0_010_theta90,dudy_wall,Highlands,q,600640,ok,37,1.806640625,-0.5868910271408719,0.5868910271408719,-0.5925110730120603,4.8828125,interpolated_zero,available_boundary
-Re080_Ca0_010_theta90,int_px_dy,Highlands,h,600640,ok,19,0.927734375,0.5066072535537216,0.5066072535537216,-4.8828125,3.714824820384857,available_boundary,interpolated_zero
-Re080_Ca0_010_theta90,int_px_dy,Highlands,q,600640,ok,22,1.07421875,0.45558825351452215,0.45558825351452215,-4.8828125,3.7276540234856683,available_boundary,interpolated_zero
-Re080_Ca0_010_theta90,int_u2_dy,Highlands,h,600640,ok,1,0.048828125,0.8579734810954222,0.8579734810954222,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,int_u2_dy,Highlands,q,600640,ok,1,0.048828125,0.977647036314738,0.977647036314738,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,u_interface,Highlands,h,600640,ok,15,0.732421875,0.5118332896321974,0.5118332896321974,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,u_interface,Highlands,q,600640,ok,11,0.537109375,0.731603189958302,0.731603189958302,-4.8828125,4.8828125,available_boundary,available_boundary

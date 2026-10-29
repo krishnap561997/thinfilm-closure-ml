@@ -1,0 +1,19 @@
+# TEMPLATE reconstructed from the requirements.txt files and the imports in the repo.
+# Replace it with the real spec exported on HiPerGator:
+#   $THINFILM_ENV/bin/conda env export --from-history > envs/environment.yml   (conda env)
+#   $THINFILM_ENV/bin/pip freeze > envs/requirements-lock.txt                  (venv)
+name: thinfilm-ml-py311
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy>=1.24
+  - scipy
+  - h5py>=3.8
+  - matplotlib>=3.7
+  - pytorch>=2.2
+  - jupyterlab
+  - ipykernel
+  - pip
+  - pip:
+      - nbstripout

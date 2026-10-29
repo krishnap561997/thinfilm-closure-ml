@@ -1,9 +1,0 @@
-simulation,qoi,region,field,n_points,status,peak_offset,peak_distance,peak_correlation,peak_absolute_correlation,left_limit,right_limit,left_reason,right_reason
-Re080_Ca0_010_theta90,dudy_wall,All,h,3236800,ok,-9,-0.439453125,0.2547495137518136,0.2547495137518136,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,dudy_wall,All,q,3236800,ok,-9,-0.439453125,0.2500372881996119,0.2500372881996119,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,int_px_dy,All,h,3236800,ok,18,0.87890625,0.15069696868358,0.15069696868358,-0.16561877492966828,4.8828125,interpolated_zero,available_boundary
-Re080_Ca0_010_theta90,int_px_dy,All,q,3236800,ok,17,0.830078125,0.14542204076238457,0.14542204076238457,-0.16201064048611638,4.8828125,interpolated_zero,available_boundary
-Re080_Ca0_010_theta90,int_u2_dy,All,h,3236800,ok,1,0.048828125,0.950362332076822,0.950362332076822,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,int_u2_dy,All,q,3236800,ok,0,0.0,0.9851432147122248,0.9851432147122248,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,u_interface,All,h,3236800,ok,0,0.0,0.8806678366351186,0.8806678366351186,-4.8828125,4.8828125,available_boundary,available_boundary
-Re080_Ca0_010_theta90,u_interface,All,q,3236800,ok,0,0.0,0.8928842660819181,0.8928842660819181,-4.8828125,4.8828125,available_boundary,available_boundary
