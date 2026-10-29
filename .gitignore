@@ -53,3 +53,5 @@ __pycache__/
 *.err
 *.out
 core*
+
+cache_dir/

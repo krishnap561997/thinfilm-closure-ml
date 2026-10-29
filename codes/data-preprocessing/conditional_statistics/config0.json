@@ -1,0 +1,16 @@
+{
+  "data_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/ClosureData",
+  "output_dir": "results",
+  "simulation": {"Re": 40, "Ca": 0.1, "beta": 45},
+  "qois": ["int_u2_dy", "int_px_dy","dudy_wall", "u_interface"],
+  "offsets": {"min": -100, "max": 100, "step": 1},
+  "regions": {
+    "All": {},
+    "Highlands": {"h_gt": 1.15, "require_finite_hx": true},
+    "Lowlands": {"h_lt": 0.90, "require_finite_hx": true}
+  },
+  "correlation_use_fluctuations": true,
+  "pdf_use_fluctuations": false,
+  "pdf": {"bins": 100, "n_std": 3},
+  "watch": {"interval_seconds": 300, "stable_seconds": 60}
+}
