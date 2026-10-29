@@ -29,6 +29,7 @@ restart*
 *.gif
 *.mp4
 *.avi
+*.pdf 
 
 # Build files
 obj/
@@ -53,5 +54,6 @@ __pycache__/
 *.err
 *.out
 core*
+*.sh
 
 cache_dir/
