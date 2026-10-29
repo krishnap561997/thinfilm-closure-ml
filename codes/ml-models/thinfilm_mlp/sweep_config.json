@@ -1,0 +1,20 @@
+{
+  "cache": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/thinfilm_mlp/cache_dir",
+  "half_windows": [1, 3, 6, 9],
+  "strides": [1, 3, 5, 9, 11],
+  "target_groups": {
+    "physical": ["dudy_wall", "int_u2_dy","int_px_dy", "u_interface"],
+    "corrections": ["delta_Mx_ML", "delta_Dx_ML","delta_Px_ML", "delta_Tw_ML"]
+  },
+  "input_fields": ["h", "q", "curvature"],
+  "max_concurrent": 4,
+  "training": {
+    "hidden_layers": 4,
+    "hidden_width": 64,
+    "batch_size": 8192,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "workers": 0,
+    "seed": 42
+  }
+}

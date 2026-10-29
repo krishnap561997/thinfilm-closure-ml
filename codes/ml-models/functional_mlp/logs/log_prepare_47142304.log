@@ -1,0 +1,23 @@
+Re010_Ca0_010_theta45 {'train': 300000, 'val': 309640, 'test': 309640}
+Re010_Ca0_100_theta45 {'train': 300000, 'val': 247705, 'test': 247696}
+Re020_Ca0_060_theta90 {'train': 300000, 'val': 309640, 'test': 309640}
+Re040_Ca0_010_theta90 {'train': 300000, 'val': 309600, 'test': 309640}
+Re040_Ca0_020_theta6_4 {'train': 300000, 'val': 309530, 'test': 309640}
+Re040_Ca0_100_theta45 {'train': 300000, 'val': 278676, 'test': 294158}
+Re050_Ca0_010_theta45 {'train': 300000, 'val': 309627, 'test': 309611}
+Re080_Ca0_010_theta45 {'train': 300000, 'val': 309609, 'test': 309640}
+Re080_Ca0_020_theta45 {'train': 300000, 'val': 309640, 'test': 309640}
+Re120_Ca0_005_theta90 {'train': 300000, 'val': 309632, 'test': 309640}
+Re120_Ca0_010_theta6_4 {'train': 300000, 'val': 309640, 'test': 309607}
+Re120_Ca0_010_theta90 {'train': 300000, 'val': 309386, 'test': 309601}
+Re200_Ca0_005_theta6_4 {'train': 300000, 'val': 309449, 'test': 309640}
+Re200_Ca0_010_theta45 {'train': 300000, 'val': 309640, 'test': 309640}
+Re200_Ca0_020_theta6_4 {'train': 300000, 'val': 309625, 'test': 309564}
+Re020_Ca0_010_theta45 {'heldout': 2891185}
+Re040_Ca0_040_theta45 {'heldout': 2854207}
+Re080_Ca0_005_theta6_4 {'heldout': 2857664}
+Re080_Ca0_010_theta90 {'heldout': 2824313}
+Re120_Ca0_010_theta45 {'heldout': 2817217}
+Re120_Ca0_020_theta90 {'heldout': 2799940}
+Re200_Ca0_010_theta6_4 {'heldout': 2798522}
+Prepared /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/cache_dir; cache id dec8900815e2e78da8c1c42f6a8732591a52e6492fd8085320018a029b81a13a

@@ -1,0 +1,17 @@
+sbatch run_prepare.sh
+
+python generate_sweep.py \
+    --config sweep_config.json \
+    --output runs/sweep_01
+
+sbatch runs/sweep_01/submit_array.sh
+
+If task is interrupted, 
+sbatch --array=3 runs/sweep_01/submit_array.sh
+
+For evaluation,
+printf '%s\n' runs/sweep_curvature_01/*/best.pt > evaluation_checkpoints.txt
+
+N=$(wc -l < evaluation_checkpoints.txt)
+
+sbatch --array="0-$((N - 1))%4" run_evaluate.sh
