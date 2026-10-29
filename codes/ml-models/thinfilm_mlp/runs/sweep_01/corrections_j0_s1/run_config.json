@@ -1,0 +1,156 @@
+{
+  "args": {
+    "cache": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/thinfilm_mlp/cache_dir",
+    "run_dir": "runs/sweep_01/corrections_j0_s1",
+    "half_window": 0,
+    "stride": 1,
+    "input_fields": [
+      "h",
+      "q"
+    ],
+    "targets": [
+      "delta_Dx_ML",
+      "delta_Mx_ML",
+      "delta_Px_ML",
+      "delta_Tw_ML"
+    ],
+    "target_weights": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "hidden_width": 64,
+    "hidden_layers": 4,
+    "epochs": 100,
+    "batch_size": 8192,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "patience": 25,
+    "workers": 0,
+    "seed": 42,
+    "device": "auto",
+    "resume": false,
+    "no_early_stopping": true
+  },
+  "architecture": {
+    "input_dim": 6,
+    "output_dim": 4,
+    "hidden_width": 64,
+    "hidden_layers": 4
+  },
+  "normalization": {
+    "x_mean": [
+      0.963341245561961,
+      0.9858761704163763,
+      0.0,
+      85.26315789473684,
+      0.026947368414288287,
+      0.8089142002557453
+    ],
+    "x_std": [
+      0.32131355865774464,
+      0.690049554729822,
+      2.0,
+      63.35932790152501,
+      0.03387822466256325,
+      0.47419546197093615
+    ],
+    "y_mean": [
+      -0.0005247228171402951,
+      -0.018857999641708822,
+      0.004800675904107576,
+      0.0137797206865686
+    ],
+    "y_std": [
+      0.031835026731490926,
+      18.42366880811752,
+      10.193491381830798,
+      11.889400291067304
+    ]
+  },
+  "cache_id": "482e2b8fd3b8d2b512910c9652c9a8210c5bb87b399a4aeb11d9905a5041c595",
+  "input_order": "[h,q,signed_dx] for increasing offsets, then Re,Ca,angle_radians",
+  "window_by_case": {
+    "Re010_Ca0_005_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re010_Ca0_010_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re010_Ca0_100_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re020_Ca0_060_theta90": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re040_Ca0_002_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re040_Ca0_010_theta90": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re040_Ca0_020_theta6_4": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re040_Ca0_100_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re050_Ca0_010_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re080_Ca0_010_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re080_Ca0_020_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re120_Ca0_005_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re120_Ca0_005_theta90": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re120_Ca0_010_theta6_4": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re120_Ca0_010_theta90": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re120_Ca0_100_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re200_Ca0_005_theta6_4": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re200_Ca0_010_theta45": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    },
+    "Re200_Ca0_020_theta6_4": {
+      "spacing": 0.048828125,
+      "half_width": 0.0
+    }
+  },
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "numpy": "2.4.6"
+  }
+}

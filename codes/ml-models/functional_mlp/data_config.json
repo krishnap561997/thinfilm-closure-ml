@@ -1,0 +1,60 @@
+{
+  "data_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/ClosureData",
+  "cache_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/cache_dir",
+  "development_cases": [
+    "Re010_Ca0_010_theta45",
+    "Re010_Ca0_100_theta45",
+    "Re020_Ca0_060_theta90",
+    "Re040_Ca0_010_theta90",
+    "Re040_Ca0_020_theta6_4",
+    "Re040_Ca0_100_theta45",
+    "Re050_Ca0_010_theta45",
+    "Re080_Ca0_010_theta45",
+    "Re080_Ca0_020_theta45",
+    "Re120_Ca0_005_theta90",
+    "Re120_Ca0_010_theta6_4",
+    "Re120_Ca0_010_theta90",
+    "Re200_Ca0_005_theta6_4",
+    "Re200_Ca0_010_theta45",
+    "Re200_Ca0_020_theta6_4"
+  ],
+  "heldout_cases": [
+    "Re020_Ca0_010_theta45",
+    "Re040_Ca0_040_theta45",
+    "Re080_Ca0_005_theta6_4",
+    "Re080_Ca0_010_theta90",
+    "Re120_Ca0_010_theta45",
+    "Re120_Ca0_020_theta90",
+    "Re200_Ca0_010_theta6_4"
+  ],
+  "local_fields": [
+    "h_x",
+    "h_xx",
+    "q_x",
+    "q_xx"
+  ],
+  "available_targets": [
+    "delta_Mx_ML",
+    "delta_Tw_ML",
+    "dudy_wall",
+    "int_u2_dy"
+  ],
+  "fractions": {
+    "train": 0.80,
+    "val": 0.10,
+    "test": 0.10
+  },
+  "max_half_width": 2.0,
+  "outlet_exclusion_fraction": 0.05,
+  "flat_mask": true,
+  "flat_reference_height": 1.0,
+  "flat_height_tolerance": 0.05,
+  "temporal_gap_snapshots": 0,
+  "sampling_seed": 42,
+  "sample_caps": {
+    "train": 300000,
+    "val": null,
+    "test": null,
+    "heldout": null
+  }
+}

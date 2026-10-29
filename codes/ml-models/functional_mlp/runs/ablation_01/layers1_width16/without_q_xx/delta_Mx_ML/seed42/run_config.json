@@ -1,0 +1,84 @@
+{
+  "args": {
+    "cache": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/cache_dir",
+    "input_mode": "local",
+    "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_q_xx/delta_Mx_ML/seed42",
+    "half_window": 4,
+    "stride": 1,
+    "input_fields": [
+      "h",
+      "q",
+      "h_x",
+      "q_x",
+      "h_xx"
+    ],
+    "targets": [
+      "delta_Mx_ML"
+    ],
+    "target_weights": [
+      1.0
+    ],
+    "hidden_width": 16,
+    "hidden_layers": 1,
+    "epochs": 100,
+    "batch_size": 8192,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "patience": 25,
+    "workers": 0,
+    "seed": 42,
+    "device": "cuda",
+    "resume": false,
+    "no_early_stopping": true
+  },
+  "architecture": {
+    "input_dim": 8,
+    "output_dim": 1,
+    "hidden_width": 16,
+    "hidden_layers": 1
+  },
+  "normalization": {
+    "x_mean": [
+      0.9592005157245234,
+      0.9862463100147706,
+      -0.00016097502617444244,
+      -0.00015184394489847015,
+      -4.512463922674735e-05,
+      88.6666666666667,
+      0.026666666567325595,
+      0.8151851375897722
+    ],
+    "x_std": [
+      0.30965757452008835,
+      0.7039092489134471,
+      0.11799973353079414,
+      0.24780122905329297,
+      0.19471855903079835,
+      66.31909394904471,
+      0.031499559532103844,
+      0.5335143550240675
+    ],
+    "y_mean": [
+      -0.00011496382889002003
+    ],
+    "y_std": [
+      0.43537937836259294
+    ]
+  },
+  "cache_id": "dec8900815e2e78da8c1c42f6a8732591a52e6492fd8085320018a029b81a13a",
+  "input_mode": "local",
+  "input_order": [
+    "h",
+    "q",
+    "h_x",
+    "q_x",
+    "h_xx",
+    "Re",
+    "Ca",
+    "angle"
+  ],
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "numpy": "2.4.6"
+  }
+}

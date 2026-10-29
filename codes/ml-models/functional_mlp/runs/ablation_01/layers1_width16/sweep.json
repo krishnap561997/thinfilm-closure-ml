@@ -1,0 +1,322 @@
+{
+  "schema": 2,
+  "input_mode": "local",
+  "cache": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/cache_dir",
+  "cache_id": "dec8900815e2e78da8c1c42f6a8732591a52e6492fd8085320018a029b81a13a",
+  "epochs": 100,
+  "no_early_stopping": true,
+  "training": {
+    "batch_size": 8192,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "workers": 0
+  },
+  "runs": [
+    {
+      "task_id": 0,
+      "name": "layers1_width16/first_derivatives/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "first_derivatives",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/first_derivatives/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 1,
+      "name": "layers1_width16/first_derivatives/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "first_derivatives",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/first_derivatives/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 2,
+      "name": "layers1_width16/without_q_x/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "without_q_x",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "h_xx",
+        "q_xx"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_q_x/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 3,
+      "name": "layers1_width16/without_q_x/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "without_q_x",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "h_xx",
+        "q_xx"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_q_x/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 4,
+      "name": "layers1_width16/without_q_xx/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "without_q_xx",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x",
+        "h_xx"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_q_xx/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 5,
+      "name": "layers1_width16/without_q_xx/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "without_q_xx",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x",
+        "h_xx"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_q_xx/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 6,
+      "name": "layers1_width16/without_h_xx/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "without_h_xx",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x",
+        "q_xx"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_h_xx/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 7,
+      "name": "layers1_width16/without_h_xx/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "without_h_xx",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x",
+        "q_xx"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/without_h_xx/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 8,
+      "name": "layers1_width16/full_derivatives/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "full_derivatives",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x",
+        "h_xx",
+        "q_xx"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/full_derivatives/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 9,
+      "name": "layers1_width16/full_derivatives/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "full_derivatives",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x",
+        "q_x",
+        "h_xx",
+        "q_xx"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/full_derivatives/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 10,
+      "name": "layers1_width16/local_baseline/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "local_baseline",
+      "input_fields": [
+        "h",
+        "q"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/local_baseline/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 11,
+      "name": "layers1_width16/local_baseline/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "local_baseline",
+      "input_fields": [
+        "h",
+        "q"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/local_baseline/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 12,
+      "name": "layers1_width16/first_derivatives_without_h_x/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "first_derivatives_without_h_x",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/first_derivatives_without_h_x/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 13,
+      "name": "layers1_width16/first_derivatives_without_h_x/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "first_derivatives_without_h_x",
+      "input_fields": [
+        "h",
+        "q",
+        "h_x"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/first_derivatives_without_h_x/delta_Tw_ML/seed42"
+    },
+    {
+      "task_id": 14,
+      "name": "layers1_width16/first_derivatives_without_q_x/delta_Mx_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "first_derivatives_without_q_x",
+      "input_fields": [
+        "h",
+        "q",
+        "q_x"
+      ],
+      "targets": [
+        "delta_Mx_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/first_derivatives_without_q_x/delta_Mx_ML/seed42"
+    },
+    {
+      "task_id": 15,
+      "name": "layers1_width16/first_derivatives_without_q_x/delta_Tw_ML/seed42",
+      "architecture_group": "layers1_width16",
+      "input_group": "first_derivatives_without_q_x",
+      "input_fields": [
+        "h",
+        "q",
+        "q_x"
+      ],
+      "targets": [
+        "delta_Tw_ML"
+      ],
+      "hidden_layers": 1,
+      "hidden_width": 16,
+      "seed": 42,
+      "run_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/runs/ablation_01/layers1_width16/first_derivatives_without_q_x/delta_Tw_ML/seed42"
+    }
+  ]
+}
