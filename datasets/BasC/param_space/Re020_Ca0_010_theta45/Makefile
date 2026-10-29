@@ -48,8 +48,11 @@ QCCFLAGS := \
 CUSTOM_HEADERS := \
 	/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/software/headers
 
+BASILISK_OLD := /home/krishnap.kalivel/basilisk-old/src
+QCC := $(BASILISK_OLD)/qcc
+
 OPENGLIBS := \
-	-L$(BASILISK)/gl \
+	-L$(BASILISK_OLD)/gl \
 	-lglutils \
 	-lfb_tiny
 
@@ -60,7 +63,7 @@ HDFLIBS := \
 	-lhdf5_hl
 
 LIBS := \
-	-I$(BASILISK) \
+	-I$(BASILISK_OLD) \
 	-I$(CUSTOM_HEADERS) \
 	$(OPENGLIBS) \
 	$(HDFLIBS) \
@@ -76,22 +79,39 @@ default: $(DEFAULT_TARGET)
 
 restart: $(RESTART_TARGET)
 
-$(DEFAULT_TARGET): $(DEFAULT_SRC)
+$(DEFAULT_TARGET): $(DEFAULT_SRC) Makefile
 	module purge; \
 	module load $(MODULES); \
-	CC99='$(CC99)' qcc $(QCCFLAGS) \
-		$(DEFAULT_SRC) \
-		-o $(DEFAULT_TARGET) \
-		$(LIBS)
+	unset BPATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH; \
+	export BASILISK="$(BASILISK_OLD)"; \
+	export PATH="$(BASILISK_OLD):$$PATH"; \
+	echo "qcc: $$(command -v qcc)"; \
+	echo "resolved: $$(readlink -f "$$(command -v qcc)")"; \
+	CC99='$(CC99)' "$(QCC)" $(QCCFLAGS) \
+	  $(DEFAULT_SRC) \
+	  -o $(DEFAULT_TARGET) \
+	  -I$(BASILISK_OLD) \
+	  -I$(CUSTOM_HEADERS) \
+	  $(OPENGLIBS) \
+	  $(HDFLIBS) \
+	  -lm
 
-$(RESTART_TARGET): $(RESTART_SRC)
+$(RESTART_TARGET): $(RESTART_SRC) Makefile
 	module purge; \
 	module load $(MODULES); \
-	CC99='$(CC99)' qcc $(QCCFLAGS) \
-		$(RESTART_SRC) \
-		-o $(RESTART_TARGET) \
-		$(LIBS)
-
+	unset BPATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH; \
+	export BASILISK="$(BASILISK_OLD)"; \
+	export PATH="$(BASILISK_OLD):$$PATH"; \
+	echo "qcc: $$(command -v qcc)"; \
+	echo "resolved: $$(readlink -f "$$(command -v qcc)")"; \
+	CC99='$(CC99)' "$(QCC)" $(QCCFLAGS) \
+	  $(RESTART_SRC) \
+	  -o $(RESTART_TARGET) \
+	  -I$(BASILISK_OLD) \
+	  -I$(CUSTOM_HEADERS) \
+	  $(OPENGLIBS) \
+	  $(HDFLIBS) \
+	  -lm
 # ============================================================
 # Run targets
 # ============================================================

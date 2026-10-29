@@ -9,7 +9,7 @@
 #SBATCH --ntasks=1                  # ONE task only
 #SBATCH --cpus-per-task=16          # OpenMP threads (adjust!)
 #!SBATCH --mem-per-cpu=4gb
-#SBATCH -t 04-00:00:00
+#SBATCH -t 4-00:00:00
 
 #SBATCH --account=bala1s
 #SBATCH --qos=bala1s

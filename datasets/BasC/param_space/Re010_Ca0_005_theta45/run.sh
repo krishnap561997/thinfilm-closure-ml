@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=R010_C0_005
+#SBATCH --job-name=R010_C0_005_T45
 
 #SBATCH -o run_%j.out
 #SBATCH --mail-type=ALL
@@ -12,7 +12,7 @@
 #SBATCH -t 4-00:00:00
 
 #SBATCH --account=bala1s
-#SBATCH --qos=bala1s
+#SBATCH --qos=bala1s-b
 #!SBATCH --partition=hpg-dev
 
 # -------------------------
