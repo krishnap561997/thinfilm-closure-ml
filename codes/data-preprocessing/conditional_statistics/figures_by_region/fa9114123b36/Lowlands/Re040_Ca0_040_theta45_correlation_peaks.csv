@@ -1,0 +1,11 @@
+simulation,qoi,region,field,n_points,status,peak_offset,peak_distance,peak_correlation,peak_absolute_correlation,left_limit,right_limit,left_reason,right_reason
+Re040_Ca0_040_theta45,delta_Dx_ML,Lowlands,h,1651529,ok,-27,-1.318359375,-0.473188514017205,0.473188514017205,-4.8828125,-0.12707535067760836,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Dx_ML,Lowlands,q,1651529,ok,-26,-1.26953125,-0.482171269195656,0.482171269195656,-4.8828125,-0.10683631291836782,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_M_ML,Lowlands,h,1651529,ok,-8,-0.390625,0.16803246814630887,0.16803246814630887,-3.3460031953274587,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_M_ML,Lowlands,q,1651529,ok,100,4.8828125,0.11537698845629338,0.11537698845629338,-3.35513017507013,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Mx_ML,Lowlands,h,1651529,ok,-22,-1.07421875,-0.37110217882731766,0.37110217882731766,-4.8828125,-0.03359507108244102,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Mx_ML,Lowlands,q,1651529,ok,-23,-1.123046875,-0.3922838387966964,0.3922838387966964,-4.8828125,-0.03295309555333268,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Px_ML,Lowlands,h,1651529,ok,-8,-0.390625,-0.21101754579137305,0.21101754579137305,-4.8828125,0.08292605391695075,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Px_ML,Lowlands,q,1651529,ok,-8,-0.390625,-0.2117779004605463,0.2117779004605463,-4.8828125,0.08778077491640951,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Tw_ML,Lowlands,h,1651529,ok,-26,-1.26953125,-0.4639184405875432,0.4639184405875432,-4.8828125,-0.04259686662771938,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Tw_ML,Lowlands,q,1651529,ok,-26,-1.26953125,-0.45302890788682115,0.45302890788682115,-4.8828125,-0.0019007359935969206,available_boundary,interpolated_zero

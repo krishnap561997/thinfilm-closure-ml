@@ -13,11 +13,13 @@ Definitions retained from closure_quantities_nondim.ipynb:
     h_m        = integral f_minus dy
     q_m        = integral u_minus f_minus dy
     shape_factor = integral u^2 f dy
+    u_interface = u(x, h(x)), linearly interpolated in y
     tau_wall   = (du/dy)|wall with fourth-order cell-centered stencil,
                  using nondimensional mu = 1 by default
 
-Spatial derivatives use the fourth-order finite-difference formulas from the
-notebook.
+Spatial derivatives use Savitzky--Golay filtering. The window length m and
+polynomial order p are selected independently for h and q in each snapshot by
+minimizing the reconstruction RMSE over m=11,13,...,41 and p=2,3.
 """
 
 from __future__ import annotations
@@ -29,6 +31,7 @@ from typing import Any
 
 import h5py
 import numpy as np
+from scipy.signal import savgol_filter
 
 
 # ---------------------------------------------------------------------------
@@ -321,147 +324,96 @@ def compute_wall_shear(
     return x[0, :], mu * dudy_wall
 
 
-def first_derivative_x(
-    x: np.ndarray,
-    field: np.ndarray,
+def compute_interface_velocity(
+    u: np.ndarray,
+    y: np.ndarray,
+    h: np.ndarray,
 ) -> np.ndarray:
     """
-    Fourth-order first derivative, including one-sided boundary formulas.
+    Evaluate the streamwise velocity at the interface, ``u(x, h(x))``.
+
+    Linear interpolation is performed independently in each wall-normal
+    column, matching the notebook. Each column uses its own y coordinates.
     """
-    x = np.asarray(x, dtype=float)
-    field = np.asarray(field, dtype=float)
+    u = np.asarray(u, dtype=float)
+    y = np.asarray(y, dtype=float)
+    h = np.asarray(h, dtype=float)
 
-    if x.ndim != 1 or field.ndim != 1:
-        raise ValueError("x and field must be one-dimensional.")
+    if u.ndim != 2 or y.ndim != 2:
+        raise ValueError("u and y must be two-dimensional arrays.")
 
-    if x.shape != field.shape:
-        raise ValueError("x and field must have identical shapes.")
+    if u.shape != y.shape:
+        raise ValueError("u and y must have identical shapes.")
 
-    if x.size < 5:
-        raise ValueError("At least five x points are required.")
+    ny, nx = u.shape
+    if h.shape != (nx,):
+        raise ValueError(f"h must have shape ({nx},), received {h.shape}.")
 
-    dx_values = np.diff(x)
-    dx = dx_values[0]
+    u_interface = np.empty(nx, dtype=float)
 
-    if dx <= 0.0 or not np.allclose(dx_values, dx):
-        raise ValueError("x must be monotonically increasing and uniform.")
+    for i in range(nx):
+        order = np.argsort(y[:, i])
+        y_column = y[order, i]
+        u_column = u[order, i]
 
-    derivative = np.empty_like(field, dtype=float)
+        if np.any(np.diff(y_column) <= 0.0):
+            raise ValueError(
+                f"Non-increasing y coordinates at x-index {i}."
+            )
 
-    derivative[2:-2] = (
-        field[:-4]
-        - 8.0 * field[1:-3]
-        + 8.0 * field[3:-1]
-        - field[4:]
-    ) / (12.0 * dx)
+        # np.interp uses the nearest endpoint when h lies outside the range,
+        # which is the same behavior as the notebook implementation.
+        u_interface[i] = np.interp(h[i], y_column, u_column)
 
-    derivative[0] = (
-        -25.0 * field[0]
-        + 48.0 * field[1]
-        - 36.0 * field[2]
-        + 16.0 * field[3]
-        - 3.0 * field[4]
-    ) / (12.0 * dx)
-
-    derivative[1] = (
-        -3.0 * field[0]
-        - 10.0 * field[1]
-        + 18.0 * field[2]
-        - 6.0 * field[3]
-        + field[4]
-    ) / (12.0 * dx)
-
-    derivative[-2] = (
-        -field[-5]
-        + 6.0 * field[-4]
-        - 18.0 * field[-3]
-        + 10.0 * field[-2]
-        + 3.0 * field[-1]
-    ) / (12.0 * dx)
-
-    derivative[-1] = (
-        3.0 * field[-5]
-        - 16.0 * field[-4]
-        + 36.0 * field[-3]
-        - 48.0 * field[-2]
-        + 25.0 * field[-1]
-    ) / (12.0 * dx)
-
-    return derivative
+    return u_interface
 
 
-def second_derivative_x(
+def best_savgol_filter(
     x: np.ndarray,
-    field: np.ndarray,
-) -> np.ndarray:
-    """
-    Fourth-order second derivative, including one-sided boundary formulas.
+    values: np.ndarray,
+    m_values: range = range(11, 42, 2),
+    p_values: range = range(2, 4),
+) -> tuple[int, int, float]:
+    """Select the valid (m, p) pair with the lowest full-domain RMSE.
+
+    Ties use the smallest window and then the smallest polynomial order,
+    matching the notebook's tuple sorting. p >= 2 supports second derivatives.
     """
     x = np.asarray(x, dtype=float)
-    field = np.asarray(field, dtype=float)
+    values = np.asarray(values, dtype=float)
 
-    if x.ndim != 1 or field.ndim != 1:
-        raise ValueError("x and field must be one-dimensional.")
+    if x.ndim != 1 or values.ndim != 1 or x.shape != values.shape:
+        raise ValueError("x and values must be 1D arrays of the same length.")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("values must contain only finite numbers.")
+    candidates = []
+    for m in m_values:
+        for p in p_values:
+            if m < 3 or m % 2 == 0 or m > len(values) or p < 2 or p >= m:
+                continue
+            filtered = savgol_filter(values, window_length=m, polyorder=p)
+            error = float(np.sqrt(np.mean((filtered - values) ** 2)))
+            candidates.append((error, m, p))
+    if not candidates:
+        raise ValueError("No valid Savitzky--Golay (m, p) combinations.")
+    error, m, p = min(candidates)
+    return m, p, error
 
-    if x.shape != field.shape:
-        raise ValueError("x and field must have identical shapes.")
 
-    if x.size < 6:
-        raise ValueError("At least six x points are required.")
-
+def savgol_x_derivatives(
+    x: np.ndarray, values: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, int, int, float]:
+    """Return first and second x derivatives with one selected (m, p) pair."""
+    x = np.asarray(x, dtype=float)
+    values = np.asarray(values, dtype=float)
+    m, p, error = best_savgol_filter(x, values)
     dx_values = np.diff(x)
     dx = dx_values[0]
-
-    if dx <= 0.0 or not np.allclose(dx_values, dx):
+    if dx <= 0.0 or not np.allclose(dx_values, dx, rtol=1e-7, atol=1e-12):
         raise ValueError("x must be monotonically increasing and uniform.")
-
-    derivative = np.empty_like(field, dtype=float)
-
-    derivative[2:-2] = (
-        -field[4:]
-        + 16.0 * field[3:-1]
-        - 30.0 * field[2:-2]
-        + 16.0 * field[1:-3]
-        - field[:-4]
-    ) / (12.0 * dx**2)
-
-    derivative[0] = (
-        45.0 * field[0]
-        - 154.0 * field[1]
-        + 214.0 * field[2]
-        - 156.0 * field[3]
-        + 61.0 * field[4]
-        - 10.0 * field[5]
-    ) / (12.0 * dx**2)
-
-    derivative[1] = (
-        10.0 * field[0]
-        - 15.0 * field[1]
-        - 4.0 * field[2]
-        + 14.0 * field[3]
-        - 6.0 * field[4]
-        + field[5]
-    ) / (12.0 * dx**2)
-
-    derivative[-2] = (
-        field[-6]
-        - 6.0 * field[-5]
-        + 14.0 * field[-4]
-        - 4.0 * field[-3]
-        - 15.0 * field[-2]
-        + 10.0 * field[-1]
-    ) / (12.0 * dx**2)
-
-    derivative[-1] = (
-        -10.0 * field[-6]
-        + 61.0 * field[-5]
-        - 156.0 * field[-4]
-        + 214.0 * field[-3]
-        - 154.0 * field[-2]
-        + 45.0 * field[-1]
-    ) / (12.0 * dx**2)
-
-    return derivative
+    first = savgol_filter(values, m, p, deriv=1, delta=dx)
+    second = savgol_filter(values, m, p, deriv=2, delta=dx)
+    return first, second, m, p, error
 
 
 # ---------------------------------------------------------------------------
@@ -562,6 +514,8 @@ def create_output_datasets(
         "q_m",
         "shape_factor",
         "shape_factor_m",
+        "u_interface",
+        "u_interface_m",
         "h_x",
         "q_x",
         "h_xx",
@@ -595,6 +549,10 @@ def create_output_datasets(
     datasets["dt"] = output.create_dataset(
         "dt", shape=(nt,), dtype=np.float64
     )
+    for name in ("h_savgol_m", "h_savgol_p", "q_savgol_m", "q_savgol_p"):
+        datasets[name] = output.create_dataset(name, shape=(nt,), dtype=np.int32)
+    for name in ("h_savgol_rmse", "q_savgol_rmse"):
+        datasets[name] = output.create_dataset(name, shape=(nt,), dtype=np.float64)
 
     return datasets
 
@@ -682,6 +640,9 @@ def extract_snapshots(config: dict[str, Any]) -> Path:
         output.attrs["source_snapshot_dir"] = str(snapshot_dir)
         output.attrs["wall_shear_mu"] = wall_mu
         output.attrs["lower_boundary"] = lower_boundary
+        output.attrs["x_derivative_method"] = "Savitzky-Golay; RMSE selection per snapshot"
+        output.attrs["savgol_m_candidates"] = np.arange(11, 42, 2)
+        output.attrs["savgol_p_candidates"] = np.arange(2, 4)
 
         output.create_dataset("x", data=xc)
 
@@ -776,10 +737,16 @@ def extract_snapshots(config: dict[str, Any]) -> Path:
                     mu=wall_mu,
                 )
 
+                u_interface = compute_interface_velocity(
+                    u,
+                    y_matrix,
+                    h,
+                )
+
                 _, shape_factor_m = depth_integral(
                     x_matrix,
                     y_matrix,
-                    u_minus**2 * f,
+                    u_minus**2 * f_minus,
                     lower_boundary=lower_boundary,
                 )
 
@@ -789,10 +756,14 @@ def extract_snapshots(config: dict[str, Any]) -> Path:
                     u_minus,
                     mu=wall_mu,
                 )
-                h_x = first_derivative_x(xc, h)
-                q_x = first_derivative_x(xc, q)
-                h_xx = second_derivative_x(xc, h)
-                q_xx = second_derivative_x(xc, q)
+
+                u_interface_m = compute_interface_velocity(
+                    u_minus,
+                    y_matrix,
+                    h_m,
+                )
+                h_x, h_xx, h_m_opt, h_p_opt, h_rmse = savgol_x_derivatives(xc, h)
+                q_x, q_xx, q_m_opt, q_p_opt, q_rmse = savgol_x_derivatives(xc, q)
 
                 datasets["h"][:, time_index] = h
                 datasets["q"][:, time_index] = q
@@ -800,6 +771,8 @@ def extract_snapshots(config: dict[str, Any]) -> Path:
                 datasets["q_m"][:, time_index] = q_m
                 datasets["shape_factor"][:, time_index] = shape_factor
                 datasets["shape_factor_m"][:, time_index] = shape_factor_m
+                datasets["u_interface"][:, time_index] = u_interface
+                datasets["u_interface_m"][:, time_index] = u_interface_m
                 datasets["h_x"][:, time_index] = h_x
                 datasets["q_x"][:, time_index] = q_x
                 datasets["h_xx"][:, time_index] = h_xx
@@ -810,6 +783,12 @@ def extract_snapshots(config: dict[str, Any]) -> Path:
                 datasets["t"][time_index] = t
                 datasets["tm"][time_index] = tm
                 datasets["dt"][time_index] = dt
+                datasets["h_savgol_m"][time_index] = h_m_opt
+                datasets["h_savgol_p"][time_index] = h_p_opt
+                datasets["h_savgol_rmse"][time_index] = h_rmse
+                datasets["q_savgol_m"][time_index] = q_m_opt
+                datasets["q_savgol_p"][time_index] = q_p_opt
+                datasets["q_savgol_rmse"][time_index] = q_rmse
 
         output.flush()
 

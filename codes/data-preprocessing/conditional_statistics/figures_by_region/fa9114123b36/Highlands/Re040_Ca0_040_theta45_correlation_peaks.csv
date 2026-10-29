@@ -1,0 +1,11 @@
+simulation,qoi,region,field,n_points,status,peak_offset,peak_distance,peak_correlation,peak_absolute_correlation,left_limit,right_limit,left_reason,right_reason
+Re040_Ca0_040_theta45,delta_Dx_ML,Highlands,h,654335,ok,56,2.734375,-0.5741787725510424,0.5741787725510424,0.3265852583581459,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Dx_ML,Highlands,q,654335,ok,59,2.880859375,-0.5347754236444163,0.5347754236444163,0.3046924414010617,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_M_ML,Highlands,h,654335,ok,0,0.0,-0.8231056683540261,0.8231056683540261,-4.8828125,3.5037693607399345,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_M_ML,Highlands,q,654335,ok,0,0.0,-0.7813725111696231,0.7813725111696231,-4.8828125,3.8819923781226415,available_boundary,interpolated_zero
+Re040_Ca0_040_theta45,delta_Mx_ML,Highlands,h,654335,ok,43,2.099609375,-0.6286000669564707,0.6286000669564707,-0.002442812635977263,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Mx_ML,Highlands,q,654335,ok,45,2.197265625,-0.5793057357964221,0.5793057357964221,-0.002316242931998009,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Px_ML,Highlands,h,654335,ok,27,1.318359375,-0.187024947975708,0.187024947975708,-0.011537414365080451,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Px_ML,Highlands,q,654335,ok,31,1.513671875,-0.1613917425739287,0.1613917425739287,0.006587422582286354,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Tw_ML,Highlands,h,654335,ok,43,2.099609375,0.6500276220191413,0.6500276220191413,-0.0011750015507717066,4.8828125,interpolated_zero,available_boundary
+Re040_Ca0_040_theta45,delta_Tw_ML,Highlands,q,654335,ok,46,2.24609375,0.601422435035022,0.601422435035022,-0.009917855868166986,4.8828125,interpolated_zero,available_boundary
