@@ -1,59 +1,97 @@
-# Basilisk outputs
+# ============================================================
+# Rule of thumb: git holds source + small configs. Data, builds,
+# logs and results live in the data store (see docs/data-layout.md).
+# ============================================================
+
+# --- Simulation outputs (Basilisk / ROM) ---
 dump*
 snapshot*
 restart*
-
-# Nek5000 outputs
-*.fld
-*.f000*
-*.nek5000
-
-# Data files
+interface*
+infc*/
+output/
+images/
 *.dat
 *.h5
 *.hdf5
+*.h5.lock
 *.mat
 *.xdmf
-*.xmf 
-
-# Visualization
+*.xmf
 *.vtk
 *.vtu
 *.pvtu
 *.pvd
+*.fld
+*.f000*
+*.nek5000
 
-# Images and videos
+# --- Basilisk / C / C++ build products ---
+_*.c
+*.o
+*.so
+*.a
+obj/
+build/
+filmflow
+filmflow_restart
+filmflow_debug
+test
+testOMP
+main_whitenoise
+main_frequency
+thinfilm_solver
+
+# --- Run directories ---
+# Any per-run subdirectory you create (SLURM scripts, outputs) is ignored as a whole,
+# including its .sh files. Name them runs/, run_<something>/ or scratch/.
+# To ignore some other directory wholesale, put a .gitignore containing just "*" inside it.
+runs/
+run_*/
+scratch/
+
+# --- SLURM and run logs ---
+*.out
+*.err
+*.log
+logs/
+core*
+
+# --- ML artefacts ---
+cache_dir/
+saved_models/
+*.pt
+*.pth
+*.ts
+*.ckpt
+*.npz
+*.npy
+
+# --- Figures and generated reports (regenerate from notebooks/scripts) ---
 *.png
 *.jpg
 *.jpeg
 *.gif
 *.mp4
 *.avi
-*.pdf 
+*.pdf
+!docs/**/*.pdf
+results/
+figures/
+!docs/figures/
 
-# Build files
-obj/
-build/
-*.o
-*.so
-*.a
-
-# Python
+# --- Python / Jupyter ---
 __pycache__/
 *.pyc
-.ipynb_checkpoints
-*.pt
+.ipynb_checkpoints/
+envs/*/
+!envs/*.yml
 
-# VS Code
+# --- Editors / OS ---
 .vscode/
-
-# OS files
+.idea/
+*.swp
+*.asv
 .DS_Store
-
-# Log Files
-*.err
-*.out
-core*
-*.sh
-
-cache_dir/
+Thumbs.db
+desktop.ini
