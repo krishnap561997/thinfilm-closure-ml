@@ -12,7 +12,7 @@ git status          # commit/push anything pending to main FIRST, then stop usin
 # 2. Fresh clone of the code
 mkdir -p /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code
 cd /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code
-git clone https://github.com/krishnap561997/thinfilm-closure-ml.git
+git clone git@github.com:krishnap561997/thinfilm-closure-ml.git   # SSH: HTTPS passwords are rejected by GitHub
 cd thinfilm-closure-ml
 
 # 3. Environment variables (add to ~/.bashrc)
@@ -26,6 +26,8 @@ git config --global user.email "121191287+krishnap561997@users.noreply.github.co
 # 5. Notebook hygiene (once per clone)
 $THINFILM_ENV/bin/pip install nbstripout && $THINFILM_ENV/bin/nbstripout --install
 ```
+
+**GitHub authentication on HiPerGator uses SSH.** The key is `~/.ssh/id_ed25519_github`. If a push fails with "Permission denied (publickey)", add `Host github.com` / `IdentityFile ~/.ssh/id_ed25519_github` / `IdentitiesOnly yes` to `~/.ssh/config`, then test with `ssh -T git@github.com`. To switch an HTTPS clone to SSH: `git remote set-url origin git@github.com:krishnap561997/thinfilm-closure-ml.git`.
 
 On the laptop, clone into a folder **outside OneDrive** (for example `C:\dev\thinfilm-closure-ml`). The OneDrive copy can then be archived or deleted.
 
