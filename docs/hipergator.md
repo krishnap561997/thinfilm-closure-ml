@@ -48,9 +48,14 @@ cp $THINFILM_ROOT/dns/production/cases/$case/params.in .   # or write a new one
 make && make run
 ```
 
-Then add or update the case's row in `datasets/MANIFEST_dns.csv` and commit.
+Then refresh the manifest and commit:
 
-`dns/production/Makefile` builds against `~/basilisk-old/src`, which is what most production cases used. `Makefile.basilisk-current` uses `$BASILISK` instead.
+```bash
+python $THINFILM_ROOT/datasets/update_manifest.py   # fills counts / t_last / status / closure_extracted
+# then edit split + notes by hand, and commit datasets/MANIFEST_dns.csv
+```
+
+`dns/production/Makefile` builds against `~/basilisk-old/src`. That is the only Basilisk compatible with the HDF5 headers, and all production cases use it.
 
 ## Claude Code in VS Code
 

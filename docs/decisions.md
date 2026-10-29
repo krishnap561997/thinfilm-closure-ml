@@ -2,6 +2,12 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-10 — Basilisk version
+
+- All thin-film DNS are built with `~/basilisk-old/src`, which is compatible with the HDF5/XDMF output headers.
+- The newer Basilisk install belongs to the heterogeneous-nucleation project and cannot write these HDF5 files.
+- Eight case Makefiles reference `$BASILISK`, but those cases were also run with basilisk-old.
+
 ## 2026-10 — Repository restructure
 
 - Code and data were split. The old /blue checkout is now the data store, and git holds only source code, small configs and manifests.
