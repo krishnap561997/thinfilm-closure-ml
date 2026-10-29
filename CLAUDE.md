@@ -18,7 +18,7 @@ Future extensions: gas-sheared films, heated films, and microchannel flow boilin
 
 | Path | What it is |
 |---|---|
-| `dns/production/` | **Production Basilisk setup**: `filmflow0.c`, `filmflow_restart.c` (nondimensional, Nusselt scaling), `Makefile` (builds against `~/basilisk-old`), `Makefile.basilisk-current`, `run.sh` (SLURM), `count_sim_files.sh` |
+| `dns/production/` | **Production Basilisk setup**: `filmflow0.c`, `filmflow_restart.c` (nondimensional, Nusselt scaling), `Makefile` (builds against `~/basilisk-old`), `run.sh` (SLURM), `count_sim_files.sh` |
 | `dns/production/cases/<case>/` | `params.in` per DNS case (plus case-specific `.c` where one existed) |
 | `dns/include/hdf5_headers/` | HDF5/XDMF output headers included by the Basilisk sources |
 | `dns/tests/` | Physics/BC test setups (bc-blowup-fix, clsvof, white-noise domain tests, vertical-confined, hdf5-output) |
@@ -56,13 +56,14 @@ Future extensions: gas-sheared films, heated films, and microchannel flow boilin
 - **Run DNS cases in the data store, not inside the repo.**
   1. Copy `dns/production/{filmflow0.c,filmflow_restart.c,Makefile,run.sh}` plus the case's `params.in` into the case directory.
   2. Run `make` and then `make run`.
-  3. Add or update the row in `datasets/MANIFEST_dns.csv`.
+  3. Refresh the manifest with `python datasets/update_manifest.py`, then fill in `split` and `notes` by hand.
+- **Ignore run directories:** per-run subdirectories should be named `runs/`, `run_*/` or `scratch/`. They are ignored as a whole, including their `.sh` files.
 - **Use nondimensional Nusselt scaling everywhere:** h_N, u_N, Re = u_N h_N/ν, Ca = μ u_N/σ, Fr² = Re sinβ/3, We = Re·Ca, Λ = 3. See `docs/equations.md`.
 - **Use these closure names consistently:** `delta_Mx_ML`, `delta_Tw_ML`, `delta_Px_ML`, `delta_Dx_ML` (ΔC = C_DNS − C_Lav). The combined source term is S_ML = −ΔM_x + ΔP_x − ΔT_w + ΔD_x.
 - **SLURM settings:** account and qos `bala1s` (burst: `bala1s-b`); use `hpg-dev` for short jobs.
 - **Modules:**
   - DNS: `gcc/14.2.0 hdf5 imagemagick`
-  - Production builds use the Basilisk at `/home/krishnap.kalivel/basilisk-old/src`. Most production cases were built with it; see the `basilisk_build` column in the manifest.
+  - **All** thin-film DNS use the Basilisk at `/home/krishnap.kalivel/basilisk-old/src`. It is the version compatible with the HDF5 output headers. The newer `$BASILISK` install belongs to the heterogeneous-nucleation project and is **not** compatible, so never build these cases against it.
 - **Line endings:** `.gitattributes` keeps `.sh`, `Makefile`, `.c` and `.py` files LF, so files edited on Windows still run on HiPerGator.
 
 ## Keeping context in sync (laptop ↔ HiPerGator ↔ claude.ai)

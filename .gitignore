@@ -42,6 +42,14 @@ main_whitenoise
 main_frequency
 thinfilm_solver
 
+# --- Run directories ---
+# Any per-run subdirectory you create (SLURM scripts, outputs) is ignored as a whole,
+# including its .sh files. Name them runs/, run_<something>/ or scratch/.
+# To ignore some other directory wholesale, put a .gitignore containing just "*" inside it.
+runs/
+run_*/
+scratch/
+
 # --- SLURM and run logs ---
 *.out
 *.err
@@ -50,7 +58,6 @@ logs/
 core*
 
 # --- ML artefacts ---
-runs/
 cache_dir/
 saved_models/
 *.pt

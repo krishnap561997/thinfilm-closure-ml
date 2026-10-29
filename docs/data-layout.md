@@ -20,11 +20,9 @@ $THINFILM_STORE = /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closur
 
 - `datasets/MANIFEST_dns.csv` has one row per DNS case:
   - the parameters from `params.in`;
-  - `basilisk_build` (old or current);
-  - `n_h5_snapshots`, from the last file count on 2026-10-29;
-  - `closure_config`, which records whether an extraction config exists;
-  - `status`, which you fill in;
+  - automatic columns `n_h5_snapshots`, `t_last`, `status` (not_started / running / partial / complete) and `closure_extracted`;
+  - hand-filled columns `split` (train / val / test / exclude) and `notes`;
   - `store_path`.
 - `datasets/MANIFEST_rom.csv` has one row per ROM sweep case, with the fields from `input.txt`.
 
-To refresh the snapshot counts, run `dns/production/count_sim_files.sh` and update the manifest.
+To refresh the automatic columns, run `python $THINFILM_ROOT/datasets/update_manifest.py` on HiPerGator. Add `--dry-run` to print only the summary. Hand-filled columns are preserved.
