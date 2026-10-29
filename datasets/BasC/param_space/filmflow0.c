@@ -163,12 +163,14 @@ int main (int argc, char * argv[])
 
   fprintf(stderr, "LX: %.8f\n", LX);
   fprintf(stderr, "LX [m]: %.8f\n", LX*H0);
-  fprintf(stderr, "MAXlevel: %d\n", MAXlevel);
   fprintf(stderr, "U0 [m/s]: %.8f\n", U0);
   fprintf(stderr, "H0 [m/s]: %.8f\n", H0);
   fprintf(stderr, "T0 [s]: %.8f\n", T0);
   fprintf(stderr, "f_cut [Hz]: %.8f\n", fcut_dim);
   fprintf(stderr, "f : %.8f\n", fcut_noise);
+  fprintf(stderr, "rho_l : %.8f\n", RHO_L);
+  fprintf(stderr, "mu_l : %.8f\n", MU_L);
+  fprintf(stderr, "theta : %.8f\n", angle*180./pi);
 
   run();
 }

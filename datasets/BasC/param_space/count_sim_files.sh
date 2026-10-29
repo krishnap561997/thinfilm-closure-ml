@@ -3,7 +3,7 @@
 simulation_root="/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space"
 
 output_csv="$simulation_root/simulation_file_counts.csv"
-empty_csv="$simulation_root/simulations_with_no_data.csv"
+empty_csv="$simulation_root/simulation_incomplete.csv"
 
 echo "simulation_directory,num_h5_files" > "$output_csv"
 echo "simulation_directory,num_h5_files,output_directory_exists" > "$empty_csv"
@@ -32,7 +32,7 @@ for sim_dir in "$simulation_root"/Re*_Ca*_theta*; do
 
     echo "$sim_name,$num_files" >> "$output_csv"
 
-    if (( num_files == 0 )); then
+    if (( num_files < 201 )); then
         echo "$sim_name,$num_files,$output_exists" >> "$empty_csv"
     fi
 done

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=R080_C0_005
+#SBATCH --job-name=R080_C0_005_T45
 
 #SBATCH -o run_%j.out
 #SBATCH --mail-type=ALL

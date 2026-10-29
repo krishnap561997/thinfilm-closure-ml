@@ -12,7 +12,7 @@
 #SBATCH -t 4-00:00:00
 
 #SBATCH --account=bala1s
-#SBATCH --qos=bala1s
+#SBATCH --qos=bala1s-b
 #!SBATCH --partition=hpg-dev
 
 # -------------------------

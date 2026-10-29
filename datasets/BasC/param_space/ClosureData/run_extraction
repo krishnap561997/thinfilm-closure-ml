@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+here="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+if [[ ! -s "$here/ready_configs.txt" ]]; then
+    echo "No ready case JSON files found in $here/ready_configs.txt" >&2
+    exit 1
+fi
+while IFS= read -r config; do
+    echo "Submitting $(basename "$config")"
+    sbatch "$here/run.sh" "$config"
+done < "$here/ready_configs.txt"
