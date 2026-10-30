@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-29 (evening): Paper 1 plan, schedule and Sec. IV.A results added._
+_Last updated: 2026-10-30: ROM build fixed; momentum-budget closure check added._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -67,6 +67,15 @@ Update this file in the same commit as any change that moves the science forward
 - Predictability depends on Ca. R² is 0.93–0.98 for Ca ≥ 0.06 (Re ≤ 40), but about 0 for Re = 10 with Ca ≤ 0.01 and for Re = 40 with Ca = 0.002. Across the 20 development cases, R² correlates with log Ca at 0.65 and with log Re at 0.31. This points to capillarity and supports curvature as an input.
 - Correlates better with curvature κ = h_xx/(1+h_x²)^{3/2} (`ml/thinfilm_mlp/augment_curvature.py`).
 - May need non-Markovian (Mori–Zwanzig) memory.
+
+**Budget closure check (30 Oct 2026, `pipeline/extract_closures/check_momentum_budget.py`)**
+
+- Uses the (t, t−dt) pair in each snapshot for ∂ₜ. The stored deltas match the raw integrals to machine precision, so C_Lav + ΔC = C_DNS exactly.
+- Restricting the DNS state to the ROM grid (N = 4000) and evaluating a Python replica of the lavalle-cpp q-RHS, d_t q − RHS_ROM ≈ S_ML:
+  - inertial cases close well; at 1 h_N smoothing E1/E0 = |d_t q − RHS_ROM − S_ML| / |d_t q − RHS_ROM| is 0.04 (Re120 Ca0.01 β45, the oracle target, corr 0.999) and 0.10 (Re200 Ca0.01 β6.4);
+  - Re40 Ca0.02 β6.4: 0.35, but the Lavalle misfit itself is only ~7% of d_t q there;
+  - **Re10 Ca0.01 β45 (We = 0.1) does not close** (E1/E0 ≈ 0.9). Mass closes over 1 h_N windows (2%), but the one-step ∂ₜh has grid-scale jitter (15% of its variance below 1 h_N), and the DNS momentum budget leaves 13% of d_t q unexplained even at 1 h_N. Suspect ∫∂ₓp near the interface at large σ, or interfacial terms omitted by the passive-gas form. Treat strongly capillary low-Re cases with caution in training and in the oracle.
+- Rusanov numerical dissipation is ~2% of d_t q for Re120; Noble–Vila capillarity with r = √(h/We) h_x matches h h_xxx/We to ~2–7%.
 
 ## Next steps
 
