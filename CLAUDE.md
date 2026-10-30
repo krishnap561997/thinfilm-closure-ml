@@ -40,8 +40,8 @@ Future extensions: gas-sheared films, heated films, and microchannel flow boilin
 
 - **Code (this repo, new clone):** `$THINFILM_ROOT` (suggested `/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code/thinfilm-closure-ml`).
 - **Data store (old repo directory, now treated as data only):** `$THINFILM_STORE = /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml`
-  - DNS runs: `$THINFILM_STORE/datasets/BasC/param_space/<case>/` (`output/*.h5`, `infc/`, dumps)
-  - Extracted closures: `$THINFILM_STORE/datasets/BasC/param_space/ClosureData/`
+  - DNS runs: `$THINFILM_STORE/datasets/BasC/DNS/param_space/<case>/` (`output/*.h5`, `infc/`, dumps)
+  - Extracted closures: `$THINFILM_STORE/datasets/BasC/DNS/param_space/ClosureData/`
   - ROM sweep runs: `$THINFILM_STORE/datasets/ROM_Ca_Re_sweep/<case>/`
   - Python env: `$THINFILM_STORE/software/envs/thinfilm-ml-py311`
   - ML caches/runs: `$THINFILM_STORE/codes/ml-models/{functional_mlp,thinfilm_mlp}/{cache_dir,runs}`

@@ -43,7 +43,7 @@ On the laptop, clone into a folder **outside OneDrive** (for example `C:\dev\thi
 
 ```bash
 case=Re080_Ca0_020_theta90
-dst=$THINFILM_DATA/BasC/param_space/$case
+dst=$THINFILM_DATA/BasC/DNS/param_space/$case
 mkdir -p $dst && cd $dst
 cp $THINFILM_ROOT/dns/production/{filmflow0.c,filmflow_restart.c,Makefile,run.sh} .
 cp $THINFILM_ROOT/dns/production/cases/$case/params.in .   # or write a new one

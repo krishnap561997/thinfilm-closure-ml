@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-simulation_root="/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space"
+simulation_root="/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space"
 
 output_csv="$simulation_root/simulation_file_counts.csv"
 empty_csv="$simulation_root/simulation_incomplete.csv"

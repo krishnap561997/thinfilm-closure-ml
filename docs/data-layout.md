@@ -4,8 +4,8 @@ There is no data in git. The data store is the pre-restructure checkout on /blue
 
 ```
 $THINFILM_STORE = /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml
-├── datasets/BasC/param_space/<case>/        DNS runs: params.in, output/snapshot_*.h5, infc/, dump-*
-├── datasets/BasC/param_space/ClosureData/   extracted closure data + generated extraction jobs (configs/*.json)
+├── datasets/BasC/DNS/param_space/<case>/        DNS runs: params.in, output/snapshot_*.h5, infc/, dump-*
+├── datasets/BasC/DNS/param_space/ClosureData/   extracted closure data + generated extraction jobs (configs/*.json)
 ├── datasets/ROM_Ca_Re_sweep/<case>/         MATLAB ROM sweep runs
 ├── codes/ml-models/*/cache_dir, runs/       ML caches, training runs, logs
 └── software/envs/thinfilm-ml-py311/         Python env

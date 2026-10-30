@@ -1,6 +1,6 @@
 # Available closure data
 
-Source: `/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/ClosureData`
+Source: `/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/ClosureData`
 
 Inventory of existing HDF5 files when the configuration was updated.
 

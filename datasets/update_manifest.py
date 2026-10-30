@@ -29,7 +29,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 STORE = Path(os.environ.get("THINFILM_DATA",
-             "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets")) / "BasC/param_space"
+             "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets")) / "BasC/DNS/param_space"
 MANIFEST = REPO / "datasets/MANIFEST_dns.csv"
 SNAP = re.compile(r"snapshot_(\d+(?:\.\d+)?)\.h5$")
 CASE = re.compile(r"Re\d{3}_Ca\d+_\d+_theta\d+(?:_\d+)?$")

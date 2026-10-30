@@ -1,7 +1,7 @@
 {
-    "snapshot_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/Re010_Ca0_010_theta45/output",
+    "snapshot_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/Re010_Ca0_010_theta45/output",
 
-    "output_file": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/Re010_Ca0_010_theta45/thinfilm_closure_data.h5",
+    "output_file": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/Re010_Ca0_010_theta45/thinfilm_closure_data.h5",
 
     "start_time": 10,
     "end_time": 1030,
