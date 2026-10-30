@@ -1,4 +1,8 @@
-CXX = h5c++
+# The HiPerGator hdf5/1.10.5 wrapper defaults to a conda compiler and ships no
+# static libs, so force g++ underneath and link the shared libraries.
+export HDF5_CXX ?= g++
+export HDF5_CLINKER ?= g++
+CXX = h5c++ -shlib
 CXXFLAGS ?= -O3 -std=c++17 -Wall -Wextra -Wpedantic -Iinclude
 
 SOURCES := $(shell find src -name '*.cpp')

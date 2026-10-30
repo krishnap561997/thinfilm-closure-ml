@@ -2,6 +2,18 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-10-30 — Oracle DNS writes 1D column profiles in situ
+
+- For the oracle restart, Basilisk writes depth-integrated profiles (`dns/include/column_profiles.h`) instead of 2D snapshots: h, q, ∫u², ∫₀ʰ∂ₓp, ∂_z u|₀ and the raw interface velocity, at t and t−dt. That is about 1 MB per output instead of 133 MB, so the output interval can be 0.01 or finer.
+- Derivatives and ΔC are still computed in Python (`pipeline/extract_closures/profiles_to_closures.py`), reusing the functions in `extract_closure_terms.py`. On the same state this matches the 2D extraction to round-off (relative difference ≤ 5×10⁻¹² for every field).
+- Oracle source: `dns/oracle/filmflow_restart_mono.c` (production restart, 10 Hz inlet as in `BasC/fixed-frequency`). The source of the original L800 monochromatic binary was not found, so equivalence is checked against the existing L800 snapshots at t = 1810–1830.
+
+## 2026-10-30 — DNS case directories moved under BasC/DNS
+
+- `$THINFILM_STORE/datasets/BasC/param_space` is now `$THINFILM_STORE/datasets/BasC/DNS/param_space`; its contents, including `ClosureData/`, are unchanged. `fixed-frequency/` and `liu1994/` stay in `BasC/`.
+- Every text reference was rewritten: repo configs, scripts, manifests, docs and notebooks; the ClosureData extraction configs; and the old code copies under `$THINFILM_STORE/codes/`. The list of edited files and a backup of the originals are in `BasC/DNS/PATH_MIGRATION_2026-10-30.txt`.
+- ML caches or saved runs that store absolute data paths in binary files (`.npz`, `.pt`) were not rewritten. Rebuild a cache if it fails to find its source files.
+
 ## 2026-10-29 — Paper 1 scope, venue and closure targets
 
 - **Venue and dates.** Target IJHMT or AI Thermal Fluids. Submit 15 Dec 2026. Results for the APS DFD talk (22 Nov) freeze on 15 Nov.

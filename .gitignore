@@ -36,6 +36,10 @@ build/
 filmflow
 filmflow_restart
 filmflow_debug
+rom/lavalle-cpp/thinfilm
+thinfilm_training_data*.h5
+inlet_signal.csv
+final_state.csv
 test
 testOMP
 main_whitenoise
@@ -55,7 +59,8 @@ scratch/
 *.err
 *.log
 logs/
-core*
+/core
+core.[0-9]*
 
 # --- ML artefacts ---
 cache_dir/

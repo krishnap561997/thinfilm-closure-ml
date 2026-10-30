@@ -3,7 +3,7 @@
 
 Run on HiPerGator:
   python3 generate_extraction_jobs.py
-  /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/ClosureData/run_extraction
+  /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/ClosureData/run_extraction
 
 Use --extractor PATH if the extraction script is not in PARAM_SPACE's parent
 repository root. Generation does not submit jobs; run_extraction does.
@@ -20,7 +20,7 @@ from pathlib import Path
 
 DEFAULT_ROOT = Path(
     "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/"
-    "thinfilm-closure-ml/datasets/BasC/param_space"
+    "thinfilm-closure-ml/datasets/BasC/DNS/param_space"
 )
 CASE_PATTERN = re.compile(r"Re\d{3}_Ca\d+_\d{3}_theta\d+(?:_\d+)?\Z")
 SNAPSHOT_PATTERN = re.compile(r"snapshot_(\d{6})\.h5\Z")

@@ -1,5 +1,5 @@
 {
-  "data_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/ClosureData",
+  "data_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/ClosureData",
   "cache_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/thinfilm_mlp/cache_dir",
   "development_cases": [
     "Re010_Ca0_005_theta45",

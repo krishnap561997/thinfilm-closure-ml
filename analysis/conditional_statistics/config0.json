@@ -1,5 +1,5 @@
 {
-  "data_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/param_space/ClosureData",
+  "data_dir": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/ClosureData",
   "output_dir": "results",
   "simulation": {"Re": 40, "Ca": 0.1, "beta": 45},
   "qois": ["int_u2_dy", "int_px_dy","dudy_wall", "u_interface"],
