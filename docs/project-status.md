@@ -83,6 +83,16 @@ Update this file in the same commit as any change that moves the science forward
 
 ## Next steps
 
+**In progress (30 Oct 2026), branch `oracle-closure`:**
+
+- Oracle DNS running: SLURM job 48362419 (bala1s-b, 16 cores, ~2 h). Restart of L800 (Re120 Ca0.01 β45, 10 Hz) from t = 1800 to 1900, 1D profiles every 0.01, 2D snapshots every 10, dumps every 50. Run directory: `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/run_t1800/`.
+- When it finishes:
+  1. compare its 2D snapshots at t = 1810–1830 with the original L800 snapshots;
+  2. convert the profiles with `pipeline/extract_closures/profiles_to_closures.py`;
+  3. check the time-interpolation error by dropping every other profile.
+- Then the ROM oracle hook in `rom/lavalle-cpp`: ΔF as a face-flux correction, ΔT_w and ΔP_x as sources, linear interpolation in time, DNS-driven inlet and initial state (r = √(h/We) h_x).
+- `test_insitu/` next to `run_t1800/` is a disposable validation run.
+
 See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp`.
 
 ## Paper 1
