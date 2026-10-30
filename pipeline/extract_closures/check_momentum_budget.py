@@ -12,12 +12,14 @@ B) ROM grid: restrict the DNS state to the lavalle-cpp grid, evaluate a Python r
    the ROM's discrete q-RHS (MUSCL/minmod + Rusanov, Lavalle pressure law, Noble-Vila
    capillarity with r = sqrt(h/We) h_x, 2 q_xx/Re), and test whether
      d_t q - RHS_ROM  ~=  S_ML = -dMx + dPx - dTw + dDx
-   i.e. whether the oracle source closes the ROM as discretised. --smooth W applies a
-   Gaussian filter of width W (h_N) to the ROM-grid fields first: the one-step DNS time
+   i.e. whether the oracle source closes the ROM as discretised. --smooth 0,1 applies a
+   Gaussian filter of each width (h_N) to the ROM-grid fields: the one-step DNS time
    derivative carries grid-scale interface jitter in strongly capillary cases (We ~ 0.1).
 """
 from __future__ import annotations
 import argparse
+import csv
+from pathlib import Path
 import h5py
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
@@ -114,91 +116,132 @@ def with_ghosts(f): return np.concatenate(([f[0]], f, [f[-1]]))
 def rms(a): return float(np.sqrt(np.nanmean(np.square(a))))
 
 
+def snapshot_arrays(x, P, cur, prv, j, dt, a, mD, mR):
+    """Masked residual fields for snapshot j; ROM-grid fields per smoothing width."""
+    N, L, dxR, We = a.N, a.L, a.L / a.N, P["Re"] * P["Ca"]
+    dth = (cur["h"][:, j] - prv["h"][:, j]) / dt
+    dtq = (cur["q"][:, j] - prv["q"][:, j]) / dt
+    rc, lc, Sc, qxc = dns_terms(x, cur, j, P)
+    rp, lp, Sp, qxp = dns_terms(x, prv, j, P)
+    Rraw = 0.5 * (rhs_sum(rc) + rhs_sum(rp))
+    Rlav = 0.5 * (rhs_sum(lc) + rhs_sum(lp))
+    S = 0.5 * (Sc + Sp)
+    D = {"dth": dth[mD], "mass": (dth + 0.5 * (qxc + qxp))[mD], "dtq": dtq[mD],
+         "R_raw": (dtq - Rraw)[mD], "raw_minus_lav": (Rraw - Rlav)[mD], "S": S[mD]}
+    for k in ("Mx", "Px", "Tw", "Dx", "G"): D[k] = 0.5 * (rc[k] + rp[k])[mD]
+
+    rhs, caps, rus, caplav = [], [], [], []
+    for s in (cur, prv):
+        hR, qR = restrict(x, s["h"][:, j], N, L), restrict(x, s["q"][:, j], N, L)
+        hxR, hxxxR = restrict(x, s["h_x"][:, j], N, L), restrict(x, s["h_xxx"][:, j], N, L)
+        o = rom_rhs_q(with_ghosts(hR), with_ghosts(qR), with_ghosts(np.sqrt(hR / We) * hxR), dxR, P)
+        rhs.append(o["total"]); caps.append(o["cap"]); rus.append(o["rusanov"]); caplav.append(hR * hxxxR / We)
+    rhs = 0.5 * (rhs[0] + rhs[1])
+    dtqR, SR = restrict(x, dtq, N, L), restrict(x, S, N, L)
+    D["rom_rus"] = (0.5 * (rus[0] + rus[1]))[mR]
+    D["rom_cap"] = (0.5 * (caps[0] + caps[1]))[mR]
+    D["rom_caplav"] = (0.5 * (caplav[0] + caplav[1]))[mR]
+    D["rom_dtq_raw"] = dtqR[mR]
+    for w in a.smooth:
+        sm = (lambda v: gaussian_filter1d(v, w / dxR)) if w > 0 else (lambda v: v)
+        E0 = sm(dtqR) - sm(rhs)
+        D[f"rom_dtq_w{w:g}"], D[f"rom_E0_w{w:g}"] = sm(dtqR)[mR], E0[mR]
+        D[f"rom_S_w{w:g}"], D[f"rom_E1_w{w:g}"] = sm(SR)[mR], (E0 - sm(SR))[mR]
+    return D
+
+
+def metrics(D, smooth):
+    """Scalar diagnostics from (possibly pooled) residual fields."""
+    m = {"rms_dth": rms(D["dth"]), "mass_rel": rms(D["mass"]) / rms(D["dth"]),
+         "rms_dtq": rms(D["dtq"]), "dns_res_rel": rms(D["R_raw"]) / rms(D["dtq"]),
+         "S_rel": rms(D["S"]) / rms(D["dtq"]), "delta_consistency": rms(D["raw_minus_lav"])}
+    for k in ("Mx", "Px", "Tw", "Dx", "G"): m[f"rms_{k}"] = rms(D[k])
+    m["rom_rusanov_rel"] = rms(D["rom_rus"]) / rms(D["rom_dtq_raw"])
+    m["rom_cap_mismatch_rel"] = rms(D["rom_cap"] - D["rom_caplav"]) / rms(D["rom_cap"])
+    for w in smooth:
+        g = lambda k: D[f"rom_{k}_w{w:g}"]
+        d = rms(g("dtq"))
+        m[f"rom_E0_rel_w{w:g}"] = rms(g("E0")) / d
+        m[f"rom_S_rel_w{w:g}"] = rms(g("S")) / d
+        m[f"rom_E1_rel_w{w:g}"] = rms(g("E1")) / d
+        m[f"rom_E1_over_E0_w{w:g}"] = rms(g("E1")) / rms(g("E0"))
+        m[f"rom_corr_w{w:g}"] = float(np.corrcoef(g("E0"), g("S"))[0, 1])
+    return m
+
+
+def select_columns(t, a):
+    if a.times:
+        t0, t1, step = (float(v) for v in a.times.split(":"))
+        want = np.arange(t0, t1 + 0.5 * step, step)
+        cols = [int(np.argmin(abs(t - w))) for w in want if np.min(abs(t - w)) < 1e-6]
+        return cols, [w for w in want if np.min(abs(t - w)) >= 1e-6]
+    return list(range(a.every - 1, len(t), a.every)), []
+
+
+def write_csv(path, rows, append=False):
+    path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
+    new = not (append and path.exists())
+    with path.open("w" if not append else "a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0]))
+        if new: w.writeheader()
+        w.writerows(rows)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("closure_file")
-    ap.add_argument("--every", type=int, default=10, help="use every n-th snapshot")
+    ap.add_argument("--every", type=int, default=10, help="use every n-th snapshot (ignored with --times)")
+    ap.add_argument("--times", help="start:stop:step snapshot times, e.g. 1000:2000:100")
     ap.add_argument("--L", type=float, default=800.0)
     ap.add_argument("--N", type=int, default=4000, help="ROM cells")
     ap.add_argument("--x-min", type=float, default=20.0, help="exclude inlet region")
     ap.add_argument("--x-max-frac", type=float, default=0.95, help="exclude outlet region")
-    ap.add_argument("--smooth", type=float, default=0.0, help="Gaussian width (h_N) on ROM grid")
-    ap.add_argument("--save", help="optional .npz with one-snapshot profiles for plotting")
+    ap.add_argument("--smooth", type=lambda v: [float(w) for w in v.split(",")], default=[0.0],
+                    help="comma-separated Gaussian widths (h_N) on the ROM grid, e.g. 0,1")
+    ap.add_argument("--csv", help="write one row per snapshot time to this file")
+    ap.add_argument("--summary-csv", help="append one pooled row for this case to this file")
     a = ap.parse_args()
 
-    with h5py.File(a.closure_file, "r") as f: nt = f["t"].shape[0]
-    cols = list(range(a.every - 1, nt, a.every))
+    case = Path(a.closure_file).stem.replace("thinfilm_closure_data_", "")
+    with h5py.File(a.closure_file, "r") as f: t_all = f["t"][:]
+    cols, missing = select_columns(t_all, a)
+    if not cols: raise SystemExit(f"{case}: no snapshots selected")
     x, P, cur, prv, t, dt = load(a.closure_file, cols)
     print(f"{a.closure_file}\nRe={P['Re']:g} Ca={P['Ca']:g} beta={np.degrees(P['angle']):.1f} deg; "
-          f"{len(cols)} snapshots t={t[0]:.0f}..{t[-1]:.0f}, solver dt {dt.min():.2e}..{dt.max():.2e}")
+          f"{len(cols)} snapshots t={t[0]:.0f}..{t[-1]:.0f}, solver dt {dt.min():.2e}..{dt.max():.2e}"
+          + (f"; missing t=" + " ".join(f"{w:g}" for w in missing) if missing else ""))
     mD = (x > a.x_min) & (x < a.x_max_frac * a.L)
     XR = (np.arange(a.N) + 0.5) * a.L / a.N
     mR = (XR > a.x_min) & (XR < a.x_max_frac * a.L)
-    dxR = a.L / a.N
-    We = P["Re"] * P["Ca"]
 
-    acc = {k: [] for k in ("dth", "mass", "dtq", "R_raw", "R_lav", "raw_minus_lav", "S",
-                           "Mx", "Px", "Tw", "Dx", "G",
-                           "R_dtq", "R_E0", "R_E1", "R_S", "R_rus", "R_cap", "R_caplav")}
+    base = {"case": case, "Re": P["Re"], "Ca": P["Ca"], "beta_deg": round(float(np.degrees(P["angle"])), 3)}
+    rows, pooled = [], {}
     for j in range(len(cols)):
-        dth = (cur["h"][:, j] - prv["h"][:, j]) / dt[j]
-        dtq = (cur["q"][:, j] - prv["q"][:, j]) / dt[j]
-        rc, lc, Sc, qxc = dns_terms(x, cur, j, P)
-        rp, lp, Sp, qxp = dns_terms(x, prv, j, P)
-        Rraw = 0.5 * (rhs_sum(rc) + rhs_sum(rp))
-        Rlav = 0.5 * (rhs_sum(lc) + rhs_sum(lp))
-        S = 0.5 * (Sc + Sp)
-        acc["dth"].append(dth[mD]); acc["mass"].append((dth + 0.5 * (qxc + qxp))[mD])
-        acc["dtq"].append(dtq[mD]); acc["R_raw"].append((dtq - Rraw)[mD])
-        acc["R_lav"].append((dtq - Rlav)[mD]); acc["raw_minus_lav"].append((Rraw - Rlav)[mD])
-        acc["S"].append(S[mD])
-        for k in ("Mx", "Px", "Tw", "Dx", "G"): acc[k].append(0.5 * (rc[k] + rp[k])[mD])
+        D = snapshot_arrays(x, P, cur, prv, j, dt[j], a, mD, mR)
+        rows.append({**base, "t": float(t[j]), "dt_solver": float(dt[j]), **metrics(D, a.smooth)})
+        for k, v in D.items(): pooled.setdefault(k, []).append(v)
+    M = metrics({k: np.concatenate(v) for k, v in pooled.items()}, a.smooth)
 
-        # ROM grid
-        E0, caps, rus, caplav = [], [], [], []
-        for s in (cur, prv):
-            hR = restrict(x, s["h"][:, j], a.N, a.L)
-            qR = restrict(x, s["q"][:, j], a.N, a.L)
-            hxR = restrict(x, s["h_x"][:, j], a.N, a.L)
-            hxxxR = restrict(x, s["h_xxx"][:, j], a.N, a.L)
-            rR = np.sqrt(hR / We) * hxR
-            o = rom_rhs_q(with_ghosts(hR), with_ghosts(qR), with_ghosts(rR), dxR, P)
-            E0.append(o["total"]); caps.append(o["cap"]); rus.append(o["rusanov"])
-            caplav.append(hR * hxxxR / We)
-        sm = (lambda v: gaussian_filter1d(v, a.smooth / dxR)) if a.smooth > 0 else (lambda v: v)
-        dtqR = sm(restrict(x, dtq, a.N, a.L))
-        SR = sm(restrict(x, S, a.N, a.L))
-        E0 = dtqR - sm(0.5 * (E0[0] + E0[1]))
-        acc["R_dtq"].append(dtqR[mR]); acc["R_E0"].append(E0[mR]); acc["R_E1"].append((E0 - SR)[mR])
-        acc["R_S"].append(SR[mR]); acc["R_rus"].append((0.5 * (rus[0] + rus[1]))[mR])
-        acc["R_cap"].append((0.5 * (caps[0] + caps[1]))[mR])
-        acc["R_caplav"].append((0.5 * (caplav[0] + caplav[1]))[mR])
+    print(f"\nA) DNS grid (pooled rms over x in mask and snapshots)")
+    print(f"  mass residual / d_t h            = {M['mass_rel']:.3f}")
+    print("  momentum terms (RHS convention): " + "  ".join(f"{k} {M['rms_'+k]:.3e}" for k in ("Mx", "Px", "Tw", "Dx", "G")))
+    print(f"  rms(d_t q) = {M['rms_dtq']:.3e}; residual / d_t q = {M['dns_res_rel']:.3f}; "
+          f"S_ML / d_t q = {M['S_rel']:.3f}; raw-(Lav+delta) = {M['delta_consistency']:.1e}")
+    print(f"\nB) ROM grid, N={a.N}: Rusanov / d_t q = {M['rom_rusanov_rel']:.3f}; "
+          f"Noble-Vila cap mismatch = {M['rom_cap_mismatch_rel']:.3f}")
+    for w in a.smooth:
+        print(f"  smoothing {w:g} h_N: E0/d_t q {M[f'rom_E0_rel_w{w:g}']:.3f}  S/d_t q {M[f'rom_S_rel_w{w:g}']:.3f}  "
+              f"E1/d_t q {M[f'rom_E1_rel_w{w:g}']:.3f}  E1/E0 {M[f'rom_E1_over_E0_w{w:g}']:.3f}  "
+              f"corr(E0,S) {M[f'rom_corr_w{w:g}']:.3f}")
+    print("\n  per time:  t   mass   dns_res   " + "   ".join(f"E1/E0(w={w:g})" for w in a.smooth))
+    for r in rows:
+        print(f"  {r['t']:6.0f}  {r['mass_rel']:.3f}  {r['dns_res_rel']:.3f}     "
+              + "      ".join(f"{r[f'rom_E1_over_E0_w{w:g}']:.3f}" for w in a.smooth))
 
-        if a.save and j == len(cols) // 2:
-            np.savez(a.save, x=x[mD], dtq=dtq[mD], R_raw=(dtq - Rraw)[mD], S=S[mD], h=cur["h"][mD, j],
-                     XR=XR[mR], dtqR=dtqR[mR], E0=E0[mR], E1=(E0 - SR)[mR], SR=SR[mR], t=t[j])
-
-    A = {k: np.concatenate(v) for k, v in acc.items()}
-    print("\nA) DNS grid (rms over x in mask and snapshots)")
-    print(f"  mass:  rms(d_t h) = {rms(A['dth']):.3e}   rms(d_t h + q_x) = {rms(A['mass']):.3e}"
-          f"   ratio {rms(A['mass'])/rms(A['dth']):.3f}")
-    print("  momentum terms (RHS sign convention):  " +
-          "  ".join(f"{k} {rms(A[k]):.3e}" for k in ("Mx", "Px", "Tw", "Dx", "G")))
-    print(f"  rms(d_t q) = {rms(A['dtq']):.3e}")
-    print(f"  residual raw   rms = {rms(A['R_raw']):.3e}   ratio to d_t q {rms(A['R_raw'])/rms(A['dtq']):.3f}")
-    print(f"  residual Lav+d rms = {rms(A['R_lav']):.3e}   ratio to d_t q {rms(A['R_lav'])/rms(A['dtq']):.3f}")
-    print(f"  raw - (Lav+delta)  = {rms(A['raw_minus_lav']):.3e}   (delta consistency)")
-    print(f"  rms(S_ML) = {rms(A['S']):.3e}")
-    print(f"\nB) ROM grid, N={a.N} (dx={dxR:g}), smoothing width {a.smooth:g} h_N")
-    print(f"  rms(d_t q)                       = {rms(A['R_dtq']):.3e}")
-    print(f"  E0 = d_t q - RHS_ROM       rms   = {rms(A['R_E0']):.3e}")
-    print(f"  S_ML (restricted)          rms   = {rms(A['R_S']):.3e}")
-    print(f"  E1 = E0 - S_ML             rms   = {rms(A['R_E1']):.3e}   E1/E0 = {rms(A['R_E1'])/rms(A['R_E0']):.3f}")
-    c = np.corrcoef(A["R_E0"], A["R_S"])[0, 1]
-    print(f"  corr(E0, S_ML) = {c:.3f}")
-    print(f"  Rusanov dissipation part rms     = {rms(A['R_rus']):.3e}")
-    print(f"  Noble-Vila cap vs h h_xxx/We     : rms diff {rms(A['R_cap']-A['R_caplav']):.3e}"
-          f"  (rms cap {rms(A['R_cap']):.3e})")
+    if a.csv: write_csv(a.csv, rows)
+    if a.summary_csv:
+        write_csv(a.summary_csv, [{**base, "n_times": len(cols), "t_first": float(t[0]), "t_last": float(t[-1]),
+                                   "missing_times": " ".join(f"{w:g}" for w in missing), **M}], append=True)
 
 
 if __name__ == "__main__":
