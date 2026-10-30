@@ -57,6 +57,19 @@ python $THINFILM_ROOT/datasets/update_manifest.py   # fills counts / t_last / st
 # then edit split + notes by hand, and commit datasets/MANIFEST_dns.csv
 ```
 
+## Oracle restart with 1D profile output
+
+```bash
+run=$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/run_t1800
+mkdir -p $run && cd $run
+cp $THINFILM_ROOT/dns/production/{Makefile,run.sh} $THINFILM_ROOT/dns/oracle/filmflow_restart_mono.c .
+ln -s <source_run>/dump-001800 restart.dump        # never name the link dump-XXXXXX
+# params.in: case parameters + FREQ, AMP, T_PROF (profile interval), RESTART_FILE = restart.dump, T_END
+make restart RESTART_SRC=filmflow_restart_mono.c RESTART_TARGET=filmflow_restart_mono
+sbatch --qos=bala1s-b --cpus-per-task=16 run.sh filmflow_restart_mono
+python $THINFILM_ROOT/pipeline/extract_closures/profiles_to_closures.py profiles closures.h5
+```
+
 `dns/production/Makefile` builds against `~/basilisk-old/src`. That is the only Basilisk compatible with the HDF5 headers, and all production cases use it.
 
 ## Claude Code in VS Code

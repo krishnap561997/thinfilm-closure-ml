@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-30: ROM build fixed; momentum-budget closure check added._
+_Last updated: 2026-10-30 (evening): ROM build fixed; budget check over all closure files; DNS data moved to BasC/DNS; in-situ 1D profile output; oracle DNS restart launched._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -11,6 +11,8 @@ Update this file in the same commit as any change that moves the science forward
 - Rusanov flux with MUSCL reconstruction.
 - RK4 time integration.
 - A run takes about 15 min, versus about 30 h for DNS (roughly 120× faster).
+- Builds from a clean clone since 30 Oct (`include/core/` had been hidden by a `core*` ignore rule): `module load gcc/14.2.0 hdf5 && make`.
+- No closure hook yet: `ClosureModel::evaluate(h, q)` works point by point. The oracle needs a field- and time-dependent correction added in `evaluate_rhs` (see `rom/lavalle-cpp/README.md`).
 
 **DNS (`dns/production`)**
 
@@ -18,16 +20,19 @@ Update this file in the same commit as any change that moves the science forward
 - Domain 800 h_N × 6 h_N.
 - MAXLEVEL 14, giving Δ/h_N = 0.0488 (about 20 cells per h_N). This was chosen from a grid study at levels 14 and 15.
 - The last ~5% of the domain is excluded from analysis because of outlet effects (domain study at 400 vs 800 h_N).
+- In-situ 1D output (`dns/include/column_profiles.h`) writes per-column h, q, ∫u², ∫₀ʰ∂ₓp, ∂_z u|₀ and the interface velocity at t and t−dt. That is ~1 MB per output against 133 MB for a 2D snapshot, and after `profiles_to_closures.py` it matches the 2D extraction to round-off.
 
 **Inlet forcing (Chang et al. 1996)**
 
 - Broadband: $u(0,z,t) = U_N(z)[1+F(t)]$ with $F = F_0\sqrt{2/M}\sum_m\cos(2\pi f_m t+\phi_m)$.
 - F₀ = 0.025, M = 1000, f_cut = 28 Hz (dimensional), seed 12345.
+- Monochromatic (oracle) runs: u = U_N(z)[1 + 0.03 sin(2π f t)] with f = 10 Hz. For Re120 β45 that is f = 0.0214 nondimensionally, a period of about 47 time units.
 
 **Database**
 
 - 85 DNS case setups in `datasets/MANIFEST_dns.csv`.
-- At the last file count, 29 cases had HDF5 output and 28 had closure-extraction configs.
+- Manifest refresh (30 Oct): 18 complete, 10 partial, 57 not started; 22 cases have extracted closure files in `BasC/DNS/param_space/ClosureData/`.
+- Since 30 Oct, DNS cases live in `$THINFILM_STORE/datasets/BasC/DNS/param_space/` (moved from `BasC/param_space`).
 - The ONR report quotes 25 production cases spanning Re 10–200, Ca 0.005–0.1, and β = 6.4°, 45°, 90°.
 - **TODO:** fill the `status` column of the manifest (production / incomplete / test).
 
@@ -85,7 +90,7 @@ Update this file in the same commit as any change that moves the science forward
 
 **In progress (30 Oct 2026), branch `oracle-closure`:**
 
-- Oracle DNS running: SLURM job 48362419 (bala1s-b, 16 cores, ~2 h). Restart of L800 (Re120 Ca0.01 β45, 10 Hz) from t = 1800 to 1900, 1D profiles every 0.01, 2D snapshots every 10, dumps every 50. Run directory: `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/run_t1800/`.
+- Oracle DNS running: SLURM job 48362419 (bala1s-b, 16 cores, ~65 s per time unit, so ~2 h; at t ≈ 1803.7 when this was written). Restart of L800 (Re120 Ca0.01 β45, 10 Hz) from t = 1800 to 1900, 1D profiles every 0.01, 2D snapshots every 10, dumps every 50. Run directory: `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/run_t1800/`.
 - When it finishes:
   1. compare its 2D snapshots at t = 1810–1830 with the original L800 snapshots;
   2. convert the profiles with `pipeline/extract_closures/profiles_to_closures.py`;

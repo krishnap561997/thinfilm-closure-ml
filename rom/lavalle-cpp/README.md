@@ -17,10 +17,10 @@ This is a structured C++ translation of the supplied MATLAB solver. The current 
 
 ### Simple UF/HPC-style build
 ```bash
-module load gcc hdf5   # module names may vary
+module load gcc/14.2.0 hdf5
 make
 ```
-The Makefile uses `h5c++` by default.
+The Makefile uses `h5c++`. On HiPerGator the `hdf5/1.10.5` wrapper defaults to a conda compiler and ships no static libraries, so the Makefile sets `HDF5_CXX=g++` and links with `-shlib`. A short smoke test (`t_end = 5`) runs in about 2 s.
 
 ### CMake
 ```bash
@@ -30,8 +30,7 @@ cmake --build build -j
 
 ## Run
 ```bash
-cp input.example.txt input.txt
-./thinfilm input.txt
+./thinfilm input.txt   # run in a scratch/run directory, not in the repo
 ```
 Outputs:
 - `thinfilm_training_data.h5`
@@ -44,6 +43,10 @@ Outputs:
 2. The MATLAB main loop advances the state from `t` to `t+dt` but calls `append_thinfilm_h5(..., t, updated_state, ...)`. This C++ code writes `t+dt`, which is the physically consistent timestamp.
 3. The code retains the MATLAB positivity floor `h >= 1e-7` at every RK intermediate state and after the final update.
 4. The current closure has `phi_sf=1` because the supplied Lavalle solver has already performed the 6/5-to-1 + pressure-law reformulation. `tau_w=3q/h^2` is kept as an explicit closure source.
+
+## Oracle closure (planned, Nov 2026)
+
+The oracle *a posteriori* run will add exact DNS corrections taken from `profiles_to_closures.py` output on the ROM grid. ΔF = ∫u² − (q²/h + Λ²h⁵/45) goes in as a face-flux correction, and ΔT_w and ΔP_x as cell sources, interpolated linearly in time at every RK4 stage. The inlet and initial state come from the DNS, with r = √(h/We) h_x. A prescribed ΔF(x,t) does not change the flux Jacobian. A learned ΔF(h,q,…) would, and must then supply its derivatives as described below. `pipeline/extract_closures/check_momentum_budget.py` contains a Python replica of this solver's q-RHS.
 
 ## ML extension
 
