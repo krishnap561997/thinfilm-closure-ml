@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-30 (evening): ROM build fixed; budget check over all closure files; DNS data moved to BasC/DNS; in-situ 1D profile output; oracle DNS restart launched._
+_Last updated: 2026-10-31: oracle a posteriori results (Re120 Ca0.01 β45, 10 Hz)._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -73,32 +73,21 @@ Update this file in the same commit as any change that moves the science forward
 - Correlates better with curvature κ = h_xx/(1+h_x²)^{3/2} (`ml/thinfilm_mlp/augment_curvature.py`).
 - May need non-Markovian (Mori–Zwanzig) memory.
 
-**Budget closure check (30 Oct 2026, `pipeline/extract_closures/check_momentum_budget.py`)**
+**Budget closure check (30 Oct 2026).** Full write-up: `docs/results/budget-check.md`.
 
-- Uses the (t, t−dt) pair in each snapshot for ∂ₜ. The stored deltas match the raw integrals to machine precision, so C_Lav + ΔC = C_DNS exactly.
-- Restricting the DNS state to the ROM grid (N = 4000) and evaluating a Python replica of the lavalle-cpp q-RHS, d_t q − RHS_ROM ≈ S_ML:
-  - inertial cases close well; at 1 h_N smoothing E1/E0 = |d_t q − RHS_ROM − S_ML| / |d_t q − RHS_ROM| is 0.04 (Re120 Ca0.01 β45, the oracle target, corr 0.999) and 0.10 (Re200 Ca0.01 β6.4);
-  - Re40 Ca0.02 β6.4: 0.35, but the Lavalle misfit itself is only ~7% of d_t q there;
-  - **Re10 Ca0.01 β45 (We = 0.1) does not close** (E1/E0 ≈ 0.9). Mass closes over 1 h_N windows (2%), but the one-step ∂ₜh has grid-scale jitter (15% of its variance below 1 h_N), and the DNS momentum budget leaves 13% of d_t q unexplained even at 1 h_N. Suspect ∫∂ₓp near the interface at large σ, or interfacial terms omitted by the passive-gas form. Treat strongly capillary low-Re cases with caution in training and in the oracle.
-- **Full sweep (all 22 closure files, t = 1000–2000 every 100; results in `ClosureData/budget_check/`):**
-  - at 1 h_N smoothing, the unexplained remainder E1 is ≤ 4.5% of d_t q for 19 of 22 cases; corr(E0, S_ML) ≥ 0.99 for 15. The exceptions are Re10 Ca0.01 β45 (16%), Re80 Ca0.005 β6.4 (9%) and Re20 Ca0.01 β45 (7%), all low We (0.1–0.4);
-  - where it fails, it fails at the same snapshots where the mass equation fails (e.g. Re80 Ca0.005 β6.4 at t = 1500–1600: mass 0.24, E1/E0 0.92; at t = 1000: mass 0.01, E1/E0 0.28). Mass involves no closure, so the one-step ∂ₜ is unreliable there. The per-snapshot mass residual is a cheap data-quality flag;
-  - β = 6.4° cases show E1/E0 ≈ 0.1–0.45 only because Lavalle is already close there (E0 ≈ 7–12% of d_t q); E1 itself is ≤ 3% of d_t q.
-- Rusanov numerical dissipation is ~2% of d_t q for Re120; Noble–Vila capillarity with r = √(h/We) h_x matches h h_xxx/We to ~2–7%.
+- The stored deltas match the raw integrals to machine precision, so C_Lav + ΔC = C_DNS exactly.
+- Over all 22 closure files (t = 1000–2000 every 100), S_ML closes the lavalle-cpp discretisation to ≤ 4.5% of d_t q for 19 cases (1 h_N smoothing). The exceptions are low-We cases (Re10 Ca0.01 β45, Re80 Ca0.005 β6.4, Re20 Ca0.01 β45), where the one-step ∂ₜ is unreliable at the snapshots where the mass equation also fails. The per-snapshot mass residual is a cheap data-quality flag.
 
 ## Next steps
 
-**In progress (30 Oct 2026), branch `oracle-closure`:**
+**Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.
 
-- Oracle DNS running: SLURM job 48362419 (bala1s-b, 16 cores, ~65 s per time unit, so ~2 h; at t ≈ 1803.7 when this was written). Restart of L800 (Re120 Ca0.01 β45, 10 Hz) from t = 1800 to 1900, 1D profiles every 0.01, 2D snapshots every 10, dumps every 50. Run directory: `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/run_t1800/`.
-- When it finishes:
-  1. compare its 2D snapshots at t = 1810–1830 with the original L800 snapshots;
-  2. convert the profiles with `pipeline/extract_closures/profiles_to_closures.py`;
-  3. check the time-interpolation error by dropping every other profile.
-- Then the ROM oracle hook in `rom/lavalle-cpp`: ΔF as a face-flux correction, ΔT_w and ΔP_x as sources, linear interpolation in time, DNS-driven inlet and initial state (r = √(h/We) h_x).
-- `test_insitu/` next to `run_t1800/` is a disposable validation run.
+- Lavalle alone: h error ≈ 0.6 (relative to std h) after 5 time units, waves underpredicted (max h 1.45 vs 2.1).
+- ΔT_w + ΔM_x: error ≈ 0.2 for 50 time units, wave height restored, stable for 100.
+- ΔT_w alone and all four terms are unstable (ΔT_w and ΔM_x largely cancel; ΔP_x is the suspect for the all-terms blow-up).
+- Next: ΔM_x/ΔT_w correlation, smoothed ΔP_x, ROM re-initialised from the DNS every 5–10 time units.
 
-See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp`.
+See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp` (the oracle module in `rom/lavalle-cpp/{include,src}/oracle/` is separate and already done; the learned-closure hook is still to do).
 
 ## Paper 1
 
@@ -130,7 +119,7 @@ Memory models and new architectures go in a Paper 2 only if Paper 1 leaves a gap
 | 3.1–3.3 Depth-integrated model, Lavalle closures, extraction | drafted (Noble–Vila text and the fixes below still needed) |
 | 4 ML closure models (data protocol, inputs, networks) | to write; currently inside IV.A |
 | 5.1 *A priori* (Sec. IV.A) | drafted 29 Oct with red TODOs: held-out eval, same-config comparison, J=0 baseline on the same samples, curvature sweep |
-| 5.2 Oracle *a posteriori* | needs new results |
+| 5.2 Oracle *a posteriori* | first results 31 Oct (ΔT_w+ΔM_x stable, error 0.6 → 0.2; ΔT_w alone and all-terms unstable) |
 | 5.3 ML-augmented ROM (monochromatic + broadband statistics, grid study, cost) | needs new results |
 | 5.4 Stability (flux-Jacobian eigenvalues; dispersion relation if time) | needs new results |
 | 6 Conclusions | to write |

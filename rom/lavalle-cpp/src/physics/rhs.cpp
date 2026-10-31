@@ -2,12 +2,14 @@
 #include "physics/boundary_conditions.hpp"
 #include "physics/capillary.hpp"
 #include "physics/source_terms.hpp"
+#include "oracle/oracle_forcing.hpp"  // ORACLE
 
 RHS evaluate_rhs(const State& input, double t, const Parameters& p,
                  const ClosureModel& closure, const ChangNoise& noise,
                  FluxDiagnostics* diagnostics) {
     State s=input; // MATLAB solveRHS applies BC to local copies.
     apply_white_noise_bc(s,p.ng,noise,t);
+    if(const auto* o=OracleForcing::active()) o->apply_inlet(s,t,p);  // ORACLE
 
     auto flux=compute_rusanov_fluxes(s,p.ng,p.dx,p,closure,diagnostics);
     RHS rhs(s.size());
@@ -25,6 +27,7 @@ RHS evaluate_rhs(const State& input, double t, const Parameters& p,
         rhs.q[i]+=src[i]+visc[i]+cap.q[i];
         rhs.r[i]+=cap.r[i];
     }
+    if(const auto* o=OracleForcing::active()) o->add_source(rhs.q,t,p);  // ORACLE
     // Ghost RHS stays zero by construction.
     return rhs;
 }
