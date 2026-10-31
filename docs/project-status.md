@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-30 (evening): ROM build fixed; budget check over all closure files; DNS data moved to BasC/DNS; in-situ 1D profile output; oracle DNS restart launched._
+_Last updated: 2026-10-31: oracle a posteriori results (Re120 Ca0.01 β45, 10 Hz)._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -88,15 +88,28 @@ Update this file in the same commit as any change that moves the science forward
 
 ## Next steps
 
-**In progress (30 Oct 2026), branch `oracle-closure`:**
+**Oracle *a posteriori* (31 Oct 2026), Re120 Ca0.01 β45, 10 Hz, t = 1800–1900.** Data in `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/`: `run_t1800/` (DNS), `closures/`, `rom/` (`summary.txt`, `summary.csv`, `runs/`).
 
-- Oracle DNS running: SLURM job 48362419 (bala1s-b, 16 cores, ~65 s per time unit, so ~2 h; at t ≈ 1803.7 when this was written). Restart of L800 (Re120 Ca0.01 β45, 10 Hz) from t = 1800 to 1900, 1D profiles every 0.01, 2D snapshots every 10, dumps every 50. Run directory: `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/run_t1800/`.
-- When it finishes:
-  1. compare its 2D snapshots at t = 1810–1830 with the original L800 snapshots;
-  2. convert the profiles with `pipeline/extract_closures/profiles_to_closures.py`;
-  3. check the time-interpolation error by dropping every other profile.
-- Then the ROM oracle hook in `rom/lavalle-cpp`: ΔF as a face-flux correction, ΔT_w and ΔP_x as sources, linear interpolation in time, DNS-driven inlet and initial state (r = √(h/We) h_x).
-- `test_insitu/` next to `run_t1800/` is a disposable validation run.
+- **DNS restart** (`dns/oracle/filmflow_restart_mono.c`, job 48362419, 1 h 38 min): 10⁴ profiles every 0.01. It reproduces the original L800 run, with an h difference of 0.3%, 0.6% and 0.9% of std(h) at t = 1810, 1820 and 1830.
+- **Time resolution:** linear interpolation over 0.02 has ≤ 0.06% error for ΔM_x, ΔT_w, h and q. ΔP_x is the exception: 14% on the DNS grid and 5% on the ROM grid, so it carries high-frequency temporal content.
+- **ROM oracle** (`rom/lavalle-cpp` oracle module, N = 4000, dt = 0.005, DNS initial state and inlet; corrections are cell averages interpolated linearly in time). h error relative to std(h_DNS), 20 < x < 760:
+
+  | elapsed | Lavalle | +ΔT_w | +ΔT_w+ΔM_x | all four |
+  |---|---|---|---|---|
+  | 1 | 0.115 | 0.283 | 0.060 | 0.014 |
+  | 5 | 0.536 | 1.63 | 0.150 | 0.164 |
+  | 20 | 0.590 | crashed at 7.9 | 0.199 | 0.555 |
+  | 50 | 0.585 | – | 0.192 | crashed at ≈30 |
+  | 99.9 | 1.07 | – | 0.550 | – |
+
+  - Lavalle alone underpredicts the waves: max h is 1.45 against 2.1 for the DNS.
+  - ΔT_w + ΔM_x restores the wave height (max h 2.10 vs 2.12 at elapsed time 50) and stays stable for 100 units; the error rises again near the end (cause not yet identified, possibly phase drift).
+  - ΔT_w alone crashes: h → 0 and the hyperbolicity check fails. ΔT_w and ΔM_x appear to largely cancel, so they should be applied (and possibly learned) together.
+  - All four terms is the most accurate early on but grows faster and crashes at t ≈ 1830. ΔP_x is the suspect, given its high-frequency content (not yet confirmed).
+- **Next:**
+  1. correlation of ΔM_x and ΔT_w (train on the sum?);
+  2. rerun "all" with ΔP_x smoothed, and ΔT_w+ΔM_x+ΔP_x without ΔD_x;
+  3. ROM re-initialised from the DNS every 5–10 units, to separate closure error from phase drift.
 
 See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp`.
 
@@ -130,7 +143,7 @@ Memory models and new architectures go in a Paper 2 only if Paper 1 leaves a gap
 | 3.1–3.3 Depth-integrated model, Lavalle closures, extraction | drafted (Noble–Vila text and the fixes below still needed) |
 | 4 ML closure models (data protocol, inputs, networks) | to write; currently inside IV.A |
 | 5.1 *A priori* (Sec. IV.A) | drafted 29 Oct with red TODOs: held-out eval, same-config comparison, J=0 baseline on the same samples, curvature sweep |
-| 5.2 Oracle *a posteriori* | needs new results |
+| 5.2 Oracle *a posteriori* | first results 31 Oct (ΔT_w+ΔM_x stable, error 0.6 → 0.2; ΔT_w alone and all-terms unstable) |
 | 5.3 ML-augmented ROM (monochromatic + broadband statistics, grid study, cost) | needs new results |
 | 5.4 Stability (flux-Jacobian eigenvalues; dispersion relation if time) | needs new results |
 | 6 Conclusions | to write |
