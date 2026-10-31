@@ -5,14 +5,16 @@
 #include "forcing/chang_noise.hpp"          // Chang white noise inlet BC
 #include "integrators/rk4.hpp"              // RK4 time stepper
 #include "io/hdf5_writer.hpp"               // Output hdf5 files
+#include "oracle/oracle_forcing.hpp"         // ORACLE
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 
-int main(int argc,char** argv){      //Arguments let you run either ./thinfilm or ./thinfilm my_input.txt
+int main(int argc,char** argv){      //Arguments let you run either ./thinfilm or ./thinfilm my_input.txt [oracle.txt]
     try{
         const std::string input=(argc>1)?argv[1]:"input.txt"; //Default to input.txt if not my_input.txt not provided
 
@@ -51,6 +53,10 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         // Initial condition
         std::fill(state.h.begin(),state.h.end(),1.0); std::fill(state.q.begin(),state.q.end(),1.0); 
         std::fill(state.r.begin(),state.r.end(),0.0);
+        double t0=0.0;  // start time of the run
+
+        std::unique_ptr<OracleForcing> oracle;  // ORACLE
+        if(argc>2){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
 
         // Inlet forcing. noise.value(t) gives forcing value at time t
         ChangNoise noise(p.in.MNOISE,p.fcut_noise,p.in.F0_noise,1);
@@ -70,7 +76,7 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         // Start run-time solver. chrono cpp equivalent of tic toc
         auto start=std::chrono::steady_clock::now();
         for(int n=0;n<p.nsteps;++n){
-            const double t=n*p.dt;
+            const double t=t0+n*p.dt;
             const State old=state;
             const double F0=noise.value(t);
             inlet<<std::setprecision(17)<<t<<','<<t*p.TN<<','<<F0<<','<<1.0+F0<<'\n';
