@@ -73,45 +73,21 @@ Update this file in the same commit as any change that moves the science forward
 - Correlates better with curvature κ = h_xx/(1+h_x²)^{3/2} (`ml/thinfilm_mlp/augment_curvature.py`).
 - May need non-Markovian (Mori–Zwanzig) memory.
 
-**Budget closure check (30 Oct 2026, `pipeline/extract_closures/check_momentum_budget.py`)**
+**Budget closure check (30 Oct 2026).** Full write-up: `docs/results/budget-check.md`.
 
-- Uses the (t, t−dt) pair in each snapshot for ∂ₜ. The stored deltas match the raw integrals to machine precision, so C_Lav + ΔC = C_DNS exactly.
-- Restricting the DNS state to the ROM grid (N = 4000) and evaluating a Python replica of the lavalle-cpp q-RHS, d_t q − RHS_ROM ≈ S_ML:
-  - inertial cases close well; at 1 h_N smoothing E1/E0 = |d_t q − RHS_ROM − S_ML| / |d_t q − RHS_ROM| is 0.04 (Re120 Ca0.01 β45, the oracle target, corr 0.999) and 0.10 (Re200 Ca0.01 β6.4);
-  - Re40 Ca0.02 β6.4: 0.35, but the Lavalle misfit itself is only ~7% of d_t q there;
-  - **Re10 Ca0.01 β45 (We = 0.1) does not close** (E1/E0 ≈ 0.9). Mass closes over 1 h_N windows (2%), but the one-step ∂ₜh has grid-scale jitter (15% of its variance below 1 h_N), and the DNS momentum budget leaves 13% of d_t q unexplained even at 1 h_N. Suspect ∫∂ₓp near the interface at large σ, or interfacial terms omitted by the passive-gas form. Treat strongly capillary low-Re cases with caution in training and in the oracle.
-- **Full sweep (all 22 closure files, t = 1000–2000 every 100; results in `ClosureData/budget_check/`):**
-  - at 1 h_N smoothing, the unexplained remainder E1 is ≤ 4.5% of d_t q for 19 of 22 cases; corr(E0, S_ML) ≥ 0.99 for 15. The exceptions are Re10 Ca0.01 β45 (16%), Re80 Ca0.005 β6.4 (9%) and Re20 Ca0.01 β45 (7%), all low We (0.1–0.4);
-  - where it fails, it fails at the same snapshots where the mass equation fails (e.g. Re80 Ca0.005 β6.4 at t = 1500–1600: mass 0.24, E1/E0 0.92; at t = 1000: mass 0.01, E1/E0 0.28). Mass involves no closure, so the one-step ∂ₜ is unreliable there. The per-snapshot mass residual is a cheap data-quality flag;
-  - β = 6.4° cases show E1/E0 ≈ 0.1–0.45 only because Lavalle is already close there (E0 ≈ 7–12% of d_t q); E1 itself is ≤ 3% of d_t q.
-- Rusanov numerical dissipation is ~2% of d_t q for Re120; Noble–Vila capillarity with r = √(h/We) h_x matches h h_xxx/We to ~2–7%.
+- The stored deltas match the raw integrals to machine precision, so C_Lav + ΔC = C_DNS exactly.
+- Over all 22 closure files (t = 1000–2000 every 100), S_ML closes the lavalle-cpp discretisation to ≤ 4.5% of d_t q for 19 cases (1 h_N smoothing). The exceptions are low-We cases (Re10 Ca0.01 β45, Re80 Ca0.005 β6.4, Re20 Ca0.01 β45), where the one-step ∂ₜ is unreliable at the snapshots where the mass equation also fails. The per-snapshot mass residual is a cheap data-quality flag.
 
 ## Next steps
 
-**Oracle *a posteriori* (31 Oct 2026), Re120 Ca0.01 β45, 10 Hz, t = 1800–1900.** Data in `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/`: `run_t1800/` (DNS), `closures/`, `rom/` (`summary.txt`, `summary.csv`, `runs/`).
+**Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.
 
-- **DNS restart** (`dns/oracle/filmflow_restart_mono.c`, job 48362419, 1 h 38 min): 10⁴ profiles every 0.01. It reproduces the original L800 run, with an h difference of 0.3%, 0.6% and 0.9% of std(h) at t = 1810, 1820 and 1830.
-- **Time resolution:** linear interpolation over 0.02 has ≤ 0.06% error for ΔM_x, ΔT_w, h and q. ΔP_x is the exception: 14% on the DNS grid and 5% on the ROM grid, so it carries high-frequency temporal content.
-- **ROM oracle** (`rom/lavalle-cpp` oracle module, N = 4000, dt = 0.005, DNS initial state and inlet; corrections are cell averages interpolated linearly in time). h error relative to std(h_DNS), 20 < x < 760:
+- Lavalle alone: h error ≈ 0.6 (relative to std h) after 5 time units, waves underpredicted (max h 1.45 vs 2.1).
+- ΔT_w + ΔM_x: error ≈ 0.2 for 50 time units, wave height restored, stable for 100.
+- ΔT_w alone and all four terms are unstable (ΔT_w and ΔM_x largely cancel; ΔP_x is the suspect for the all-terms blow-up).
+- Next: ΔM_x/ΔT_w correlation, smoothed ΔP_x, ROM re-initialised from the DNS every 5–10 time units.
 
-  | elapsed | Lavalle | +ΔT_w | +ΔT_w+ΔM_x | all four |
-  |---|---|---|---|---|
-  | 1 | 0.115 | 0.283 | 0.060 | 0.014 |
-  | 5 | 0.536 | 1.63 | 0.150 | 0.164 |
-  | 20 | 0.590 | crashed at 7.9 | 0.199 | 0.555 |
-  | 50 | 0.585 | – | 0.192 | crashed at ≈30 |
-  | 99.9 | 1.07 | – | 0.550 | – |
-
-  - Lavalle alone underpredicts the waves: max h is 1.45 against 2.1 for the DNS.
-  - ΔT_w + ΔM_x restores the wave height (max h 2.10 vs 2.12 at elapsed time 50) and stays stable for 100 units; the error rises again near the end (cause not yet identified, possibly phase drift).
-  - ΔT_w alone crashes: h → 0 and the hyperbolicity check fails. ΔT_w and ΔM_x appear to largely cancel, so they should be applied (and possibly learned) together.
-  - All four terms is the most accurate early on but grows faster and crashes at t ≈ 1830. ΔP_x is the suspect, given its high-frequency content (not yet confirmed).
-- **Next:**
-  1. correlation of ΔM_x and ΔT_w (train on the sum?);
-  2. rerun "all" with ΔP_x smoothed, and ΔT_w+ΔM_x+ΔP_x without ΔD_x;
-  3. ROM re-initialised from the DNS every 5–10 units, to separate closure error from phase drift.
-
-See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp`.
+See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp` (the oracle module in `rom/lavalle-cpp/{include,src}/oracle/` is separate and already done; the learned-closure hook is still to do).
 
 ## Paper 1
 

@@ -34,7 +34,7 @@ Future extensions: gas-sheared films, heated films, and microchannel flow boilin
 | `ml/legacy/` | Early scripts that use the old `Pytorch_ML_env` |
 | `notebooks/analysis/`, `notebooks/ml/` | Exploratory and figure notebooks. Outputs are stripped, and many still contain absolute `/blue` paths |
 | `datasets/` | **Manifests only** (`MANIFEST_dns.csv`, `MANIFEST_rom.csv`) — no data in git |
-| `docs/` | `project-status.md`, `equations.md`, `data-layout.md`, `hipergator.md`, `decisions.md` |
+| `docs/` | `project-status.md` (short, mirrored to claude.ai), `equations.md`, `data-layout.md`, `hipergator.md`, `decisions.md`, `results/` (full write-ups: `budget-check.md`, `oracle-a-posteriori.md`) |
 | `envs/environment.yml` | Python env spec (the env itself lives on /blue) |
 | `env.sh` | `source env.sh` → sets THINFILM_ROOT / THINFILM_STORE / THINFILM_DATA / THINFILM_ENV |
 

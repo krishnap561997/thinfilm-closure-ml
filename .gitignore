@@ -82,6 +82,7 @@ saved_models/
 *.pdf
 !docs/**/*.pdf
 results/
+!docs/results/
 figures/
 !docs/figures/
 
