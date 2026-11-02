@@ -2,6 +2,18 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-01 — Fit ΔM_x + ΔT_w together; test the chain rule first
+
+- Decided by the user: the functional forms are developed for the sum ΔM_x + ΔT_w (and for ΔM_x), not for ΔT_w alone, because the two cancel to about 64% (ΔT_w ≈ −0.64 ΔM_x, corr −0.975). Details and the chain-rule test: `docs/results/functional-form-structure.md`.
+- Approach: sparse regression on a physical library first, PySR as a cross-check; pysindy and pysr installed in `thinfilm-ml-py311` (`envs/pysr_env.sh` sets the Julia paths on /blue). Scores are per case, normalised by each case's σ.
+
+## 2026-11-01 — Fit the ΔM_x / ΔT_w functional forms on t > 1000 only
+
+- Decided by the user: the functional forms for ΔM_x and ΔT_w are fitted (and scored) on snapshots with t > 1000, i.e. developed waves. The budget check and the oracle also use t ≥ 1000.
+- Why: the held-out error of the 1×16 MLP for Re120 Ca0.02 β90 is dominated by an early-time transient (NRMSE 0.33 at t = 200–500, 0.16 at 500–1000, 0.08–0.10 for t ≥ 1000). See `docs/results/mlp-heldout-eval.md`.
+- **Caveat: not verified yet.** The claim that the early-time error is a developing-wave transient comes from Claude's analysis of the prediction files by time bin. The user has not verified it in person (no look at the fields or time series for that case), and it has been checked for only four of the seven held-out cases. The cut at t > 1000 rests on it.
+- **Reminder for Claude:** once the functional-form problem has been addressed (a form is fitted and evaluated), raise this decision again and ask the user to verify the transient claim and confirm that t > 1000 is still the right cut (and whether t = 1000 itself is included; the cache has snapshots every 10).
+
 ## 2026-10-30 — Oracle DNS writes 1D column profiles in situ
 
 - For the oracle restart, Basilisk writes depth-integrated profiles (`dns/include/column_profiles.h`) instead of 2D snapshots: h, q, ∫u², ∫₀ʰ∂ₓp, ∂_z u|₀ and the raw interface velocity, at t and t−dt. That is about 1 MB per output instead of 133 MB, so the output interval can be 0.01 or finer.

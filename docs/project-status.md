@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-10-31: oracle a posteriori results (Re120 Ca0.01 β45, 10 Hz)._
+_Last updated: 2026-11-01: held-out evaluation of the 1×16 MLP._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -77,6 +77,16 @@ Update this file in the same commit as any change that moves the science forward
 
 - The stored deltas match the raw integrals to machine precision, so C_Lav + ΔC = C_DNS exactly.
 - Over all 22 closure files (t = 1000–2000 every 100), S_ML closes the lavalle-cpp discretisation to ≤ 4.5% of d_t q for 19 cases (1 h_N smoothing). The exceptions are low-We cases (Re10 Ca0.01 β45, Re80 Ca0.005 β6.4, Re20 Ca0.01 β45), where the one-step ∂ₜ is unreliable at the snapshots where the mass equation also fails. The per-snapshot mass residual is a cheap data-quality flag.
+
+**Held-out evaluation of the 1×16 MLP (1 Nov 2026).** Full write-up: `docs/results/mlp-heldout-eval.md`.
+
+- On the 7 held-out cases pooled NRMSE is 0.109 (ΔM_x) and 0.100 (ΔT_w); in the nonlinear region (x > 100, h > 1.1 or h < 0.9) it is 0.130 / 0.121 against ≈ 1.2 for Lavalle alone; peak amplitudes within 1.5–3% (ΔT_w Re200 β6.4: 8%).
+- Weakest: Re80 Ca0.005 β6.4 (We = 0.4, flagged by the budget check) and the other β = 6.4° case. Next: functional form.
+
+**Functional-form search for ΔM_x and ΔM_x + ΔT_w (1 Nov 2026).** Full write-up: `docs/results/functional-form-structure.md`.
+
+- ΔT_w ≈ −0.64 ΔM_x (corr −0.975): the two cancel only partly, so forms are developed for the sum ΔM_x + ΔT_w. ΔM_x = ∂ₓΔF with ΔF ≈ F(h, q) (R² ≈ 0.997); it is nearly linear in h_x, q_x.
+- Pooled sparse regression (t > 1000): ΔM_x has a 5-term form with no Re/Ca/β dependence (leave-one-case-out NRMSE 0.129, held-out 0.093, β = 6.4° holdout 0.127). The sum has no adequate sparse form yet (LOCO ≈ 0.35–0.4). Not yet compared with the MLP on the same data; t > 1000 cut still to be verified by the user.
 
 ## Next steps
 
