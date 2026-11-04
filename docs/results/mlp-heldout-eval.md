@@ -32,7 +32,7 @@ Per case, nonlinear-region NRMSE (ΔM_x / ΔT_w):
 - The nonlinear region holds 49–75% of the samples, so it is most of the domain, not a few crests.
 - Median peak amplitude error of max|ΔC| per snapshot: 1.5–3.3% for ΔM_x; 1.4–3.6% for ΔT_w except Re200 β6.4 (8.2%). Peak position is within one grid cell (ΔT_w Re80 Ca0.005: two).
 - Bias is below 0.05σ everywhere.
-- Worst case for both targets: Re80 Ca0.005 β6.4 (We = 0.4), a case the budget check already flags (`budget-check.md`). The β = 6.4° cases are the weakest group.
+- Worst case for both targets: Re80 Ca0.005 β6.4 (We = 0.4). The budget check flags the same case, but that concerns the one-step ∂ₜ; the error is not tied to low We (see "What drives the error" in `functional-form-structure.md`: it follows Fr² and small correction size). The β = 6.4° cases are the weakest group.
 
 ## Caveats
 
@@ -44,11 +44,11 @@ Per case, nonlinear-region NRMSE (ΔM_x / ΔT_w):
 
 `scripts/mlp_error_vs_mass_residual.py`: NRMSE (x > 100) at the 11 snapshots shared with the budget check (t = 1000–2000 every 100), against the per-snapshot mass residual.
 
-- Re80 Ca0.005 β6.4: NRMSE on snapshots with mass residual < 0.05 is 0.225 (ΔM_x) / 0.185 (ΔT_w); on snapshots with residual > 0.1 it is 0.221 / 0.190. Rank correlation 0.25 / 0.47 over 11 points. The error is the same on good and poor snapshots, so it is not noisy targets: the model is genuinely less accurate at this low-We, low-β point. Only one snapshot is < 0.05 and few cases have enough of both kinds to say more.
+- Re80 Ca0.005 β6.4: NRMSE on snapshots with mass residual < 0.05 is 0.225 (ΔM_x) / 0.185 (ΔT_w); on snapshots with residual > 0.1 it is 0.221 / 0.190. Rank correlation 0.25 / 0.47 over 11 points. The error is the same on good and poor snapshots, so it is not noisy targets: the model is genuinely less accurate at this low-β point (low We is not the driver, see `functional-form-structure.md`). Only one snapshot is < 0.05 and few cases have enough of both kinds to say more.
 - By time, the error in this case and in Re200 Ca0.01 β6.4 is flat from t = 200 on (0.22 and 0.13 for ΔM_x), i.e. a systematic misfit and not a startup transient.
 - Re120 Ca0.02 β90 behaves differently: 0.325 (ΔM_x) / 0.303 (ΔT_w) at t = 200–500, 0.16 at 500–1000, and 0.08–0.10 for t ≥ 1000. Its large held-out error is an early-time transient (waves still developing); the developed state is predicted well. Its 0.195 / 0.186 in the table above is dominated by t < 1000, while the budget check and the oracle use t ≥ 1000.
 
 ## Open items
 
-1. Decide how to weight the β = 6.4° (and low-We) cases when designing the functional form; their error is systematic.
+1. Decide how to weight the β = 6.4° (small-correction) cases when designing the functional form; their error is systematic.
 2. Decide whether the form is fitted on t ≥ 1000 only (developed waves) or on the whole record.

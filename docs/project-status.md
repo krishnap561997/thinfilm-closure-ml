@@ -81,7 +81,7 @@ Update this file in the same commit as any change that moves the science forward
 **Held-out evaluation of the 1×16 MLP (1 Nov 2026).** Full write-up: `docs/results/mlp-heldout-eval.md`.
 
 - On the 7 held-out cases pooled NRMSE is 0.109 (ΔM_x) and 0.100 (ΔT_w); in the nonlinear region (x > 100, h > 1.1 or h < 0.9) it is 0.130 / 0.121 against ≈ 1.2 for Lavalle alone; peak amplitudes within 1.5–3% (ΔT_w Re200 β6.4: 8%).
-- Weakest: Re80 Ca0.005 β6.4 (We = 0.4, flagged by the budget check) and the other β = 6.4° case. Next: functional form.
+- Weakest: Re80 Ca0.005 β6.4 and the other β = 6.4° case. The error tracks low Fr² and small correction size, not We (`docs/results/functional-form-structure.md`). Next: functional form.
 
 **Functional-form search for ΔM_x and ΔM_x + ΔT_w (1 Nov 2026).** Full write-up: `docs/results/functional-form-structure.md`.
 

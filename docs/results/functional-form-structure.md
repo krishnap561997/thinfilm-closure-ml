@@ -55,9 +55,27 @@ Greedy forward selection on base(h,q) × gradient × parameter factor, trained o
 
 **Caveats:** metric (rms-normalised) and time window differ from `mlp-heldout-eval.md`, so no MLP comparison yet; q ≈ h³ makes the monomials collinear (coefficients not individually interpretable); greedy selection is noisy (LOCO not monotonic in k).
 
+## What drives the error? (`scripts/error_vs_parameters.py`)
+
+The 5-term ΔM_x form and the 9-term sum form evaluated on all 22 cases (t > 1000), Spearman correlation of the per-case relative error (RMSE/rms of the truth) with the case parameters. Dev cases are in-sample for the pooled fit.
+
+| | ΔM_x all 22 | ΔM_x held-out 7 | sum all 22 | sum held-out 7 |
+|---|---|---|---|---|
+| We | +0.12 | −0.21 | +0.11 | −0.07 |
+| Fr² | −0.71 | −0.61 | −0.75 | −0.71 |
+| β | −0.39 | −0.47 | −0.49 | −0.76 |
+| Re | −0.44 | −0.47 | −0.45 | −0.20 |
+| rms(ΔC)/rms(M_x,Lav) | −0.60 | −0.57 | −0.62 | −0.79 |
+
+- **We is not the driver.** The lowest-We cases are well predicted (Re40 Ca0.01 β90, We = 0.4: 0.047; Re20 Ca0.01 β45, We = 0.2: 0.092). The earlier reading of the Re80 Ca0.005 β6.4 error as a low-We effect was wrong; it is a low-β effect.
+- **Low Fr², small corrections are hard in relative terms.** The β = 6.4° cases have ΔM_x of only 22–30% of the Lavalle term (rms), NRMSE 0.08–0.15 against 0.05–0.09 for most β = 45° and 90° cases. Their absolute RMSE is nearly constant (0.007–0.010); an error floor of about 0.01 (derivative smoothing or extraction noise?) would explain this. Untested.
+- **A second hard group is high Ca** (Re10 Ca0.1, Re20 Ca0.06, Re40 Ca0.1 at β45/90): NRMSE 0.22–0.27 (ΔM_x) and 0.43–0.56 (sum), the largest absolute errors (0.11–0.20). Separate failure, probably missing terms for strongly nonlinear, low-σ waves.
+- Caveats: Fr² = Re sinβ/3, so Fr², β and relative correction size are confounded (22 points cannot separate them); correlations only; two sparse forms, not the MLP.
+
 ## Open items
 
-1. Re-score the 1×16 MLP and the 5-term form on the same t > 1000 data, metric and nonlinear region.
+1. Test whether a ~0.01 absolute error floor comes from derivative smoothing or extraction noise (vary the Savitzky–Golay window, compare with the level-15 mesh data if available).
+2. Re-score the 1×16 MLP and the 5-term form on the same t > 1000 data, metric and nonlinear region.
 2. Better library for the sum: use s = q − h³ instead of q, h_xx/q_xx with Re and We factors.
 3. Fit F through its gradient (strict chain rule) and test a collinearity-reduced basis for ΔM_x.
 4. PySR cross-check: setup (Julia download) was not confirmed finished; test `import pysr` with `envs/pysr_env.sh`.
