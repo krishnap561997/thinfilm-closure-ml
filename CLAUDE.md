@@ -28,13 +28,14 @@ Future extensions: gas-sheared films, heated films, and microchannel flow boilin
 | `rom/lavalle-cpp/` | C++ Lavalle two-equation solver (Rusanov + MUSCL, RK4, Noble–Vila capillarity, Chang noise forcing, HDF5 out). Build: `module load gcc/14.2.0 hdf5 && make` |
 | `rom/matlab/` | Original MATLAB ROM (monochromatic + white-noise), `cases/ROM_Ca_Re_sweep/*/input.txt` |
 | `pipeline/extract_closures/` | DNS → depth-integrated quantities and closure terms (`extract_closure_terms.py`); `generate_extraction_jobs.py` writes per-case SLURM jobs into the data store; `profiles_to_closures.py` does the same from in-situ 1D profiles; `check_momentum_budget.py` + `run_budget_check.sh` check that the budget closes (see its README) |
+| `scripts/mesh_study/` | Mesh-sensitivity tools: transient-exit finder and crest-aligned comparison of two closure files (see its README) |
 | `analysis/conditional_statistics/` | Conditional statistics of closure terms (peaks, regions) |
 | `ml/functional_mlp/` | Shallow MLPs on (h, q, derivatives) — ablations for ΔM_x and ΔT_w |
 | `ml/thinfilm_mlp/` | Neighbour-stencil MLP and curvature-feature experiments |
 | `ml/legacy/` | Early scripts that use the old `Pytorch_ML_env` |
 | `notebooks/analysis/`, `notebooks/ml/` | Exploratory and figure notebooks. Outputs are stripped, and many still contain absolute `/blue` paths |
 | `datasets/` | **Manifests only** (`MANIFEST_dns.csv`, `MANIFEST_rom.csv`) — no data in git |
-| `docs/` | `project-status.md` (short, mirrored to claude.ai), `equations.md`, `data-layout.md`, `hipergator.md`, `decisions.md`, `results/` (full write-ups: `budget-check.md`, `oracle-a-posteriori.md`) |
+| `docs/` | `project-status.md` (short, mirrored to claude.ai), `equations.md`, `data-layout.md`, `hipergator.md`, `decisions.md`, `results/` (full write-ups: `budget-check.md`, `oracle-a-posteriori.md`, `mesh-sensitivity.md`) |
 | `envs/environment.yml` | Python env spec (the env itself lives on /blue) |
 | `env.sh` | `source env.sh` → sets THINFILM_ROOT / THINFILM_STORE / THINFILM_DATA / THINFILM_ENV |
 

@@ -88,6 +88,14 @@ Update this file in the same commit as any change that moves the science forward
 - ΔT_w ≈ −0.64 ΔM_x (corr −0.975): the two cancel only partly, so forms are developed for the sum ΔM_x + ΔT_w. ΔM_x = ∂ₓΔF with ΔF ≈ F(h, q) (R² ≈ 0.997); it is nearly linear in h_x, q_x.
 - Pooled sparse regression (t > 1000): ΔM_x has a 5-term form with no Re/Ca/β dependence (leave-one-case-out NRMSE 0.129, held-out 0.093, β = 6.4° holdout 0.127). The sum has no adequate sparse form yet (LOCO ≈ 0.35–0.4). Not yet compared with the MLP on the same data; t > 1000 cut still to be verified by the user.
 
+**Mesh sensitivity, MAXLEVEL 14 vs 15 (3 Nov 2026).** Full write-up: `docs/results/mesh-sensitivity.md`. Re120 Ca0.01 β45, 10 Hz, t = 550–650 (level 15 stops at t = 650), crest-aligned.
+
+- Level 15 waves are 1.2% faster (celerity 1.937 vs 1.913); crest height and wavelength agree.
+- ΔM_x and ΔT_w agree (peaks within 1%, same position relative to the crest, correlation 0.998). Raw ΔP_x and ΔD_x differ because of grid-scale extraction noise; after a common Gaussian smoothing S_ML agrees to about 10%.
+- Caveats: transient (unsaturated) window; DT = 0.003 cap at level 14, CFL-limited at level 15.
+
+**New DNS runs (3 Nov 2026).** 8 white-noise cases farthest (in log Re, log Ca, log sinβ) from existing data were submitted on `bala1s-b` (4 days, 16 CPUs): Re020_Ca0_001_theta6_4, Re010_Ca0_001_theta90, Re020_Ca0_005_theta6_4, Re020_Ca0_002_theta90, Re040_Ca0_002_theta6_4, Re010_Ca0_040_theta90, Re080_Ca0_060_theta45, Re020_Ca0_020_theta6_4. Re10 β6.4° was excluded (linearly stable); the Re20 β6.4° cases are close to marginal and may not saturate. Refresh the manifest when they finish.
+
 ## Next steps
 
 **Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.

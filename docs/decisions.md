@@ -65,3 +65,5 @@ Record each decision as a short entry: what was decided and why. Newest entries 
 
 - ΔD_x is dropped from the ML targets because it is negligible.
 - Priority targets are ΔM_x and ΔT_w; ΔP_x is under investigation.
+
+- 2026-11-03: Mesh study level 14 vs 15 (Re120 Ca0.01 β45, 10 Hz, t = 550–650, crest-aligned): celerity +1.2 % at level 15; ΔM_x, ΔT_w peaks within 1 %; raw ΔP_x/ΔD_x differ (extraction noise). Level 15 stops at t = 650 and has a CFL-limited dt vs the DT = 0.003 cap at level 14. Details: `docs/results/mesh-sensitivity.md`.
