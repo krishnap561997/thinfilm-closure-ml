@@ -25,6 +25,7 @@ Record each decision as a short entry: what was decided and why. Newest entries 
 - `$THINFILM_STORE/datasets/BasC/param_space` is now `$THINFILM_STORE/datasets/BasC/DNS/param_space`; its contents, including `ClosureData/`, are unchanged. `fixed-frequency/` and `liu1994/` stay in `BasC/`.
 - Every text reference was rewritten: repo configs, scripts, manifests, docs and notebooks; the ClosureData extraction configs; and the old code copies under `$THINFILM_STORE/codes/`. The list of edited files and a backup of the originals are in `BasC/DNS/PATH_MIGRATION_2026-10-30.txt`.
 - ML caches or saved runs that store absolute data paths in binary files (`.npz`, `.pt`) were not rewritten. Rebuild a cache if it fails to find its source files.
+- **Correction (4 Nov):** the 30 Oct search used `rg`, which skips git-ignored paths, so it missed `codes/ml-models/functional_mlp/cache_dir/manifest.json` and two scripts in the store (`ClosureData/run.sh`, `param_space/count_sim_files.sh`). They were fixed on 4 Nov (originals in `BasC/DNS/path_migration_2026-11-04_originals.tgz`). The manifest's cache `id` is stored, not recomputed, so it is unchanged. Remaining old-path mentions are intentional: 50 SLURM logs in `ClosureData/logs/`, Jupyter `.ipynb_checkpoints`, and the migration records.
 
 ## 2026-10-29 — Paper 1 scope, venue and closure targets
 

@@ -51,7 +51,7 @@ Future extensions: gas-sheared films, heated films, and microchannel flow boilin
   - Python env: `$THINFILM_STORE/software/envs/thinfilm-ml-py311`
   - ML caches/runs: `$THINFILM_STORE/codes/ml-models/{functional_mlp,thinfilm_mlp}/{cache_dir,runs}`
 - Many configs and notebooks still hard-code these `/blue/.../thinfilm-closure-ml/...` paths. They keep working because the store has not moved. **Do not move or rename the store directory.**
-- On 2026-10-30 `BasC/param_space` moved to `BasC/DNS/param_space`, and every text reference was rewritten (see `docs/decisions.md`). Search for and update hard-coded paths whenever you move anything in the store.
+- On 2026-10-30 `BasC/param_space` moved to `BasC/DNS/param_space`; references were rewritten on 30 Oct and again on 4 Nov (the first pass skipped git-ignored folders such as `cache_dir/`; see `docs/decisions.md`). Old SLURM logs and `.ipynb_checkpoints` deliberately keep the old path. When you move anything in the store, search with `grep -rIl` (it ignores `.gitignore`; `rg` does not unless given `--no-ignore`) and update hard-coded paths.
 
 ## Conventions and rules
 
