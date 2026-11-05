@@ -1,5 +1,7 @@
 # Structure of ΔM_x and ΔM_x + ΔT_w (towards a functional form)
 
+_Figures: [`figures/functional-form-structure/`](figures/functional-form-structure/)_
+
 Before searching for closed forms: how do ΔM_x and ΔT_w relate, and does ΔM_x follow from a flux defect ΔF(h, q)? All with t > 1000, 100 < x < 0.95 L, 22 cases from the `ml/functional_mlp` cache.
 
 ## Cancellation of ΔM_x and ΔT_w (`scripts/check_mx_tw_cancellation.py`)

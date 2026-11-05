@@ -1,5 +1,7 @@
 # Oracle *a posteriori* runs
 
+_Figures: [`figures/oracle-a-posteriori/`](figures/oracle-a-posteriori/)_
+
 Run the ROM with the exact DNS corrections ΔC(x, t) and compare with the DNS. This tests the closure framework independently of any learned model. Source for Paper 1 Sec. 5.2.
 
 ## Setup (Re120, Ca0.01, β45°, 10 Hz, t = 1800–1900)

@@ -85,6 +85,8 @@ results/
 !docs/results/
 figures/
 !docs/figures/
+!docs/results/figures/
+!docs/results/figures/**
 
 # --- Python / Jupyter ---
 __pycache__/

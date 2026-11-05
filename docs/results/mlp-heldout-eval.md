@@ -1,5 +1,7 @@
 # 1×16 MLP on held-out cases (ΔM_x, ΔT_w)
 
+_Figures: [`figures/mlp-heldout-eval/`](figures/mlp-heldout-eval/)_
+
 Is the shallow MLP good enough on unseen cases, especially in the nonlinear wave regions, to justify looking for a closed functional form in (h, q, h_x, q_x, Re, Ca, β)?
 
 ## Setup

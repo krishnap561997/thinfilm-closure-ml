@@ -1,5 +1,7 @@
 # Mesh sensitivity: MAXLEVEL 14 vs 15 (Re120, Ca0.01, β45°, 10 Hz, L = 800)
 
+_Figures: [`figures/mesh-sensitivity/`](figures/mesh-sensitivity/)_
+
 Runs: `length-check/L800` (level 14) and `length-check/L800_Level15` in the data store.
 Scripts: `scripts/mesh_study/{find_transient_exit,compare_mesh}.py`. Closure files, figures and CSVs:
 `$THINFILM_STORE/datasets/BasC/DNS/param_space/ClosureData/mesh_study/` (`compare/`).

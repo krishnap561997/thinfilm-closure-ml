@@ -1,5 +1,7 @@
 # Momentum-budget closure check
 
+_Figures: [`figures/budget-check/`](figures/budget-check/)_
+
 Does the depth-integrated mass and momentum budget close with the extracted terms, and does S_ML close the lavalle-cpp discretisation? Run before the oracle so that bookkeeping errors are not mistaken for physics.
 
 - **Code:** `pipeline/extract_closures/check_momentum_budget.py` (commit 26aefd9), `run_budget_check.sh`. Metrics are defined in `pipeline/extract_closures/README.md`.
