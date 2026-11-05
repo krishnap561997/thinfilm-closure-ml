@@ -48,7 +48,50 @@ Per case, nonlinear-region NRMSE (ΔM_x / ΔT_w):
 - By time, the error in this case and in Re200 Ca0.01 β6.4 is flat from t = 200 on (0.22 and 0.13 for ΔM_x), i.e. a systematic misfit and not a startup transient.
 - Re120 Ca0.02 β90 behaves differently: 0.325 (ΔM_x) / 0.303 (ΔT_w) at t = 200–500, 0.16 at 500–1000, and 0.08–0.10 for t ≥ 1000. Its large held-out error is an early-time transient (waves still developing); the developed state is predicted well. Its 0.195 / 0.186 in the table above is dominated by t < 1000, while the budget check and the oracle use t ≥ 1000.
 
+## Fewer inputs: (h, h_x) only (4 Nov 2026)
+
+Two more cases of the same ablation (`ablation_01/layers1_width16/h_hx/{delta_Mx_ML,delta_Tw_ML}/seed42`, tasks 16–17, SLURM job 49560900): 1×16, 100 epochs, no early stopping, seed 42, same cache. Inputs h and h_x plus Re, Ca, angle (no q, no q_x). Held-out evaluation with `evaluate.py --split heldout` and `scripts/mlp_wave_region_summary.py` as above; validation table from `scripts/ablation_summary.py`.
+
+**Validation** (sqrt of normalised MSE, 100 epochs; the best epoch is the last one for every row except the local baseline):
+
+| Inputs (plus Re, Ca, β) | ΔM_x | ΔT_w |
+|---|---|---|
+| h, q | 0.949 | 0.953 |
+| h, q, q_x | 0.230 | 0.263 |
+| h, q, h_x | 0.177 | 0.222 |
+| **h, h_x** | **0.171** | **0.213** |
+| h, q, h_x, q_x | 0.158 | 0.212 |
+| h, q, h_x, q_x, h_xx, q_xx | 0.154 | 0.211 |
+
+**Held-out, nonlinear region** (NRMSE / σ_case; Lavalle alone ≈ 1.24):
+
+| | (h, h_x) | (h, q, h_x, q_x) |
+|---|---|---|
+| ΔM_x pooled / mean over the 7 cases | 0.146 / 0.164 | **0.130 / 0.142** |
+| ΔT_w pooled / mean over the 7 cases | **0.115** / 0.135 | 0.121 / **0.125** |
+| R² nonlinear (ΔM_x / ΔT_w) | 0.986 / 0.991 | 0.989 / 0.990 |
+
+Per case, nonlinear-region NRMSE, (h, h_x) vs (h, q, h_x, q_x):
+
+| Case | ΔM_x | ΔT_w |
+|---|---|---|
+| Re20 Ca0.01 β45 | 0.099 vs 0.089 | 0.132 vs 0.110 |
+| Re40 Ca0.04 β45 | 0.129 vs 0.107 | 0.074 vs 0.078 |
+| Re80 Ca0.005 β6.4 | 0.248 vs 0.286 | 0.250 vs 0.226 |
+| Re80 Ca0.01 β90 | 0.068 vs 0.057 | 0.059 vs 0.057 |
+| Re120 Ca0.01 β45 | 0.101 vs 0.082 | 0.082 vs 0.068 |
+| Re120 Ca0.02 β90 | 0.210 vs 0.195 | 0.161 vs 0.186 |
+| Re200 Ca0.01 β6.4 | **0.296** vs 0.178 | 0.186 vs 0.149 |
+
+- h and h_x alone remove about 90% of the Lavalle error in the nonlinear region (R² ≥ 0.986 for both targets). Peak positions stay within one grid cell (≤ 0.07) and peak-amplitude errors are 0.7–6.4%.
+- Adding q to (h, h_x) does not help: (h, q, h_x) is worse than (h, h_x) on validation for both targets, so q carries no useful information once h_x is present. q_x is what gives the remaining gain (ΔM_x 0.171 → 0.158 on validation).
+- ΔT_w: equal on validation (0.213 vs 0.212) and slightly better pooled on held-out, but worse in 5 of 7 cases and 8% worse on the case mean; the pooled value is dominated by the large-σ cases. Not an improvement.
+- ΔM_x: 12–15% worse on held-out, and the loss is concentrated at Re200 Ca0.01 β6.4 (0.296 vs 0.178, bias −0.088σ, peak-amplitude error 6.4%). This suggests q_x (or q) matters at high Re and low β; not tested directly. Re80 Ca0.005 β6.4 improves for ΔM_x (0.286 → 0.248) but remains among the worst.
+- Caveats: single seed, so differences of 0.01–0.02 may be within seed spread (not measured); the models are not converged at 100 epochs; held-out cases are interleaved with the development cases.
+
 ## Open items
 
 1. Decide how to weight the β = 6.4° (small-correction) cases when designing the functional form; their error is systematic.
 2. Decide whether the form is fitted on t ≥ 1000 only (developed waves) or on the whole record.
+3. Measure the seed-to-seed spread (2 more seeds for the (h, h_x) and (h, q, h_x, q_x) groups) before drawing conclusions from differences below ~0.02.
+4. Test whether adding q_x (or q) to (h, h_x) removes the Re200 β6.4 ΔM_x gap, i.e. whether q_x is needed at high Re and low β.
