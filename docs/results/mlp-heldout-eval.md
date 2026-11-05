@@ -91,6 +91,38 @@ Per case, nonlinear-region NRMSE, (h, h_x) vs (h, q, h_x, q_x):
 - ΔM_x: 12–15% worse on held-out, and the loss is concentrated at Re200 Ca0.01 β6.4 (0.296 vs 0.178, bias −0.088σ, peak-amplitude error 6.4%). This suggests q_x (or q) matters at high Re and low β; not tested directly. Re80 Ca0.005 β6.4 improves for ΔM_x (0.286 → 0.248) but remains among the worst.
 - Caveats: single seed, so differences of 0.01–0.02 may be within seed spread (not measured); the models are not converged at 100 epochs; held-out cases are interleaved with the development cases.
 
+## Sum target ΔM_x + ΔT_w: (h, h_x, q) vs (h, h_x) (5 Nov 2026)
+
+Two models for the combined correction that enters S_ML, for the *a posteriori* tests (`ablation_02_sum/layers1_width16/{h_hx_q,h_hx}/delta_MxTw_ML/seed42`, SLURM job 49820013). The target `delta_MxTw_ML` = `delta_Mx_ML` + `delta_Tw_ML` is built on the fly in `ml/functional_mlp/datasets.py`; the cache is unchanged. 1×16, 100 epochs, no early stopping, seed 42, same cache and splits as `ablation_01`. Inputs: (h, h_x, q) or (h, h_x), plus Re, Ca, angle. Evaluated with `evaluate.py` (val, heldout) and `scripts/mlp_wave_region_summary.py`.
+
+NRMSE here is normalised by the std of the *sum*, which is smaller than that of ΔM_x or ΔT_w because they partly cancel. The numbers are therefore not comparable with the single-target tables above.
+
+| | (h, h_x, q) | (h, h_x) |
+|---|---|---|
+| Validation √loss (final epoch) | 0.300 | **0.289** |
+| Validation pooled NRMSE / R² | 0.318 / 0.899 | **0.306 / 0.906** |
+| Held-out pooled NRMSE / R² | 0.260 / 0.933 | **0.243 / 0.941** |
+| Held-out nonlinear region, pooled NRMSE (Lavalle alone 1.235) | 0.308 | **0.287** |
+| Held-out R² nonlinear | 0.938 | **0.946** |
+
+Held-out nonlinear-region NRMSE per case, (h, h_x, q) vs (h, h_x):
+
+| Case | NRMSE | Bias (h, h_x) |
+|---|---|---|
+| Re20 Ca0.01 β45 | **0.220** vs 0.269 | 0.005 |
+| Re40 Ca0.04 β45 | 0.314 vs **0.291** | 0.034 |
+| Re80 Ca0.005 β6.4 | **0.557** vs 0.672 | **−0.308** |
+| Re80 Ca0.01 β90 | 0.176 vs **0.159** | −0.010 |
+| Re120 Ca0.01 β45 | 0.219 vs **0.206** | −0.013 |
+| Re120 Ca0.02 β90 | 0.398 vs **0.356** | 0.016 |
+| Re200 Ca0.01 β6.4 | 0.600 vs **0.563** | 0.073 |
+
+- Both remove 75–80% of the Lavalle error in the nonlinear region (1.235 → 0.29–0.31), but the sum is about twice as hard as either component (0.25 vs 0.11 pooled held-out): the small residual of two large, anticorrelated terms is predicted less accurately.
+- (h, h_x) is slightly better than (h, h_x, q) in aggregate (validation, held-out pooled, nonlinear region), consistent with q adding nothing once h_x is present. The margin is 5–8% and from a single seed, so it is not significant.
+- Per case the picture is mixed: (h, h_x) wins in 5 of 7 cases but is clearly worse at Re20 Ca0.01 β45 (0.269 vs 0.220) and at Re80 Ca0.005 β6.4 (0.672 vs 0.557). The latter has a large negative nonlinear-region bias (−0.308σ) and an inlet error of 0.34σ, against 0.27σ for the model with q.
+- Both are poor at the two β = 6.4° cases (NRMSE 0.56–0.67 and 0.56–0.60, R² 0.77–0.84). At Re200 Ca0.01 β6.4 the median peak-position offset (pkDx) is 1.7 for both models, against ≤ 0.2 elsewhere. The sum for these cases may need more than local (h, h_x).
+- Caveats: single seed, not converged at 100 epochs, and no *a posteriori* result yet; a small *a priori* NRMSE on the sum does not guarantee a stable ROM.
+
 ## Where it fails
 
 Figures: [`limit01`](figures/mlp-heldout-eval/limit01_error_vs_time.png), [`limit02`](figures/mlp-heldout-eval/limit02_learning_curves.png), [`limit03`](figures/mlp-heldout-eval/limit03_worst_case_errors.png); the R² versions of the ablation figures are `fig04` and `fig05`.

@@ -12,6 +12,34 @@ from pathlib import Path
 import numpy as np
 from torch.utils.data import Dataset
 
+# Derived targets: computed on the fly as the sum of cached component fields,
+# so the immutable cache needs no new arrays. ΔM_x + ΔT_w is the combination
+# that enters S_ML (−ΔM_x − ΔT_w), see docs/results/functional-form-structure.md.
+DERIVED_TARGETS = {'delta_MxTw_ML': ('delta_Mx_ML', 'delta_Tw_ML')}
+
+
+def check_targets(targets, available):
+    """Validate requested targets against cached and derived target names."""
+    targets = list(targets)
+    if not targets or len(set(targets)) != len(targets):
+        raise ValueError('Targets must be nonempty and unique')
+    available = set(available)
+    for t in targets:
+        if t not in available and not set(DERIVED_TARGETS.get(t, (t,))) <= available:
+            raise ValueError(f'Requested target {t} is not in this cache')
+    return targets
+
+
+def target_fields(targets):
+    """Cached arrays needed to build the requested targets."""
+    return list(dict.fromkeys(f for t in targets for f in DERIVED_TARGETS.get(t, (t,))))
+
+
+def target_values(m, targets, it, ix):
+    """Stack target values at (it, ix), summing components of derived targets."""
+    return np.stack([sum(m[f][it, ix] for f in DERIVED_TARGETS.get(t, (t,)))
+                     for t in targets], axis=1)
+
 
 class WindowDataset(Dataset):
     """Expose one cached split as a PyTorch dataset across multiple cases."""
@@ -32,11 +60,7 @@ class WindowDataset(Dataset):
             raise ValueError("input_fields must be ['h','q'] or ['h','q','curvature']")
         self.channels = len(self.input_fields) + 1  # signed dx is last
 
-        self.targets = list(targets)
-        if not self.targets or len(set(targets)) != len(targets):
-            raise ValueError('Targets must be nonempty and unique')
-        if not set(targets) <= set(self.manifest['config']['available_targets']):
-            raise ValueError('Requested targets are not in this cache')
+        self.targets = check_targets(targets, self.manifest['config']['available_targets'])
 
         if half_window < 0 or stride < 1:
             raise ValueError('half_window >= 0 and stride >= 1 required')
@@ -91,7 +115,7 @@ class WindowDataset(Dataset):
             folder = self.root / self.entries[ci]['name']
             self._maps[ci] = {
                 k: np.load(folder / f'{k}.npy', mmap_mode='r')
-                for k in self.input_fields + ['x', self.split + '_indices'] + self.targets
+                for k in self.input_fields + ['x', self.split + '_indices'] + target_fields(self.targets)
             }
         return self._maps[ci]
 
@@ -133,7 +157,7 @@ class WindowDataset(Dataset):
             X[where, -3:] = self.entries[ci]['parameters']
 
             # Targets are always evaluated at the local center (it, ix).
-            Y[where] = np.stack([m[k][it, ix] for k in self.targets], axis=1)
+            Y[where] = target_values(m, self.targets, it, ix)
 
         # Case IDs allow training and validation to weight cases equally.
         return list(zip(X, Y, cases.astype(np.int64)))
@@ -169,11 +193,7 @@ class LocalDataset(WindowDataset):
                 or not set(self.input_fields) <= allowed):
             raise ValueError('Input fields must be a nonempty unique subset of h, q, h_x, h_xx, q_x, q_xx')
 
-        self.targets = list(targets)
-        if not self.targets or len(set(self.targets)) != len(self.targets):
-            raise ValueError('Targets must be nonempty and unique')
-        if not set(self.targets) <= set(self.manifest['config']['available_targets']):
-            raise ValueError('Requested targets are not in this cache')
+        self.targets = check_targets(targets, self.manifest['config']['available_targets'])
 
         self.entries = [e for e in self.manifest['cases'] if split in e['splits']]
         if not self.entries:
@@ -196,7 +216,7 @@ class LocalDataset(WindowDataset):
             if indices.shape != (n, 2):
                 raise ValueError(f'{entry["name"]}: invalid {split} index shape')
             nx, nt = entry['shape']
-            for field in dict.fromkeys(self.input_fields + self.targets):
+            for field in dict.fromkeys(self.input_fields + target_fields(self.targets)):
                 arr = np.load(self._field_path(folder, field), mmap_mode='r')
                 expected = (n,) if field in allowed - {'h', 'q'} else (nt, nx)
                 if arr.shape != expected:
@@ -214,7 +234,7 @@ class LocalDataset(WindowDataset):
             folder = self.root / self.entries[ci]['name']
             self._maps[ci] = {
                 field: np.load(self._field_path(folder, field), mmap_mode='r')
-                for field in self.input_fields + self.targets
+                for field in self.input_fields + target_fields(self.targets)
             }
             # Coordinates are retained for prediction export compatibility.
             for field in ['x', self.split + '_indices']:
@@ -242,6 +262,6 @@ class LocalDataset(WindowDataset):
                     m[field][it, ix] if field in {'h', 'q'} else m[field][rows]
                 )
             X[where, -3:] = self.entries[ci]['parameters']
-            Y[where] = np.stack([m[field][it, ix] for field in self.targets], axis=1)
+            Y[where] = target_values(m, self.targets, it, ix)
 
         return list(zip(X, Y, cases.astype(np.int64)))

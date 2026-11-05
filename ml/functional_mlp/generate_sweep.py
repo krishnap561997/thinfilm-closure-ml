@@ -6,7 +6,7 @@ import re
 import shlex
 from pathlib import Path
 
-from datasets import LocalDataset
+from datasets import DERIVED_TARGETS, LocalDataset, check_targets
 
 
 def generate(config, output):
@@ -33,10 +33,9 @@ def generate(config, output):
         raise ValueError('no_early_stopping must be boolean')
     if any(type(s) is not int or s < 0 for s in seeds) or len(set(seeds)) != len(seeds):
         raise ValueError('Seeds must be unique nonnegative integers')
-    if (len(set(targets)) != len(targets)
-            or not set(targets) <= {'delta_Mx_ML', 'delta_Tw_ML'}
-            or not set(targets) <= set(manifest['config']['available_targets'])):
-        raise ValueError('Targets must be unique available correction names')
+    if not set(targets) <= {'delta_Mx_ML', 'delta_Tw_ML', *DERIVED_TARGETS}:
+        raise ValueError('Targets must be correction names')
+    check_targets(targets, manifest['config']['available_targets'])
 
     sizes = []
     for net in networks:
