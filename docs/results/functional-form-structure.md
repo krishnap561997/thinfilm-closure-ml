@@ -74,6 +74,16 @@ The 5-term ΔM_x form and the 9-term sum form evaluated on all 22 cases (t > 100
 - **A second hard group is high Ca** (Re10 Ca0.1, Re20 Ca0.06, Re40 Ca0.1 at β45/90): NRMSE 0.22–0.27 (ΔM_x) and 0.43–0.56 (sum), the largest absolute errors (0.11–0.20). Separate failure, probably missing terms for strongly nonlinear, low-σ waves.
 - Caveats: Fr² = Re sinβ/3, so Fr², β and relative correction size are confounded (22 points cannot separate them); correlations only; two sparse forms, not the MLP.
 
+## Where it fails
+
+Figures: [`limit01`](figures/functional-form-structure/limit01_sparse_generalisation.png), [`limit02`](figures/functional-form-structure/limit02_model_classes.png), [`fig02`](figures/functional-form-structure/fig02_error_vs_Fr2.png).
+
+- **No adequate sparse form for ΔM_x + ΔT_w.** Leave-one-case-out error is 0.32–0.41 for 3 to 20 terms, held-out 0.22–0.29, and the β = 6.4° holdout 0.37–0.57; the per-case nonlinear fit reaches 0.134 (`limit01`).
+- **The ΔM_x form overfits as terms are added.** The β = 6.4° holdout error is 0.127 with 4–5 terms, 0.305 with 10 and 0.35–0.36 with 15–20; leave-one-case-out error rises from 0.123 (15 terms) to 0.207 (20 terms).
+- **The strict chain rule is worse than the free form.** Mean NRMSE for ΔM_x is 0.119, against 0.080 for the free linear form and 0.057 for the nonlinear one. The nonlinear per-case fit overfits Re40 Ca0.04 β45 (held out): 0.103 against 0.078 for ΔM_x and 0.301 against 0.214 for the sum (`limit02`).
+- **Hardest cases.** For ΔM_x the two worst cases are Re20 Ca0.06 β90 (NRMSE 0.26 linear, 0.24 nonlinear) and Re40 Ca0.1 β45 (0.22, 0.15), both high Ca; for the sum Re40 Ca0.1 β45 is the worst (0.49 linear, 0.37 nonlinear). The error falls with Fr² (Spearman −0.70 for ΔM_x, −0.75 for the sum, `fig02`), but Fr², β and the relative size of the correction are confounded and 22 cases cannot separate them.
+- **No comparison with the MLP on the same data yet** (different metric and time window).
+
 ## Open items
 
 1. Test whether a ~0.01 absolute error floor comes from derivative smoothing or extraction noise (vary the Savitzky–Golay window, compare with the level-15 mesh data if available).

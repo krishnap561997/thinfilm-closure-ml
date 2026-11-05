@@ -70,6 +70,7 @@ Update this file in the same commit as any change that moves the science forward
 
 - NRMSE is about 0.54 even with neighbour stencils (best stencil: J=6, s=3, half-width 0.88 h_N; pooled R² 0.70).
 - Predictability depends on Ca. R² is 0.93–0.98 for Ca ≥ 0.06 (Re ≤ 40), but about 0 for Re = 10 with Ca ≤ 0.01 and for Re = 40 with Ca = 0.002. Across the 20 development cases, R² correlates with log Ca at 0.65 and with log Re at 0.31. This points to capillarity and supports curvature as an input.
+- Details and a per-case table: `docs/results/dpx-closure.md`.
 - Correlates better with curvature κ = h_xx/(1+h_x²)^{3/2} (`ml/thinfilm_mlp/augment_curvature.py`).
 - May need non-Markovian (Mori–Zwanzig) memory.
 
@@ -102,7 +103,7 @@ Update this file in the same commit as any change that moves the science forward
 
 - Lavalle alone: h error ≈ 0.6 (relative to std h) after 5 time units, waves underpredicted (max h 1.45 vs 2.1).
 - ΔT_w + ΔM_x: error ≈ 0.2 for 50 time units, wave height restored, stable for 100.
-- ΔT_w alone and all four terms are unstable (ΔT_w and ΔM_x largely cancel; ΔP_x is the suspect for the all-terms blow-up).
+- ΔT_w alone diverges (ΔT_w and ΔM_x largely cancel). All four terms stop at elapsed time 30 with h = 0 in the outlet cell (x = 800) while the interior still matches the DNS; the cause is not identified (the "all terms" error is also worse than ΔT_w + ΔM_x from elapsed 10). ΔT_w + ΔM_x drifts late (error 0.19 at 50, 0.55 at 99.9). See "Where it fails" in the write-up.
 - Next: ΔM_x/ΔT_w correlation, smoothed ΔP_x, ROM re-initialised from the DNS every 5–10 time units.
 
 See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp` (the oracle module in `rom/lavalle-cpp/{include,src}/oracle/` is separate and already done; the learned-closure hook is still to do).

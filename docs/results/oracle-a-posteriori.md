@@ -38,13 +38,23 @@ h error relative to std(h_DNS), 20 < x < 760, as a function of elapsed time sinc
 Max h (ROM / DNS) at elapsed 50: Lavalle 1.45 / 2.12; ΔT_w + ΔM_x 2.10 / 2.12.
 
 - **Lavalle alone underpredicts the waves** (max h 1.45 against 2.1), the known failure at this Re.
-- **ΔT_w + ΔM_x** restores the wave height and is stable for the full 100 time units; the error rises near the end (cause not identified, possibly phase drift).
+- **ΔT_w + ΔM_x** restores the wave height and is stable for the full 100 time units; the error rises near the end (cause not identified; see "Where it fails" and `fig01`).
 - **ΔT_w alone crashes** within 8 time units: h → 0 and the hyperbolicity check fails. ΔT_w and ΔM_x appear to largely cancel, so applying one without the other destabilises the ROM. This matters for how the networks are trained.
-- **All four terms** is the most accurate early (0.014 after 1 time unit) but grows faster and crashes at t ≈ 1830. ΔP_x is the suspect given its temporal content; not yet confirmed.
+- **All four terms** is the most accurate early (0.014 after 1 time unit) but its error grows faster, and the run stops at elapsed time 30.0 with h = 0 in the outlet cell (x = 800), inside the outlet region that is excluded from the error statistics. The interior waves still match the DNS at that time (`fig05`). The cause of the outlet failure is not identified.
+
+## Where it fails
+
+Figures: [`fig01`](figures/oracle-a-posteriori/fig01_h_profiles.png), [`fig02`](figures/oracle-a-posteriori/fig02_error_and_hmax.png), [`fig04`](figures/oracle-a-posteriori/fig04_correction_time_content.png), [`fig05`](figures/oracle-a-posteriori/fig05_crash_states.png).
+
+- **Lavalle alone** loses the wave amplitude within 5 time units (error 0.54, max h 1.45 against 2.1) and ends at 1.07 after 100.
+- **ΔT_w alone diverges.** The error is 0.28 after 1 time unit and 1.63 after 5; h falls to zero ahead of every crest and the run stops at elapsed time 7.9 (`fig05`).
+- **All four terms stops at elapsed time 30.0**, with h = 0 in the outlet cell (x = 800). The interior waves still match the DNS then, so the interior is not what failed; why the outlet cell fails is not identified. Before that, its error (0.33 at 10, 0.56 at 20) is worse than ΔT_w + ΔM_x (0.17, 0.20), so adding ΔP_x helps only in the first few time units (0.014 against 0.060 at 1). ΔP_x has far more high-frequency content in time than ΔM_x and ΔT_w (`fig04`); a link to the failure is untested.
+- **ΔT_w + ΔM_x is not the exact oracle either.** The error is 0.15–0.20 from 5 to 50 time units and then rises: 0.34 at 75, 0.55 at 99.9 (`fig01`). At 99.9 a spurious trough has formed behind the crest (h ≈ 0.3 at x ≈ 516 against ≈ 0.65 in the DNS, read from the figure) and the front of the crest is shifted by roughly 2 h_N; the capillary ripples are already out of phase at 20–50. The cause is not identified; a ROM re-initialised from the DNS would separate drift from a closure error.
+- **Scope.** One case (Re120 Ca0.01 β45), one forcing frequency (10 Hz), 100 time units (about 2 forcing periods). The corrections are prescribed functions of (x, t), not of the ROM's own state (open loop), so a learned closure will behave differently once the ROM waves drift from the DNS waves. ΔP_x is interpolated in time from output every 0.01 with a 14% interpolation error over 0.02 (the other terms ≤ 0.06%).
 
 ## Open items
 
 1. Correlation of ΔM_x and ΔT_w; train on the sum?
-2. Rerun "all" with ΔP_x smoothed, and ΔT_w + ΔM_x + ΔP_x without ΔD_x, to find what causes the blow-up.
+2. Rerun "all" with the corrections tapered or zeroed beyond x ≈ 760 (outlet region), then ΔT_w + ΔM_x + ΔP_x without ΔD_x, to find out whether the faster interior error growth comes from ΔP_x.
 3. Re-initialise the ROM from the DNS every 5–10 time units, to separate closure error from accumulated phase drift.
 4. Other cases (broadband forcing needs statistical metrics, see `docs/decisions.md`).

@@ -48,3 +48,12 @@ ROM-grid check, 1 h_N smoothing: E1/E0 0.044 (L14), 0.059 (L15).
 Level 14 is adequate for the closures: ΔM_x, ΔT_w and the smoothed S_ML are mesh-insensitive once waves are aligned,
 and the only systematic mesh effect on the waves is a +1.2 % celerity at level 15. Transient window only (t ≤ 650,
 waves not saturated), with the DT mismatch above. Update the older note in `decisions.md` ("level 15 changes only the wave speed slightly"): now quantified.
+
+## Where it fails
+
+Figures: [`limit01`](figures/mesh-sensitivity/limit01_not_converged.png), [`fig02`](figures/mesh-sensitivity/fig02_dPx_grid_scale_noise.png), [`fig03`](figures/mesh-sensitivity/fig03_crest_offset.png).
+
+- **ΔP_x and ΔD_x are not mesh-converged as extracted.** The crest-aligned relative L2 difference between level 15 and level 14 is 0.87 for ΔP_x and 0.48 for ΔD_x (0.44 and 0.18 after 1 h_N smoothing), and 0.62 for S_ML (0.10 smoothed), against 0.10 for ΔM_x and ΔT_w (0.07 smoothed) (`limit01`). The spikes sit at the interface at different places on the two meshes (`fig02`).
+- **Level 15 closes the budget worse than level 14**: mass residual 0.045 against 0.016, DNS momentum residual 0.128 against 0.072, ROM remainder E1/E0 0.059 against 0.044 (3 snapshots, t = 550–650).
+- **The waves themselves differ.** The crest speed is 1.2% higher on level 15, so the crest offset grows from 2.5 at x ≈ 180 to about 8 at x ≈ 690 (`fig03`), and crest-aligned h and q differ by 4–5% (median).
+- **This is not a clean mesh test.** DT = 0.003 on level 14 against a CFL-limited step of about 0.0016 on level 15; level 15 was stopped at t = 650, so the comparison is 11 snapshots (about 2 forcing periods) of one case, and there is no level 16.

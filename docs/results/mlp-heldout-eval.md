@@ -91,6 +91,17 @@ Per case, nonlinear-region NRMSE, (h, h_x) vs (h, q, h_x, q_x):
 - ΔM_x: 12–15% worse on held-out, and the loss is concentrated at Re200 Ca0.01 β6.4 (0.296 vs 0.178, bias −0.088σ, peak-amplitude error 6.4%). This suggests q_x (or q) matters at high Re and low β; not tested directly. Re80 Ca0.005 β6.4 improves for ΔM_x (0.286 → 0.248) but remains among the worst.
 - Caveats: single seed, so differences of 0.01–0.02 may be within seed spread (not measured); the models are not converged at 100 epochs; held-out cases are interleaved with the development cases.
 
+## Where it fails
+
+Figures: [`limit01`](figures/mlp-heldout-eval/limit01_error_vs_time.png), [`limit02`](figures/mlp-heldout-eval/limit02_learning_curves.png), [`limit03`](figures/mlp-heldout-eval/limit03_worst_case_errors.png); the R² versions of the ablation figures are `fig04` and `fig05`.
+
+- **Worst held-out cases.** Re80 Ca0.005 β6.4: nonlinear-region NRMSE 0.286 (ΔM_x) and 0.226 (ΔT_w), R² 0.954 and 0.970 for inputs (h, q, h_x, q_x). With inputs (h, h_x) only, Re200 Ca0.01 β6.4 reaches 0.296 for ΔM_x (R² 0.947). The residuals are spikes of 1–1.4 standard deviations at wave fronts and ripples, on top of a smooth offset of about 0.1–0.2 standard deviations in Re80 Ca0.005 (`limit03`).
+- **Early-time transient and systematic misfit are different problems.** Re120 Ca0.02 β90 has NRMSE 0.33 for t < 500, 0.18 for 500–1000 and 0.09 for 1500–2000 (ΔM_x). In the β = 6.4° cases the error does not depend on time (0.22–0.24 for Re80 Ca0.005, 0.14–0.16 for Re200 Ca0.01, ΔM_x; `limit01`).
+- **Inputs without gradients never learn.** With only (h, q) the validation NRMSE stays at 0.95 for both targets for all 100 epochs (`limit02`).
+- **Training is not converged.** For every input set with gradients the validation NRMSE still fell by 0.003–0.013 (1–8%) over the last 10 epochs; the best epoch is the last one (`limit02`).
+- **The comparisons are weak.** One seed (42); differences between input sets of 0.005–0.02 in NRMSE are not shown to exceed the seed-to-seed spread. The held-out cases lie between development cases in (Re, Ca, β), so this tests interpolation only.
+- **R² makes the errors look small.** For standardised targets R² ≈ 1 − NRMSE², so an NRMSE of 0.2 is an R² of 0.96 (`fig04` and `fig05` against `fig01` and `fig02`).
+
 ## Open items
 
 1. Decide how to weight the β = 6.4° (small-correction) cases when designing the functional form; their error is systematic.
