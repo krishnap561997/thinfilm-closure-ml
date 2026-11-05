@@ -87,6 +87,9 @@ figures/
 !docs/figures/
 !docs/results/figures/
 !docs/results/figures/**
+# animations are large; regenerate with scripts/figures/*/anim*.py
+docs/results/figures/**/*.mp4
+docs/results/figures/**/*.gif
 !scripts/figures/
 
 # --- Python / Jupyter ---

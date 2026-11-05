@@ -6,6 +6,7 @@
 #include "integrators/rk4.hpp"              // RK4 time stepper
 #include "io/hdf5_writer.hpp"               // Output hdf5 files
 #include "oracle/oracle_forcing.hpp"         // ORACLE
+#include "ml/ml_closure.hpp"                   // MLCLOSURE
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -57,6 +58,9 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
 
         std::unique_ptr<OracleForcing> oracle;  // ORACLE
         if(argc>2){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
+
+        std::unique_ptr<MLClosure> mlc;  // MLCLOSURE
+        if(argc>3){ mlc=std::make_unique<MLClosure>(argv[3],p); MLClosure::set_active(mlc.get()); std::cout<<mlc->summary(); }  // MLCLOSURE
 
         // Inlet forcing. noise.value(t) gives forcing value at time t
         ChangNoise noise(p.in.MNOISE,p.fcut_noise,p.in.F0_noise,1);

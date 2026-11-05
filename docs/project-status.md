@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-01: held-out evaluation of the 1×16 MLP._
+_Last updated: 2026-11-05: learned closures coupled to the ROM (first *a posteriori* runs)._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -12,7 +12,7 @@ Update this file in the same commit as any change that moves the science forward
 - RK4 time integration.
 - A run takes about 15 min, versus about 30 h for DNS (roughly 120× faster).
 - Builds from a clean clone since 30 Oct (`include/core/` had been hidden by a `core*` ignore rule): `module load gcc/14.2.0 hdf5 && make`.
-- No closure hook yet: `ClosureModel::evaluate(h, q)` works point by point. The oracle needs a field- and time-dependent correction added in `evaluate_rhs` (see `rom/lavalle-cpp/README.md`).
+- Learned-closure hook since 5 Nov: `{include,src}/ml/`, `./thinfilm input.txt oracle.txt ml.txt`; MLPs exported with `ml/functional_mlp/export_for_cpp.py` (see `rom/lavalle-cpp/README.md`). The oracle module (`{include,src}/oracle/`) supplies prescribed DNS corrections, initial state and inlet.
 
 **DNS (`dns/production`)**
 
@@ -84,6 +84,12 @@ Update this file in the same commit as any change that moves the science forward
 - On the 7 held-out cases pooled NRMSE is 0.109 (ΔM_x) and 0.100 (ΔT_w); in the nonlinear region (x > 100, h > 1.1 or h < 0.9) it is 0.130 / 0.121 against ≈ 1.2 for Lavalle alone; peak amplitudes within 1.5–3% (ΔT_w Re200 β6.4: 8%).
 - Weakest: Re80 Ca0.005 β6.4 and the other β = 6.4° case. The error tracks low Fr² and small correction size, not We (`docs/results/functional-form-structure.md`). Next: functional form.
 
+**Sum-target MLPs for the *a posteriori* ablation (5 Nov 2026).** Full write-up: section "Sum target" in `docs/results/mlp-heldout-eval.md`. Two 1×16 MLPs predict ΔM_x + ΔT_w directly: inputs (h, h_x, q) and (h, h_x), each plus Re, Ca, β.
+
+- Held-out nonlinear-region NRMSE (normalised by the std of the sum; Lavalle alone 1.235): 0.308 for (h, h_x, q) and 0.287 for (h, h_x); R² 0.938 / 0.946. Validation pooled R² 0.899 / 0.906.
+- The sum is about twice as hard as either component (0.25 vs 0.11 pooled held-out) because ΔM_x and ΔT_w partly cancel. (h, h_x) is slightly better overall, within single-seed noise; q helps at Re80 Ca0.005 β6.4 (0.557 vs 0.672) and Re20 Ca0.01 β45.
+- Both are weak for β = 6.4° (NRMSE 0.56–0.67).
+
 **Functional-form search for ΔM_x and ΔM_x + ΔT_w (1 Nov 2026).** Full write-up: `docs/results/functional-form-structure.md`.
 
 - ΔT_w ≈ −0.64 ΔM_x (corr −0.975): the two cancel only partly, so forms are developed for the sum ΔM_x + ΔT_w. ΔM_x = ∂ₓΔF with ΔF ≈ F(h, q) (R² ≈ 0.997); it is nearly linear in h_x, q_x.
@@ -106,7 +112,14 @@ Update this file in the same commit as any change that moves the science forward
 - ΔT_w alone diverges (ΔT_w and ΔM_x largely cancel). All four terms stop at elapsed time 30 with h = 0 in the outlet cell (x = 800) while the interior still matches the DNS; the cause is not identified (the "all terms" error is also worse than ΔT_w + ΔM_x from elapsed 10). ΔT_w + ΔM_x drifts late (error 0.19 at 50, 0.55 at 99.9). See "Where it fails" in the write-up.
 - Next: ΔM_x/ΔT_w correlation, smoothed ΔP_x, ROM re-initialised from the DNS every 5–10 time units.
 
-See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp` (the oracle module in `rom/lavalle-cpp/{include,src}/oracle/` is separate and already done; the learned-closure hook is still to do).
+**Learned-closure *a posteriori* (5 Nov 2026).** Full write-up: `docs/results/ml-a-posteriori.md`. Same case and window as the oracle; DNS initial state and inlet.
+
+- Two closures: one MLP for ΔM_x + ΔT_w on (h, h_x), and separate ΔM_x, ΔT_w MLPs on (h, q, h_x, q_x). Both stable for 100 time units.
+- For the first 10 time units both match the oracle (h error 0.06 at 1, 0.22 at 10; oracle 0.06 / 0.17; Lavalle 0.12 / 0.61) and restore the wave height.
+- Then they drift. The sum model over-amplifies the crests (max h 2.38 at 50 and 2.50 at 99.9 against 2.1) and leads the DNS; error 0.47 at 50 (Lavalle 0.59), 1.26 at 99.9 (Lavalle 1.07). The separate models fail sooner (1.03 at 50, 2.05 at 99.9).
+- Next: smoothed derivatives (`hx_smooth`), DNS re-initialisation every 5–10 time units, closed-loop-aware training.
+
+See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp` (the oracle module in `rom/lavalle-cpp/{include,src}/oracle/` and the learned-closure hook in `{include,src}/ml/` are done).
 
 ## Paper 1
 

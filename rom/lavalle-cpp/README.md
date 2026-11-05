@@ -48,6 +48,19 @@ Outputs:
 
 The oracle *a posteriori* run will add exact DNS corrections taken from `profiles_to_closures.py` output on the ROM grid. ΔF = ∫u² − (q²/h + Λ²h⁵/45) goes in as a face-flux correction, and ΔT_w and ΔP_x as cell sources, interpolated linearly in time at every RK4 stage. The inlet and initial state come from the DNS, with r = √(h/We) h_x. A prescribed ΔF(x,t) does not change the flux Jacobian. A learned ΔF(h,q,…) would, and must then supply its derivatives as described below. `pipeline/extract_closures/check_momentum_budget.py` contains a Python replica of this solver's q-RHS.
 
+## Learned closure hook (Nov 2026)
+
+`include/ml/ml_closure.hpp`, `src/ml/ml_closure.cpp`; hooked in by the lines tagged `// MLCLOSURE` in `src/main.cpp` and `src/physics/rhs.cpp`. Without a third argument the solver is unchanged.
+
+```bash
+./thinfilm input.txt oracle.txt ml.txt
+```
+
+- `oracle.txt` with `terms = none` supplies only the DNS initial state and inlet.
+- `ml.txt`: either `sum_model = <file>` (one model for ΔM_x + ΔT_w), or `mx_model = <file>` and `tw_model = <file>`. Optional `hx_smooth = <sigma in cells>` smooths h and q before differentiating (default 0).
+- Model files come from `ml/functional_mlp/export_for_cpp.py <best.pt> <out.txt>` (tanh MLPs of any depth; inputs any of h, q, h_x, q_x followed by Re, Ca, angle in radians). The C++ forward pass agrees with PyTorch to 6 digits.
+- At every RK4 stage the models are evaluated cell by cell on the ROM state, h_x and q_x by central differences (`ddx_1d`), and the result is subtracted from the q-equation (−ΔM_x − ΔT_w, as in the oracle). ΔM_x enters as a cell source, not as a face flux, so the flux Jacobian and Rusanov wavespeed are unchanged.
+
 ## ML extension
 
 Do not make an ML model return the RHS. Implement `ClosureModel::evaluate()` instead. The solver remains responsible for whether a learned quantity appears in a flux, source, or differentiated operator.

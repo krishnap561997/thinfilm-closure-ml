@@ -3,6 +3,7 @@
 #include "physics/capillary.hpp"
 #include "physics/source_terms.hpp"
 #include "oracle/oracle_forcing.hpp"  // ORACLE
+#include "ml/ml_closure.hpp"  // MLCLOSURE
 
 RHS evaluate_rhs(const State& input, double t, const Parameters& p,
                  const ClosureModel& closure, const ChangNoise& noise,
@@ -28,6 +29,7 @@ RHS evaluate_rhs(const State& input, double t, const Parameters& p,
         rhs.r[i]+=cap.r[i];
     }
     if(const auto* o=OracleForcing::active()) o->add_source(rhs.q,t,p);  // ORACLE
+    if(const auto* m=MLClosure::active()) m->add_source(rhs.q,s.h,s.q,p);  // MLCLOSURE
     // Ghost RHS stays zero by construction.
     return rhs;
 }
