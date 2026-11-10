@@ -1,0 +1,158 @@
+{
+  "cache": "/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/functional_mlp/cache_dpx_v2",
+  "networks": [
+    {
+      "hidden_layers": 4,
+      "hidden_width": 64
+    }
+  ],
+  "input_groups": {
+    "A_sg": [
+      "h",
+      "q",
+      "h_x",
+      "q_x"
+    ],
+    "A_s0p25": [
+      "h",
+      "q",
+      "h_x_s0p25",
+      "q_x_s0p25"
+    ],
+    "B_s0p25": [
+      "h",
+      "q",
+      "h_x_s0p25",
+      "q_x_s0p25",
+      "h_xx_s0p25"
+    ],
+    "C_s0p25": [
+      "h",
+      "q",
+      "h_x_s0p25",
+      "q_x_s0p25",
+      "kappa_s0p25"
+    ],
+    "F_s0p25": [
+      "h",
+      "q",
+      "h_x_s0p25",
+      "q_x_s0p25",
+      "h_xxx_s0p25"
+    ],
+    "G_s0p25": [
+      "h",
+      "q",
+      "h_x_s0p25",
+      "q_x_s0p25",
+      "h_xxx_s0p25",
+      "q_xx_s0p25"
+    ],
+    "H_s0p25": [
+      "h",
+      "q",
+      "h_x_s0p25",
+      "q_x_s0p25",
+      "kappa_x_We_s0p25"
+    ],
+    "A_s0p5": [
+      "h",
+      "q",
+      "h_x_s0p5",
+      "q_x_s0p5"
+    ],
+    "B_s0p5": [
+      "h",
+      "q",
+      "h_x_s0p5",
+      "q_x_s0p5",
+      "h_xx_s0p5"
+    ],
+    "C_s0p5": [
+      "h",
+      "q",
+      "h_x_s0p5",
+      "q_x_s0p5",
+      "kappa_s0p5"
+    ],
+    "F_s0p5": [
+      "h",
+      "q",
+      "h_x_s0p5",
+      "q_x_s0p5",
+      "h_xxx_s0p5"
+    ],
+    "G_s0p5": [
+      "h",
+      "q",
+      "h_x_s0p5",
+      "q_x_s0p5",
+      "h_xxx_s0p5",
+      "q_xx_s0p5"
+    ],
+    "H_s0p5": [
+      "h",
+      "q",
+      "h_x_s0p5",
+      "q_x_s0p5",
+      "kappa_x_We_s0p5"
+    ],
+    "A_s1": [
+      "h",
+      "q",
+      "h_x_s1",
+      "q_x_s1"
+    ],
+    "B_s1": [
+      "h",
+      "q",
+      "h_x_s1",
+      "q_x_s1",
+      "h_xx_s1"
+    ],
+    "C_s1": [
+      "h",
+      "q",
+      "h_x_s1",
+      "q_x_s1",
+      "kappa_s1"
+    ],
+    "F_s1": [
+      "h",
+      "q",
+      "h_x_s1",
+      "q_x_s1",
+      "h_xxx_s1"
+    ],
+    "G_s1": [
+      "h",
+      "q",
+      "h_x_s1",
+      "q_x_s1",
+      "h_xxx_s1",
+      "q_xx_s1"
+    ],
+    "H_s1": [
+      "h",
+      "q",
+      "h_x_s1",
+      "q_x_s1",
+      "kappa_x_We_s1"
+    ]
+  },
+  "targets": [
+    "delta_Px_ML_v2"
+  ],
+  "seeds": [
+    42
+  ],
+  "epochs": 100,
+  "no_early_stopping": true,
+  "max_concurrent": 6,
+  "training": {
+    "batch_size": 8192,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "workers": 0
+  }
+}
