@@ -6,7 +6,8 @@ Record each decision as a short entry: what was decided and why. Newest entries 
 
 - `dns/production/filmflow_restart.c` set the noise phases in an `event init_noise (i = 0)`. `restore()` replays the event schedule with `events(false)`, so that event never ran after a restart and the phases stayed uninitialised. Inlet RMS after a restart: about 0.002 against about 0.025 (Re10 Ca0.005: 0.026 → 0.0015). Fixed in commit 6426624 (phases set in `main()`, same seed and `rand()` sequence, so the forcing is continuous); `check_profile_restart.py` tests this on every new profile restart.
 - **Affected data.** Re050 Ca0.01 β45 was restarted at t = 1050 (RMS 0.053 → 0.0054), so its record from t = 1050 on, including t = 1050–2000 in its closure file, was not forced as intended. Re040 Ca0.1 β90 was restarted at t = 100. The 11 `rs_*` restarts of 10 Nov were cancelled; they had overwritten these original snapshots: Re10 Ca0.005 760; Re10 Ca0.01 1960; Re10 Ca0.04 β90 1910, 1920; Re10 Ca0.1 1560, 1570; Re20 Ca0.005 β6.4 1210; Re40 Ca0.002 1110; Re40 Ca0.1 1810, 1820.
-- Open: decide how to treat Re050 t > 1050 (drop from training, or rerun from dump-001050 with the fixed source).
+- Re050 (decided by the user): rerun with the fixed source. dump-001050 no longer exists, so the rerun starts from dump-001000 (original run) to T_END = 2000. Its dumps and snapshots for t > 1050 and its old closure file are in `Re050_Ca0_010_theta45/bad_forcing_restart_t1050_20261110/`; re-extract after the rerun.
+- The 12 affected case directories have the fixed `filmflow_restart` (old source and binary kept as `*.pre_fix_20261110`). No data before a restart point is affected, so nothing is rerun from t = 0.
 
 ## 2026-11-10 — ΔP_x target v2; low-We cases out of the ΔP_x training for now
 
