@@ -2,6 +2,12 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-10 — Broadband restart bug: restarts ran without inlet forcing
+
+- `dns/production/filmflow_restart.c` set the noise phases in an `event init_noise (i = 0)`. `restore()` replays the event schedule with `events(false)`, so that event never ran after a restart and the phases stayed uninitialised. Inlet RMS after a restart: about 0.002 against about 0.025 (Re10 Ca0.005: 0.026 → 0.0015). Fixed in commit 6426624 (phases set in `main()`, same seed and `rand()` sequence, so the forcing is continuous); `check_profile_restart.py` tests this on every new profile restart.
+- **Affected data.** Re050 Ca0.01 β45 was restarted at t = 1050 (RMS 0.053 → 0.0054), so its record from t = 1050 on, including t = 1050–2000 in its closure file, was not forced as intended. Re040 Ca0.1 β90 was restarted at t = 100. The 11 `rs_*` restarts of 10 Nov were cancelled; they had overwritten these original snapshots: Re10 Ca0.005 760; Re10 Ca0.01 1960; Re10 Ca0.04 β90 1910, 1920; Re10 Ca0.1 1560, 1570; Re20 Ca0.005 β6.4 1210; Re40 Ca0.002 1110; Re40 Ca0.1 1810, 1820.
+- Open: decide how to treat Re050 t > 1050 (drop from training, or rerun from dump-001050 with the fixed source).
+
 ## 2026-11-10 — ΔP_x target v2; low-We cases out of the ΔP_x training for now
 
 - Decided with the user: the ΔP_x target is `delta_Px_ML_v2` (liquid-pressure Leibniz form of ∫∂ₓp, Gaussian σ = 0.5 h_N, exact curvature in the Lavalle capillary term). The old `delta_Px_ML` stays in the files for reproducibility. Evidence: `docs/results/dpx-closure.md`, section "Extraction".

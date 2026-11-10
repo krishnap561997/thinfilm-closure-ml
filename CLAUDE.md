@@ -87,4 +87,5 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 - On HiPerGator, `/blue` is not backed up. Keep irreplaceable results (paper figures, final models) archived elsewhere as well.
 - The source of the original L800 monochromatic binary is lost. `dns/oracle/filmflow_restart_mono.c` reconstructs it from the production restart plus the `BasC/fixed-frequency` inlet (amplitude 0.03). The nondimensional forcing frequency is 0.0214, so one period is about 47 time units.
 - Strongly capillary low-Re cases (We ≲ 0.4, e.g. Re10 Ca0.01) have unreliable one-step ∂ₜ and do not close the momentum budget. Check the per-snapshot mass residual in `ClosureData/budget_check/` before trusting a snapshot.
+- Restarts before 10 Nov 2026 ran without inlet forcing (noise phases never initialised after `restore()`; fixed in `filmflow_restart.c`). Check `inlet_signal.dat` of any restarted run; see `docs/decisions.md`.
 - When restarting from a dump, link it under a different name (`RESTART_FILE = restart.dump`). A run writes its own `dump-XXXXXX`, and writing through a link with the same name would overwrite the original.
