@@ -2,6 +2,12 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-10 — ΔP_x target v2; low-We cases out of the ΔP_x training for now
+
+- Decided with the user: the ΔP_x target is `delta_Px_ML_v2` (liquid-pressure Leibniz form of ∫∂ₓp, Gaussian σ = 0.5 h_N, exact curvature in the Lavalle capillary term). The old `delta_Px_ML` stays in the files for reproducibility. Evidence: `docs/results/dpx-closure.md`, section "Extraction".
+- The L14/L15 mesh test is not used as an acceptance criterion for ΔP_x: the two meshes have different ripples (κ differs as much as ΔP_x).
+- Cases with We ≤ 0.1, where the momentum budget does not close with any extraction, are left out of the ΔP_x training until dense-in-time restart data shows whether the snapshots or the runs are at fault.
+
 ## 2026-11-10 — Train and score on the entire time record
 
 - Decided by the user: ML closures (and any new functional-form fits) are trained and scored on the **entire** time record, not only t > 1000. This supersedes the 2026-11-01 entry "Fit the ΔM_x / ΔT_w functional forms on t > 1000 only", and retires the reminder in that entry.

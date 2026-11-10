@@ -45,6 +45,18 @@ Pooled: ΔP_x R² 0.704, NRMSE 0.544; case average R² 0.626, NRMSE 0.563. For c
 - **Part of the failure may be noisy targets rather than a model limit.** The three R² ≈ 0 cases include the one where the one-step ∂ₜ and the momentum budget do not close (Re10 Ca0.01 β45, see `budget-check.md`), and the mesh study found the extracted ΔP_x not mesh-converged (relative difference 0.87 between level 14 and 15, 0.44 after smoothing; see `mesh-sensitivity.md`).
 - ΔP_x also has the most high-frequency content in time of the corrections (`oracle-a-posteriori.md`, fig04). In the oracle the run with all four terms stops at the outlet; ΔP_x has not been shown to be harmful in the interior.
 
+## Extraction (10 Nov 2026)
+
+Is part of the failure the target? `pipeline/extract_closures/dpx_diagnostics.py` (job 50636699) recomputed ΔP_x on 2D snapshots of 6 cases (t = 100–1900; fewer where runs stop early) and on the mono L14/L15 runs (t = 550–650), with ∫₀ʰ∂ₓp computed three ways: (a) the pipeline (∂ₓp on every row, including rows cut by the interface), (b) the Leibniz form on the liquid pressure, ∂ₓ∫₀ʰp_l dz − p_l(h)h_x, with p_l(h) extrapolated from fully liquid cells, (c) ∂ₓp integrated over fully liquid cells only. Output: `ClosureData/dpx_diagnostics/`. Numbers below are medians over snapshots.
+
+- **The stored ΔP_x is mostly short-wave noise from the Lavalle h_xxx term.** The RMSE-selected Savitzky–Golay window is always the smallest (m = 11, about 0.5 h_N), and 1/We amplifies the noise in h_xxx. In five of six cases 49–92% of the raw ΔP_x variance is at wavelengths below 1 h_N. In Re10 Ca0.1 the raw ΔP_x varies 6.5× more than ∫∂ₓp (0.97× after a 0.5 h_N filter). The high R² there is probably partly the MLP reproducing h_xxx from the h stencil.
+- **Method a carries the interface pressure jump.** Variance at wavelengths below 0.25 h_N: 0.51 (a) against 0.16 (b) for Re10 Ca0.01. Methods b and c agree within 1–5% after a 0.5 h_N filter; a differs by 20–70% raw.
+- **b closes the momentum budget better where it can be checked (We ≥ 0.4).** DNS-grid residual ||∂ₜq − RHS||/||∂ₜq||, a → b: Re120 Ca0.01 0.078 → 0.043 raw, 0.019 → 0.009 at σ = 0.5; mono L14 0.073 → 0.024, 0.016 → 0.008. Exception Re10 Ca0.1 (a slightly better: 0.022 against 0.027 at σ = 0.5).
+- **No method closes the budget for We ≤ 0.1** (Re10 Ca0.005, Re10 Ca0.01, Re40 Ca0.002): momentum residual 0.15–0.6 even at σ = 0.5, while the mass residual drops to about 0.001 after smoothing. The cause cannot be isolated with a one-step ∂ₜ.
+- **Mesh (crest-aligned L14 vs L15):** filtered ΔP_x differs by 0.41 (σ = 0.5) and 0.26 (σ = 1), the same as κ, which depends on h only (0.37, 0.29). The two meshes have different capillary ripples (transient window, DT mismatch, +1.2% celerity), so this test cannot judge the extraction (`scripts/mesh_study/compare_dpx_mesh.py`).
+
+**Chosen:** `delta_Px_ML_v2` = −G_σ(I_p,liq) − [h κ_x/We − cosβ/Fr² h h_x + q_xx/Re]_σ with method b and a Gaussian filter of σ = 0.5 h_N (analytic derivatives, exact curvature). σ = 1 closes the budget no better and removes about 90% of a 3 h_N capillary ripple (σ = 0.5: about 40%). Stored with `int_px_dy_liq`, `p_liq_interface`, `kappa_s`, `kappa_x_s` in the closure files (`extract_closure_terms.py`, appended to the 22 existing files and extracted for 7 new runs with data past t = 1500; jobs 50638701–50638730).
+
 ## Caveats
 
 - Validation data of the development cases only; no held-out evaluation exists for ΔP_x.
@@ -53,6 +65,6 @@ Pooled: ΔP_x R² 0.704, NRMSE 0.544; case average R² 0.626, NRMSE 0.563. For c
 ## Open items
 
 1. Held-out evaluation of ΔP_x.
-2. The curvature input on the same split, and the same models against a smoothed ΔP_x target.
+2. The curvature input on the same split, against `delta_Px_ML_v2` (Step 2 of the 10 Nov plan; We ≤ 0.1 cases left out).
 3. A memory term if curvature does not help.
 4. ΔP_x is required for Paper 1's comprehensive passive-gas model (decision of 10 Nov), even though the oracle with ΔT_w + ΔM_x only is stable for 100 time units without it.

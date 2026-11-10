@@ -72,6 +72,7 @@ Update this file in the same commit as any change that moves the science forward
 - Predictability depends on Ca. R² is 0.93–0.98 for Ca ≥ 0.06 (Re ≤ 40), but about 0 for Re = 10 with Ca ≤ 0.01 and for Re = 40 with Ca = 0.002. Across the 20 development cases, R² correlates with log Ca at 0.65 and with log Re at 0.31. This points to capillarity and supports curvature as an input.
 - Details and a per-case table: `docs/results/dpx-closure.md`.
 - Correlates better with curvature κ = h_xx/(1+h_x²)^{3/2} (`ml/thinfilm_mlp/augment_curvature.py`).
+- Extraction fixed on 10 Nov: the stored ΔP_x was dominated by Savitzky–Golay h_xxx noise (× 1/We) and by the interface pressure jump; new target `delta_Px_ML_v2` (σ = 0.5 h_N, liquid-pressure Leibniz form) closes the budget about 2× better for We ≥ 0.4. For We ≤ 0.1 no extraction closes the budget; those cases are out of ΔP_x training for now (`docs/results/dpx-closure.md`).
 - May need non-Markovian (Mori–Zwanzig) memory; that is within Paper 1's scope (decision of 10 Nov). Plan of 10 Nov: robust extraction first, then a curvature ablation (4×64 MLP), then dense-in-time restarts (T_PROF = 0.05) for 5 cases if memory is needed.
 
 **Budget closure check (30 Oct 2026).** Full write-up: `docs/results/budget-check.md`.
