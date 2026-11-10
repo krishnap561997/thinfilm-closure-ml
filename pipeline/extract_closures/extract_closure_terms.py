@@ -686,23 +686,29 @@ def state_v2(xm,ym,idx,snap,suffix,Re,Ca,beta,Lambda,lower,px_sigma):
 
 def append_v2(config):
     """Add the ΔP_x v2 datasets to an existing closure file, for exactly its stored times.
-    Existing datasets are never modified; refuses if any v2 dataset already exists."""
+    Existing datasets are never modified; refuses if any v2 dataset already exists.
+    Optional config "t_max": times > t_max are filled with NaN and their snapshots are not
+    read (for runs whose later snapshots were overwritten after the original extraction)."""
     sd=Path(config["snapshot_dir"]).expanduser(); op=Path(config["output_file"]).expanduser()
     sig=float(config.get("px_filter_width",PX_SIGMA_DEFAULT)); lower=float(config.get("lower_boundary",0.0))
     with h5py.File(op,"r+") as out:
         present=[n for n in V2_FIELDS if n in out or n+"_m" in out]
         if present: raise FileExistsError(f"{op} already has {present}; not overwriting")
         t_all=out["t"][:].ravel(); nx=int(out["x"].shape[0]); nt=t_all.size
+        t_max=float(config.get("t_max",np.inf))
         paths=[sd/format_snapshot_filename(v,str(config.get("snapshot_prefix","snapshot_")),str(config.get("snapshot_suffix",".h5")),int(config.get("filename_width",6)),int(config.get("filename_decimals",0))) for v in t_all]
-        miss=[p for p in paths if not p.is_file()]
+        use=[it for it,v in enumerate(t_all) if v<=t_max+1e-9]
+        miss=[paths[it] for it in use if not paths[it].is_file()]
         if miss: raise FileNotFoundError("Missing snapshots:\n"+"\n".join(map(str,miss[:20])))
-        with h5py.File(paths[0],"r") as first:
+        if len(use)<nt: print(f"t_max={t_max:g}: {nt-len(use)} of {nt} times left as NaN")
+        with h5py.File(paths[use[0]],"r") as first:
             cc=compute_cell_centers(first["Geometry/Points"][...],first["Topology"][...]); xm,ym,idx=build_cartesian_cell_grid(cc)
             Re=get_param(first,"Re"); Ca=get_param(first,"Ca"); beta=get_param(first,"angle"); Lambda=get_param(first,"Lambda",3.0)
         if not np.allclose(xm[0,:],out["x"][:].ravel()): raise ValueError("snapshot x grid differs from the closure file")
-        res={n:np.empty((nx,nt)) for n in V2_FIELDS}; resm={n:np.empty((nx,nt)) for n in V2_FIELDS}
+        res={n:np.full((nx,nt),np.nan) for n in V2_FIELDS}; resm={n:np.full((nx,nt),np.nan) for n in V2_FIELDS}
         hdev=0.0
-        for it,path in enumerate(paths):
+        for it in use:
+            path=paths[it]
             print(f"[{it+1}/{nt}] {path.name}",flush=True)
             with h5py.File(path,"r") as s:
                 t=scalar_value(s["Parameters/time"])
@@ -718,6 +724,7 @@ def append_v2(config):
         for n in V2_FIELDS:
             out.create_dataset(n,data=res[n],**kw); out.create_dataset(n+"_m",data=resm[n],**kw)
         out.attrs["delta_Px_ML_v2"]=V2_DESCRIPTION; out.attrs["px_filter_width"]=sig
+        if np.isfinite(t_max): out.attrs["delta_Px_ML_v2_t_max"]=t_max
     print(f"Appended {len(V2_FIELDS)} v2 fields (+_m) to {op}; max |h - stored h| = {hdev:.3g}")
     return op
 

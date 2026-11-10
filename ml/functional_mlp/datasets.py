@@ -187,11 +187,12 @@ class LocalDataset(WindowDataset):
             list(input_fields) if input_fields is not None
             else ['h', 'q', 'h_x', 'h_xx', 'q_x', 'q_xx']
         )
-        allowed = {'h', 'q', 'h_x', 'h_xx', 'q_x', 'q_xx'}
+        self.local_names = set(self.manifest.get('local_fields', {}).get('names', ['h_x', 'h_xx', 'q_x', 'q_xx']))
+        allowed = {'h', 'q'} | self.local_names
         if (not self.input_fields
                 or len(set(self.input_fields)) != len(self.input_fields)
                 or not set(self.input_fields) <= allowed):
-            raise ValueError('Input fields must be a nonempty unique subset of h, q, h_x, h_xx, q_x, q_xx')
+            raise ValueError(f'Input fields must be a nonempty unique subset of {sorted(allowed)}')
 
         self.targets = check_targets(targets, self.manifest['config']['available_targets'])
 
@@ -224,7 +225,7 @@ class LocalDataset(WindowDataset):
 
     def _field_path(self, folder, field):
         """Resolve full-grid fields versus split-aligned derivative files."""
-        if field in {'h_x', 'h_xx', 'q_x', 'q_xx'}:
+        if field in self.local_names:
             return folder / f'{self.split}_{field}.npy'
         return folder / f'{field}.npy'
 

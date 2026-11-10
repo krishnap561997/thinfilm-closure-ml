@@ -33,7 +33,7 @@ def generate(config, output):
         raise ValueError('no_early_stopping must be boolean')
     if any(type(s) is not int or s < 0 for s in seeds) or len(set(seeds)) != len(seeds):
         raise ValueError('Seeds must be unique nonnegative integers')
-    if not set(targets) <= {'delta_Mx_ML', 'delta_Tw_ML', *DERIVED_TARGETS}:
+    if not set(targets) <= {'delta_Mx_ML', 'delta_Tw_ML', 'delta_Px_ML', 'delta_Px_ML_v2', *DERIVED_TARGETS}:
         raise ValueError('Targets must be correction names')
     check_targets(targets, manifest['config']['available_targets'])
 

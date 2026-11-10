@@ -16,6 +16,28 @@ import h5py
 import numpy as np
 
 
+DERIVED_FUNCS = ('h_x', 'h_xx', 'h_xxx', 'q_x', 'q_xx', 'kappa', 'kappa_x', 'kappa_x_We')
+
+
+def derived_name(field, sigma):
+    """'h_xxx', 0.5 -> 'h_xxx_s0p5' (names must be valid input-group tokens)."""
+    return f"{field}_s{sigma:g}".replace('.', 'p')
+
+
+def filtered_derivatives(h, q, sigma, dx, params):
+    """Filtered derivatives of (nx, nt) fields along x (axis 0); params = (Re, Ca, angle)."""
+    from scipy.ndimage import gaussian_filter1d
+
+    def g(v, order):
+        return gaussian_filter1d(v, sigma / dx, axis=0, order=order, mode='nearest') / dx ** order
+    hx, hxx, hxxx = g(h, 1), g(h, 2), g(h, 3)
+    gg = 1.0 + hx ** 2
+    kappa_x = hxxx / gg ** 1.5 - 3.0 * hx * hxx ** 2 / gg ** 2.5
+    return {'h_x': hx, 'h_xx': hxx, 'h_xxx': hxxx, 'q_x': g(q, 1), 'q_xx': g(q, 2),
+            'kappa': hxx / gg ** 1.5, 'kappa_x': kappa_x,
+            'kappa_x_We': kappa_x / (params[0] * params[1])}
+
+
 def digest(obj):
     """Return a reproducible identity for JSON-serializable metadata."""
     return hashlib.sha256(json.dumps(obj, sort_keys=True).encode()).hexdigest()
@@ -69,8 +91,20 @@ def prepare(config):
             or set(local_fields) != {'h_x', 'h_xx', 'q_x', 'q_xx'}):
         raise ValueError('local_fields must contain h_x, h_xx, q_x, q_xx exactly once.')
 
+    # Optional filtered derivatives computed here from the cached h and q (not read from
+    # the source file): Gaussian filter of width sigma (h_N) with analytic derivatives,
+    # the same operator as extract_closure_terms.gauss_deriv. Stored like local_fields.
+    derived_cfg = cfg.get('derived_local_fields')
+    derived = []
+    if derived_cfg:
+        unknown = set(derived_cfg['fields']) - set(DERIVED_FUNCS)
+        if unknown or not derived_cfg['sigmas'] or min(derived_cfg['sigmas']) <= 0:
+            raise ValueError(f'Invalid derived_local_fields (unknown: {unknown})')
+        derived = [derived_name(f, sg) for sg in derived_cfg['sigmas'] for f in derived_cfg['fields']]
+    all_local = local_fields + derived
+
     targets = cfg['available_targets']
-    if not targets or len(set(targets)) != len(targets) or set(targets) & ({'h', 'q', 'curvature'} | set(local_fields)):
+    if not targets or len(set(targets)) != len(targets) or set(targets) & ({'h', 'q', 'curvature'} | set(all_local)):
         raise ValueError('Invalid available_targets.')
 
     # Check that every source exists before creating the output directory.
@@ -85,7 +119,8 @@ def prepare(config):
         'config': cfg,
         'cases': [],
         'local_fields': {
-            'names': local_fields,
+            'names': all_local,
+            'derived': derived_cfg,
             'source': 'original HDF5 datasets; no derivative recomputation',
             'layout': '{split}_{field}.npy, shape (selected,), float32',
             'alignment': 'row-for-row with {split}_indices.npy',
@@ -140,6 +175,13 @@ def prepare(config):
                 if key not in f or f[key].shape != (len(x), len(t)):
                     raise ValueError(f'{name}/{key}: required shape (nx, nt)')
                 fields[key] = np.asarray(f[key][:], dtype=np.float32)
+
+        if derived:
+            hq = {k: np.asarray(fields[k], dtype=np.float64) for k in ('h', 'q')}
+            for sg in derived_cfg['sigmas']:
+                d = filtered_derivatives(hq['h'], hq['q'], sg, float(dx.mean()), params)
+                for fname in derived_cfg['fields']:
+                    fields[derived_name(fname, sg)] = d[fname].astype(np.float32)
 
         np.save(out / 'x.npy', x)
         np.save(out / 't.npy', t)
@@ -215,7 +257,7 @@ def prepare(config):
                 # Targets need to be finite only at the center. Check all cached
                 # targets so later target-group experiments share sample indices.
                 # Derivatives are checked only at the center, never neighbors.
-                for key in targets + local_fields:
+                for key in targets + all_local:
                     valid &= np.isfinite(fields[key][centers, it])
 
                 ix = centers[valid]
@@ -243,7 +285,7 @@ def prepare(config):
 
             # Store one derivative value per selected local point. No full-grid
             # derivative files or neighbor derivative arrays are emitted.
-            for key in local_fields:
+            for key in all_local:
                 values = fields[key][indices[:, 1], indices[:, 0]]
                 np.save(out / f'{split}_{key}.npy', values)
             entry['splits'][split] = {
