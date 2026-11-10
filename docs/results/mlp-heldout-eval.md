@@ -137,6 +137,6 @@ Figures: [`limit01`](figures/mlp-heldout-eval/limit01_error_vs_time.png), [`limi
 ## Open items
 
 1. Decide how to weight the β = 6.4° (small-correction) cases when designing the functional form; their error is systematic.
-2. Decide whether the form is fitted on t ≥ 1000 only (developed waves) or on the whole record.
+2. ~~Decide whether the form is fitted on t ≥ 1000 only or on the whole record.~~ Decided 10 Nov: the whole record (`docs/decisions.md`).
 3. Measure the seed-to-seed spread (2 more seeds for the (h, h_x) and (h, q, h_x, q_x) groups) before drawing conclusions from differences below ~0.02.
 4. Test whether adding q_x (or q) to (h, h_x) removes the Re200 β6.4 ΔM_x gap, i.e. whether q_x is needed at high Re and low β.

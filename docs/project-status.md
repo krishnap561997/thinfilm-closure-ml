@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-05: learned closures coupled to the ROM (first *a posteriori* runs)._
+_Last updated: 2026-11-10: Paper 1 scope (comprehensive passive-gas model), training on the full time record, ΔP_x plan._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -72,7 +72,7 @@ Update this file in the same commit as any change that moves the science forward
 - Predictability depends on Ca. R² is 0.93–0.98 for Ca ≥ 0.06 (Re ≤ 40), but about 0 for Re = 10 with Ca ≤ 0.01 and for Re = 40 with Ca = 0.002. Across the 20 development cases, R² correlates with log Ca at 0.65 and with log Re at 0.31. This points to capillarity and supports curvature as an input.
 - Details and a per-case table: `docs/results/dpx-closure.md`.
 - Correlates better with curvature κ = h_xx/(1+h_x²)^{3/2} (`ml/thinfilm_mlp/augment_curvature.py`).
-- May need non-Markovian (Mori–Zwanzig) memory.
+- May need non-Markovian (Mori–Zwanzig) memory; that is within Paper 1's scope (decision of 10 Nov). Plan of 10 Nov: robust extraction first, then a curvature ablation (4×64 MLP), then dense-in-time restarts (T_PROF = 0.05) for 5 cases if memory is needed.
 
 **Budget closure check (30 Oct 2026).** Full write-up: `docs/results/budget-check.md`.
 
@@ -93,7 +93,7 @@ Update this file in the same commit as any change that moves the science forward
 **Functional-form search for ΔM_x and ΔM_x + ΔT_w (1 Nov 2026).** Full write-up: `docs/results/functional-form-structure.md`.
 
 - ΔT_w ≈ −0.64 ΔM_x (corr −0.975): the two cancel only partly, so forms are developed for the sum ΔM_x + ΔT_w. ΔM_x = ∂ₓΔF with ΔF ≈ F(h, q) (R² ≈ 0.997); it is nearly linear in h_x, q_x.
-- Pooled sparse regression (t > 1000): ΔM_x has a 5-term form with no Re/Ca/β dependence (leave-one-case-out NRMSE 0.129, held-out 0.093, β = 6.4° holdout 0.127). The sum has no adequate sparse form yet (LOCO ≈ 0.35–0.4). Not yet compared with the MLP on the same data; t > 1000 cut still to be verified by the user.
+- Pooled sparse regression (t > 1000): ΔM_x has a 5-term form with no Re/Ca/β dependence (leave-one-case-out NRMSE 0.129, held-out 0.093, β = 6.4° holdout 0.127). The sum has no adequate sparse form yet (LOCO ≈ 0.35–0.4). Not yet compared with the MLP on the same data. These fits used t > 1000; since 10 Nov training uses the entire record (`docs/decisions.md`).
 
 **Mesh sensitivity, MAXLEVEL 14 vs 15 (3 Nov 2026).** Full write-up: `docs/results/mesh-sensitivity.md`. Re120 Ca0.01 β45, 10 Hz, t = 550–650 (level 15 stops at t = 650), crest-aligned.
 
@@ -132,13 +132,13 @@ Title: "A machine-learning augmented reduced model for thin liquid films down an
 - Submission: 15 Dec 2026.
 - APS DFD talk on 22 Nov 2026; talk results freeze on 15 Nov.
 
-**Scope.** Markovian closures for ΔM_x, ΔT_w and ΔP_x, with ΔP_x taking curvature as an input. Paper 1 includes:
+**Scope.** A comprehensive ML-augmented reduced model for falling films with a passive gas: closures for ΔM_x, ΔT_w and ΔP_x (ΔP_x with curvature inputs, and non-Markovian memory closures if needed). Paper 1 includes:
 - *a priori* evaluation on held-out cases;
 - an oracle *a posteriori* run;
 - the ROM coupled with the learned closures;
 - a hyperbolicity check.
 
-Memory models and new architectures go in a Paper 2 only if Paper 1 leaves a gap.
+Paper 2: gas-sheared films. Paper 3: heated films (heat transfer).
 
 **Planned structure and status (29 Oct 2026):**
 

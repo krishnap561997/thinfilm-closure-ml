@@ -12,7 +12,7 @@ ML-augmented reduced-order model (ROM) for thin liquid films falling down an inc
 - **Baseline ROM:** the first-order two-equation model of Lavalle et al. (2015), with state variables h(x,t) and q(x,t).
 - **ML step:** learn corrections ΔC = C_DNS − C_Lavalle for the unclosed terms M_x, T_w, P_x, D_x, then embed them back into the ROM solver.
 
-Future extensions: gas-sheared films, heated films, and microchannel flow boiling.
+Paper 1 is the comprehensive passive-gas model (memory closures included if needed). Paper 2: gas-sheared films. Paper 3: heated films. Later: microchannel flow boiling.
 
 ## Repository map
 

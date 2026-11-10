@@ -2,6 +2,18 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-10 — Train and score on the entire time record
+
+- Decided by the user: ML closures (and any new functional-form fits) are trained and scored on the **entire** time record, not only t > 1000. This supersedes the 2026-11-01 entry "Fit the ΔM_x / ΔT_w functional forms on t > 1000 only", and retires the reminder in that entry.
+- Results already reported on t > 1000 (`functional-form-structure.md`, the budget check, the oracle window) stay as historical numbers; re-running them on the full record is a separate task.
+- New dense DNS data for ΔP_x and memory models covers the whole record by restarting from several dumps (t = 200, 800, 1500).
+
+## 2026-11-10 — Paper 1 scope: a comprehensive passive-gas model; Papers 2 and 3
+
+- Decided by the user: Paper 1 is a comprehensive ML-augmented reduced model for falling films with a **passive gas**. It is not limited to Markovian closures: if ΔP_x (or another term) needs memory, the non-Markovian closure belongs in Paper 1.
+- Paper 2: gas-sheared films. Paper 3: heated films (heat transfer). Microchannel flow boiling comes later.
+- Supersedes the scope bullet of the 2026-10-29 entry.
+
 ## 2026-11-01 — Fit ΔM_x + ΔT_w together; test the chain rule first
 
 - Decided by the user: the functional forms are developed for the sum ΔM_x + ΔT_w (and for ΔM_x), not for ΔT_w alone, because the two cancel to about 64% (ΔT_w ≈ −0.64 ΔM_x, corr −0.975). Details and the chain-rule test: `docs/results/functional-form-structure.md`.
@@ -9,6 +21,7 @@ Record each decision as a short entry: what was decided and why. Newest entries 
 
 ## 2026-11-01 — Fit the ΔM_x / ΔT_w functional forms on t > 1000 only
 
+- **Superseded on 2026-11-10:** train and score on the entire time record (see the entry above). The reminder below is retired.
 - Decided by the user: the functional forms for ΔM_x and ΔT_w are fitted (and scored) on snapshots with t > 1000, i.e. developed waves. The budget check and the oracle also use t ≥ 1000.
 - Why: the held-out error of the 1×16 MLP for Re120 Ca0.02 β90 is dominated by an early-time transient (NRMSE 0.33 at t = 200–500, 0.16 at 500–1000, 0.08–0.10 for t ≥ 1000). See `docs/results/mlp-heldout-eval.md`.
 - **Caveat: not verified yet.** The claim that the early-time error is a developing-wave transient comes from Claude's analysis of the prediction files by time bin. The user has not verified it in person (no look at the fields or time series for that case), and it has been checked for only four of the seven held-out cases. The cut at t > 1000 rests on it.
@@ -30,7 +43,7 @@ Record each decision as a short entry: what was decided and why. Newest entries 
 ## 2026-10-29 — Paper 1 scope, venue and closure targets
 
 - **Venue and dates.** Target IJHMT or AI Thermal Fluids. Submit 15 Dec 2026. Results for the APS DFD talk (22 Nov) freeze on 15 Nov.
-- **Scope.** Paper 1 covers ΔM_x, ΔT_w and ΔP_x, with ΔP_x via curvature inputs. A memory-model Paper 2 happens only if the oracle shows ΔP_x matters *a posteriori* and curvature does not fix it; otherwise the next paper is the gas-sheared or heated film.
+- **Scope** (*superseded on 2026-11-10*: Paper 1 is a comprehensive passive-gas model, memory closures included if needed; Paper 2 = shear, Paper 3 = heat transfer). Paper 1 covers ΔM_x, ΔT_w and ΔP_x, with ΔP_x via curvature inputs. A memory-model Paper 2 happens only if the oracle shows ΔP_x matters *a posteriori* and curvature does not fix it; otherwise the next paper is the gas-sheared or heated film.
 - **Flux-form target for M_x.** ΔF = ∫u² − (q²/h + Λ²h⁵/45), the momentum part only, and ΔM_x = ∂ₓΔF. This keeps the equation conservative and gives a smoother target. The −Λ²h⁵/75 that Lavalle moves into the flux from T_w stays with T_w; ΔT_w remains a pointwise source measured against the full T_w,Lav.
 - **Oracle a posteriori first.** Run the ROM with exact DNS corrections over short horizons from a DNS state. Start with the monochromatic Re = 120, β = 45°, 10 Hz case, re-run as a short restart window with output every 0.1–0.5 time units, because 10-unit h5 output is too coarse to interpolate in time.
 - **Statistical metrics for broadband cases.** Broadband ROM and DNS trajectories decorrelate, so compare h PDFs, amplitude and celerity, spectra and growth. Use the monochromatic cases for snapshot-by-snapshot comparison.

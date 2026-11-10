@@ -4,6 +4,8 @@ _Figures: [`figures/functional-form-structure/`](figures/functional-form-structu
 
 Before searching for closed forms: how do ΔM_x and ΔT_w relate, and does ΔM_x follow from a flux defect ΔF(h, q)? All with t > 1000, 100 < x < 0.95 L, 22 cases from the `ml/functional_mlp` cache.
 
+> Note (10 Nov): these results use t > 1000. Since 10 Nov training and scoring use the entire time record (`docs/decisions.md`); the numbers here are kept as they were.
+
 ## Cancellation of ΔM_x and ΔT_w (`scripts/check_mx_tw_cancellation.py`)
 
 The ROM source is S = −ΔM_x − ΔT_w + …, so cancellation means ΔM_x ≈ −ΔT_w.
@@ -91,4 +93,4 @@ Figures: [`limit01`](figures/functional-form-structure/limit01_sparse_generalisa
 2. Better library for the sum: use s = q − h³ instead of q, h_xx/q_xx with Re and We factors.
 3. Fit F through its gradient (strict chain rule) and test a collinearity-reduced basis for ΔM_x.
 4. PySR cross-check: setup (Julia download) was not confirmed finished; test `import pysr` with `envs/pysr_env.sh`.
-5. Pending reminder: verify the early-transient claim behind the t > 1000 cut (see `docs/decisions.md`, 2026-11-01).
+5. ~~Verify the early-transient claim behind the t > 1000 cut.~~ Retired 10 Nov: the cut is dropped and the full record is used.

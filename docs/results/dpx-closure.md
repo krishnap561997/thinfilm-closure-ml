@@ -55,4 +55,4 @@ Pooled: ΔP_x R² 0.704, NRMSE 0.544; case average R² 0.626, NRMSE 0.563. For c
 1. Held-out evaluation of ΔP_x.
 2. The curvature input on the same split, and the same models against a smoothed ΔP_x target.
 3. A memory term if curvature does not help.
-4. Decide whether Paper 1's *a posteriori* run needs ΔP_x: the oracle with ΔT_w + ΔM_x only is stable for 100 time units without it.
+4. ΔP_x is required for Paper 1's comprehensive passive-gas model (decision of 10 Nov), even though the oracle with ΔT_w + ΔM_x only is stable for 100 time units without it.
