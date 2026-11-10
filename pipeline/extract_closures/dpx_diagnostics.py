@@ -49,81 +49,34 @@ from pathlib import Path
 
 import h5py
 import numpy as np
-from scipy.ndimage import gaussian_filter1d
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from extract_closure_terms import (  # noqa: E402
     best_savgol_filter, build_cartesian_cell_grid, compute_cell_centers, compute_px,
     compute_wall_gradient, depth_integral, first_derivative_x, get_param,
     integrate_to_height, scalar_to_matrix, scalar_value, sg_derivatives, vector_x_to_matrix,
+    PX_GAP as GAP, PX_NFIT as NFIT, extrapolate_top, gauss_deriv, ip_liquid_leibniz,
+    lavalle_px_smooth, liquid_top_index, trapz_to,
 )
 
 METHODS = ("a", "b", "c")
-NFIT = 4          # cells used for the linear extrapolation to y = h
-GAP = 1.5         # fully liquid cells must lie at least GAP*Δ below h
-
-
-# ---------------------------------------------------------------- liquid-only integrals
-def _ls_weights(n):
-    """Weights (w0, w1) so that the LS line through n equally spaced points k = 0..n-1
-    evaluated at k = s is sum_k (w0_k + s*w1_k) v_k."""
-    k = np.arange(n, dtype=float)
-    kb = k.mean(); sxx = ((k - kb) ** 2).sum()
-    w1 = (k - kb) / sxx
-    w0 = 1.0 / n - kb * w1
-    return w0, w1
-
-
-def _extrapolate_top(field, jtop, ytop_target, dy):
-    """Linear LS fit through rows jtop-NFIT+1..jtop of each column, evaluated at
-    ytop_target (per column).  field: (ny, nx), jtop: (nx,) int."""
-    nx = field.shape[1]; cols = np.arange(nx)
-    w0, w1 = _ls_weights(NFIT)
-    vals = np.stack([field[jtop - NFIT + 1 + k, cols] for k in range(NFIT)])  # (NFIT, nx)
-    y_first = (jtop - NFIT + 1 + 0.5) * dy
-    s = (ytop_target - y_first) / dy
-    return (w0[:, None] * vals).sum(0) + s * (w1[:, None] * vals).sum(0)
-
-
-def _trapz_to(field, jtop, ytop, fwall, top_val, dy):
-    """∫_0^ytop of a cell-centred column field: wall value fwall at y = 0, centres
-    0..jtop (trapezoid), then a segment from y_jtop to ytop with end value top_val."""
-    ny, nx = field.shape; cols = np.arange(nx)
-    # cumulative trapezoid between centres: C[j] = ∫_{y_0}^{y_j}
-    C = np.zeros_like(field)
-    C[1:] = np.cumsum(0.5 * (field[1:] + field[:-1]) * dy, axis=0)
-    first = 0.5 * (fwall + field[0]) * (0.5 * dy)
-    yj = (jtop + 0.5) * dy
-    seg = 0.5 * (field[jtop, cols] + top_val) * (ytop - yj)
-    return first + C[jtop, cols] + seg
-
-
-def liquid_top_index(ycut, dy, ny):
-    j = np.floor(ycut / dy - 0.5).astype(int)
-    return np.clip(j, NFIT - 1, ny - 1)
-
-
 def ip_methods(x, ym, f, p, h, dy):
     """Return dict of I_p for methods a, b, c and p_l(h)."""
     ny, nx = p.shape
     px = compute_px(x, p)
     out = {"a": integrate_to_height(ym, px, h, 0.0)}
 
-    # b: Leibniz on the liquid pressure
-    jb = liquid_top_index(h - GAP * dy, dy, ny)
-    pl_h = _extrapolate_top(p, jb, h, dy)
-    pwall = 1.5 * p[0] - 0.5 * p[1]
-    Ipl = _trapz_to(p, jb, h, pwall, pl_h, dy)
-    out["b"] = first_derivative_x(x, Ipl) - pl_h * first_derivative_x(x, h)
+    # b: Leibniz on the liquid pressure (the v2 definition in extract_closure_terms)
+    out["b"], pl_h = ip_liquid_leibniz(x, ym, p, h)
 
     # c: ∂_x p only where the whole 5-point stencil row is liquid
     hmin5 = h.copy()
     for s in (-2, -1, 1, 2):
         hmin5 = np.minimum(hmin5, np.roll(h, s))
     jc = liquid_top_index(hmin5 - GAP * dy, dy, ny)
-    pxh = _extrapolate_top(px, jc, h, dy)
+    pxh = extrapolate_top(px, jc, h, dy)
     pxwall = 1.5 * px[0] - 0.5 * px[1]
-    out["c"] = _trapz_to(px, jc, h, pxwall, pxh, dy)
+    out["c"] = trapz_to(px, jc, h, pxwall, pxh, dy)
 
     # fraction of columns where the fit window reached below the film (thin substrate)
     out["_thin_frac"] = float(np.mean((h - GAP * dy) / dy - 0.5 < NFIT - 1))
@@ -146,8 +99,7 @@ def state_fields(x, ym, s, suffix, idx, shape, dy):
     return {"h": h, "q": q, "M": M, "dudy": dudy, "ip": ip}
 
 
-def gauss(v, sig, dx, order=0):
-    return gaussian_filter1d(v, sig / dx, order=order, mode="nearest") / dx ** order
+gauss = gauss_deriv
 
 
 def lavalle_raw(x, h, q, P):
@@ -159,13 +111,7 @@ def lavalle_raw(x, h, q, P):
 
 
 def lavalle_smooth(h, q, P, sig, dx):
-    hs = gauss(h, sig, dx); hx = gauss(h, sig, dx, 1); hxx = gauss(h, sig, dx, 2)
-    hxxx = gauss(h, sig, dx, 3); qxx = gauss(q, sig, dx, 2)
-    g = 1.0 + hx ** 2
-    kap = hxx / g ** 1.5
-    kap_x = hxxx / g ** 1.5 - 3.0 * hx * hxx ** 2 / g ** 2.5
-    P_lav = hs * kap_x / P["We"] - np.cos(P["beta"]) / P["Fr2"] * hs * hx + qxx / P["Re"]
-    return P_lav, kap, kap_x
+    return lavalle_px_smooth(h, q, P["Re"], P["We"] / P["Re"], P["beta"], P["Lambda"], sig, dx)
 
 
 # ---------------------------------------------------------------- metrics

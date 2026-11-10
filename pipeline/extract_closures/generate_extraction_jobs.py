@@ -5,8 +5,11 @@ Run on HiPerGator:
   python3 generate_extraction_jobs.py
   /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/datasets/BasC/DNS/param_space/ClosureData/run_extraction
 
-Use --extractor PATH if the extraction script is not in PARAM_SPACE's parent
-repository root. Generation does not submit jobs; run_extraction does.
+The extractor defaults to extract_closure_terms.py next to this script.
+Cases that already have a closure file get an "append_v2" config (adds the ΔP_x v2
+fields for the stored times; skipped if they are already there); other cases get a
+full extraction. --min-last-time skips runs whose last snapshot is not later than it.
+Generation does not submit jobs; run_extraction does.
 """
 
 from __future__ import annotations
@@ -15,6 +18,8 @@ import argparse
 import json
 import re
 import shlex
+
+import h5py
 from pathlib import Path
 
 
@@ -36,7 +41,11 @@ def write_if_changed(path: Path, content: str, executable: bool = False) -> None
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
-    parser.add_argument("--extractor", type=Path, help="Path to extract_closure_terms_latest.py")
+    parser.add_argument("--extractor", type=Path,
+                        default=Path(__file__).resolve().parent / "extract_closure_terms.py",
+                        help="Path to the extraction script")
+    parser.add_argument("--min-last-time", type=int, default=0,
+                        help="Skip runs whose last snapshot label is <= this value")
     parser.add_argument(
         "--python-env",
         type=Path,
@@ -59,8 +68,7 @@ def main() -> None:
     if args.step <= 0 or args.max_time < 0:
         parser.error("--step must be positive and --max-time nonnegative")
 
-    extractor = (args.extractor or root.parents[2] / "extract_closure_terms_latest.py")
-    extractor = extractor.expanduser().resolve()
+    extractor = args.extractor.expanduser().resolve()
     if not extractor.is_file():
         parser.error(f"Extractor not found: {extractor}; supply --extractor PATH")
 
@@ -83,6 +91,20 @@ def main() -> None:
             for path in output_dir.glob("snapshot_*.h5")
             if (match := SNAPSHOT_PATTERN.fullmatch(path.name)) is not None
         ) if output_dir.is_dir() else []
+        if not labels or labels[-1] <= args.min_last_time:
+            print(f"SKIP {case.name}: last snapshot {labels[-1] if labels else None} <= {args.min_last_time}")
+            skipped += 1
+            continue
+        out_file = destination / f"thinfilm_closure_data_{case.name}.h5"
+        mode = "full"
+        if out_file.exists():
+            with h5py.File(out_file, "r") as f:
+                has_v2 = "delta_Px_ML_v2" in f
+            if has_v2:
+                print(f"SKIP {case.name}: closure file already has delta_Px_ML_v2")
+                skipped += 1
+                continue
+            mode = "append_v2"
         selected = [label for label in labels if 10 <= label <= args.max_time]
         if not selected:
             print(f"SKIP {case.name}: no snapshots at or below {args.max_time}")
@@ -90,7 +112,7 @@ def main() -> None:
             continue
 
         expected = list(range(selected[0], selected[-1] + 1, args.step))
-        if selected != expected:
+        if selected != expected and mode == "full":
             missing = sorted(set(expected) - set(selected))
             print(
                 f"SKIP {case.name}: {len(selected)} snapshots within cap, "
@@ -102,7 +124,9 @@ def main() -> None:
 
         config = {
             "snapshot_dir": str(output_dir),
-            "output_file": str(destination / f"thinfilm_closure_data_{case.name}.h5"),
+            "output_file": str(out_file),
+            "mode": mode,
+            "px_filter_width": 0.5,
             "start_time": selected[0],
             "end_time": selected[-1],
             "delta_time": args.step,
@@ -121,7 +145,7 @@ def main() -> None:
         config_path = configs / f"{case.name}.json"
         write_if_changed(config_path, json.dumps(config, indent=4) + "\n")
         ready_configs.append(config_path)
-        print(f"READY {case.name}: {len(selected)} snapshots, {selected[0]}–{selected[-1]}")
+        print(f"READY {case.name} [{mode}]: {len(selected)} snapshots, {selected[0]}–{selected[-1]}")
         generated += 1
 
     write_if_changed(
@@ -148,6 +172,7 @@ set -euo pipefail
 # Mirror the original job environment while allowing submission from anywhere.
 cd "${{SLURM_SUBMIT_DIR}}"
 export PATH={shlex.quote(str(args.python_env.expanduser()))}:"$PATH"
+unset PYTHONHOME
 PYTHON_SCRIPT={shlex.quote(str(extractor))}
 CONFIG_FILE="${{1:-}}"
 

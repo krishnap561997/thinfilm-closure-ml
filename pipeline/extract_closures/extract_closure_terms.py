@@ -11,6 +11,7 @@ from typing import Any
 import h5py
 import numpy as np
 from scipy.signal import savgol_filter, find_peaks
+from scipy.ndimage import gaussian_filter1d
 
 
 def load_config(path):
@@ -111,6 +112,74 @@ def sg_derivatives(x,v,max_deriv,min_poly=2,m_values=range(11,42,2),p_values=ran
     m,p,_,_=best_savgol_filter(x,v,m_values,pv,metric="rmse",power=4)
     dx=np.diff(x)[0]
     return tuple(savgol_filter(v,m,p,deriv=d,delta=dx) for d in range(1,max_deriv+1))
+
+# ---------------------------------------------------------------------------
+# ΔP_x v2 (decided 2026-11-10, docs/results/dpx-closure.md "Extraction"):
+#   I_p,liq = ∂x ∫_0^h p_l dz - p_l(h) h_x     (Leibniz form on the liquid pressure)
+#   p_l      = cell pressure in fully liquid cells (y <= h - PX_GAP*Δ); p_l(h) is the
+#              linear least-squares extrapolation of the top PX_NFIT such cells
+#   P_Lav,s  = h κ_x/We - cosβ/Fr² h h_x + q_xx/Re, κ = h_xx/(1+h_x²)^{3/2}, all from a
+#              Gaussian filter of width σ (h_N) with analytic derivatives
+#   ΔP_x,v2  = -G_σ(I_p,liq) - P_Lav,s
+# Rows cut by the interface (pressure jump) are never differentiated in x.
+# ---------------------------------------------------------------------------
+PX_NFIT=4; PX_GAP=1.5; PX_SIGMA_DEFAULT=0.5
+
+def _ls_weights(n):
+    """LS line through n equally spaced points k=0..n-1, evaluated at s: sum_k (w0_k + s w1_k) v_k."""
+    k=np.arange(n,dtype=float); kb=k.mean(); w1=(k-kb)/((k-kb)**2).sum(); w0=1.0/n-kb*w1
+    return w0,w1
+
+def liquid_top_index(ycut,dy,ny):
+    """Index of the highest cell centre (j+1/2)dy <= ycut, clipped to [PX_NFIT-1, ny-1]."""
+    return np.clip(np.floor(ycut/dy-0.5).astype(int),PX_NFIT-1,ny-1)
+
+def extrapolate_top(field,jtop,ytarget,dy):
+    """Per column: LS line through rows jtop-PX_NFIT+1..jtop of field (ny,nx), evaluated at ytarget."""
+    cols=np.arange(field.shape[1]); w0,w1=_ls_weights(PX_NFIT)
+    vals=np.stack([field[jtop-PX_NFIT+1+k,cols] for k in range(PX_NFIT)])
+    s=(ytarget-(jtop-PX_NFIT+1.5)*dy)/dy
+    return (w0[:,None]*vals).sum(0)+s*(w1[:,None]*vals).sum(0)
+
+def trapz_to(field,jtop,ytop,fwall,top_val,dy):
+    """∫_0^ytop of a cell-centred column field: wall value fwall at y=0, trapezoid over
+    centres 0..jtop, then a segment from y_jtop to ytop with end value top_val."""
+    cols=np.arange(field.shape[1])
+    C=np.zeros_like(field); C[1:]=np.cumsum(0.5*(field[1:]+field[:-1])*dy,axis=0)
+    return 0.5*(fwall+field[0])*(0.5*dy)+C[jtop,cols]+0.5*(field[jtop,cols]+top_val)*(ytop-(jtop+0.5)*dy)
+
+def ip_liquid_leibniz(x,ym,p,h):
+    """Return (I_p,liq, p_l(h)) for cell-centred pressure p (ny,nx) on a uniform grid with wall at y=0."""
+    ny=p.shape[0]; dy=ym[1,0]-ym[0,0]
+    if not np.allclose(ym[:,0],(np.arange(ny)+0.5)*dy): raise ValueError("ip_liquid_leibniz needs uniform rows with the wall at y=0")
+    jb=liquid_top_index(h-PX_GAP*dy,dy,ny)
+    pl_h=extrapolate_top(p,jb,h,dy)
+    Ipl=trapz_to(p,jb,h,1.5*p[0]-0.5*p[1],pl_h,dy)
+    return first_derivative_x(x,Ipl)-pl_h*first_derivative_x(x,h),pl_h
+
+def gauss_deriv(v,sig,dx,order=0):
+    return gaussian_filter1d(v,sig/dx,order=order,mode="nearest")/dx**order
+
+def lavalle_px_smooth(h,q,Re,Ca,beta,Lambda,sig,dx):
+    """Filtered exact-curvature Lavalle P_x; returns (P_Lav,s, κ_s, κ_x,s)."""
+    hs=gauss_deriv(h,sig,dx); hx=gauss_deriv(h,sig,dx,1); hxx=gauss_deriv(h,sig,dx,2)
+    hxxx=gauss_deriv(h,sig,dx,3); qxx=gauss_deriv(q,sig,dx,2); g=1.0+hx**2
+    kap=hxx/g**1.5; kap_x=hxxx/g**1.5-3.0*hx*hxx**2/g**2.5
+    Fr2=Re*np.sin(beta)/Lambda
+    return hs*kap_x/(Re*Ca)-np.cos(beta)/Fr2*hs*hx+qxx/Re,kap,kap_x
+
+def px_v2_fields(x,ym,p,h,q,Re,Ca,beta,Lambda,sig):
+    dx=np.diff(x)[0]
+    Ipl,pl_h=ip_liquid_leibniz(x,ym,p,h)
+    Pls,kap,kap_x=lavalle_px_smooth(h,q,Re,Ca,beta,Lambda,sig,dx)
+    return {"int_px_dy_liq":Ipl,"p_liq_interface":pl_h,"kappa_s":kap,"kappa_x_s":kap_x,
+            "delta_Px_ML_v2":-gauss_deriv(Ipl,sig,dx)-Pls}
+
+V2_FIELDS=("int_px_dy_liq","p_liq_interface","kappa_s","kappa_x_s","delta_Px_ML_v2")
+V2_DESCRIPTION=("delta_Px_ML_v2 = -G_s(I_p,liq) - [h kappa_x/We - cos(beta)/Fr2 h h_x + q_xx/Re]_s; "
+                "I_p,liq = d/dx int_0^h p_l dz - p_l(h) h_x (liquid cells only, top 4 cells extrapolated, gap 1.5 dy); "
+                "G_s Gaussian filter of width px_filter_width (h_N) with analytic derivatives; "
+                "kappa_s, kappa_x_s from the filtered h. See docs/results/dpx-closure.md.")
 
 
 def compute_ui(
@@ -578,7 +647,7 @@ def closure_set(x,h,q,hx,hxx,hxxx,qxx,M,ui,uix,dudy,Ip,Re,Ca,beta,Lambda):
         "delta_Dx_ML": D_dns - D_lav,
     }
 
-def process_state(xm,ym,idx,snap,suffix,Re,Ca,beta,Lambda,lower):
+def process_state(xm,ym,idx,snap,suffix,Re,Ca,beta,Lambda,lower,px_sigma=PX_SIGMA_DEFAULT):
     sf="_minus" if suffix else ""
     f=scalar_to_matrix(snap[f"Cells/f{sf}"][...],idx,xm.shape)
     u=vector_x_to_matrix(snap[f"Cells/u{sf}.x"][...],idx,xm.shape)
@@ -599,7 +668,58 @@ def process_state(xm,ym,idx,snap,suffix,Re,Ca,beta,Lambda,lower):
     out={"h":h,"q":q,"h_x":hx,"q_x":qx,"h_xx":hxx,"q_xx":qxx,"h_xxx":hxxx,
          "int_u2_dy":M,"u_interface":ui,"u_interface_x":uix,"int_px_dy":Ip,"dudy_wall":dudy}
     out.update(closure_set(x,h,q,hx,hxx,hxxx,qxx,M,ui,uix,dudy,Ip,Re,Ca,beta,Lambda))
+    out.update(px_v2_fields(x,ym,p,h,q,Re,Ca,beta,Lambda,px_sigma))
     return out
+
+def state_v2(xm,ym,idx,snap,suffix,Re,Ca,beta,Lambda,lower,px_sigma):
+    """Only what ΔP_x v2 needs (append mode): h, q and the v2 fields."""
+    sf="_minus" if suffix else ""
+    f=scalar_to_matrix(snap[f"Cells/f{sf}"][...],idx,xm.shape)
+    u=vector_x_to_matrix(snap[f"Cells/u{sf}.x"][...],idx,xm.shape)
+    p=scalar_to_matrix(snap[f"Cells/p{sf}"][...],idx,xm.shape)
+    x=xm[0,:]
+    _,h=depth_integral(xm,ym,f,lower)
+    _,q=depth_integral(xm,ym,u*f,lower)
+    out={"h":h}
+    out.update(px_v2_fields(x,ym,p,h,q,Re,Ca,beta,Lambda,px_sigma))
+    return out
+
+def append_v2(config):
+    """Add the ΔP_x v2 datasets to an existing closure file, for exactly its stored times.
+    Existing datasets are never modified; refuses if any v2 dataset already exists."""
+    sd=Path(config["snapshot_dir"]).expanduser(); op=Path(config["output_file"]).expanduser()
+    sig=float(config.get("px_filter_width",PX_SIGMA_DEFAULT)); lower=float(config.get("lower_boundary",0.0))
+    with h5py.File(op,"r+") as out:
+        present=[n for n in V2_FIELDS if n in out or n+"_m" in out]
+        if present: raise FileExistsError(f"{op} already has {present}; not overwriting")
+        t_all=out["t"][:].ravel(); nx=int(out["x"].shape[0]); nt=t_all.size
+        paths=[sd/format_snapshot_filename(v,str(config.get("snapshot_prefix","snapshot_")),str(config.get("snapshot_suffix",".h5")),int(config.get("filename_width",6)),int(config.get("filename_decimals",0))) for v in t_all]
+        miss=[p for p in paths if not p.is_file()]
+        if miss: raise FileNotFoundError("Missing snapshots:\n"+"\n".join(map(str,miss[:20])))
+        with h5py.File(paths[0],"r") as first:
+            cc=compute_cell_centers(first["Geometry/Points"][...],first["Topology"][...]); xm,ym,idx=build_cartesian_cell_grid(cc)
+            Re=get_param(first,"Re"); Ca=get_param(first,"Ca"); beta=get_param(first,"angle"); Lambda=get_param(first,"Lambda",3.0)
+        if not np.allclose(xm[0,:],out["x"][:].ravel()): raise ValueError("snapshot x grid differs from the closure file")
+        res={n:np.empty((nx,nt)) for n in V2_FIELDS}; resm={n:np.empty((nx,nt)) for n in V2_FIELDS}
+        hdev=0.0
+        for it,path in enumerate(paths):
+            print(f"[{it+1}/{nt}] {path.name}",flush=True)
+            with h5py.File(path,"r") as s:
+                t=scalar_value(s["Parameters/time"])
+                if abs(t-out["t"][it])>1e-8: raise ValueError(f"{path}: time {t} != stored {out['t'][it]}")
+                cur=state_v2(xm,ym,idx,s,"",Re,Ca,beta,Lambda,lower,sig)
+                prv=state_v2(xm,ym,idx,s,"m",Re,Ca,beta,Lambda,lower,sig)
+            hdev=max(hdev,np.max(np.abs(cur["h"]-out["h"][:,it])),np.max(np.abs(prv["h"]-out["h_m"][:,it])))
+            for n in V2_FIELDS: res[n][:,it]=cur[n]; resm[n][:,it]=prv[n]
+        if hdev>1e-10: raise ValueError(f"recomputed h differs from stored h by {hdev:g}; not writing")
+        comp=config.get("compression","gzip"); comp=None if comp in (None,"none","None","") else comp
+        kw=dict(dtype=np.float64,chunks=(min(nx,1024),1))
+        if comp: kw["compression"]=comp; kw["compression_opts"]=int(config.get("compression_level",4)) if comp=="gzip" else None
+        for n in V2_FIELDS:
+            out.create_dataset(n,data=res[n],**kw); out.create_dataset(n+"_m",data=resm[n],**kw)
+        out.attrs["delta_Px_ML_v2"]=V2_DESCRIPTION; out.attrs["px_filter_width"]=sig
+    print(f"Appended {len(V2_FIELDS)} v2 fields (+_m) to {op}; max |h - stored h| = {hdev:.3g}")
+    return op
 
 def create_output_datasets(out,nx,nt,compression,level):
     base = (
@@ -608,7 +728,7 @@ def create_output_datasets(out,nx,nt,compression,level):
             "int_px_dy", "dudy_wall",
             "delta_M_ML", "delta_Mx_ML",
             "delta_Tw_ML", "delta_Px_ML", "delta_Dx_ML",
-            )
+            ) + V2_FIELDS
 
     kw=dict(shape=(nx,nt),dtype=np.float64,chunks=(min(nx,1024),1))
     if compression:
@@ -630,11 +750,14 @@ def extract_snapshots(config):
         validate_snapshot(first,paths[0]); cc=compute_cell_centers(first["Geometry/Points"][...],first["Topology"][...]); xm,ym,idx=build_cartesian_cell_grid(cc)
         Re=get_param(first,"Re"); Ca=get_param(first,"Ca"); beta=get_param(first,"angle"); Lambda=get_param(first,"Lambda",3.0)
     x=xm[0,:]; nx=len(x); nt=len(paths); lower=float(config.get("lower_boundary",0.0)); comp=config.get("compression","gzip"); comp=None if comp in (None,"none","None","") else comp; lev=int(config.get("compression_level",4))
+    sig=float(config.get("px_filter_width",PX_SIGMA_DEFAULT))
+    if op.exists(): raise FileExistsError(f"{op} exists; use mode append_v2 or remove it")
     op.parent.mkdir(parents=True,exist_ok=True)
     with h5py.File(op,"w") as out:
         out.attrs["description"]="DNS thin-film closure variables and Lavalle discrepancy closures"
         out.attrs["matrix_layout"]="x_by_time"; out.attrs["nx"]=nx; out.attrs["nt"]=nt
         out.attrs["x_derivative_method"]="Savitzky-Golay; RMSE-selected per state; filter parameters not stored"
+        out.attrs["delta_Px_ML_v2"]=V2_DESCRIPTION; out.attrs["px_filter_width"]=sig
         out.create_dataset("x",data=x); ds=create_output_datasets(out,nx,nt,comp,lev)
         with h5py.File(paths[0],"r") as first:
             pg=out.create_group("parameters"); copy_static_parameters(first,pg)
@@ -647,8 +770,8 @@ def extract_snapshots(config):
             with h5py.File(path,"r") as s:
                 validate_snapshot(s,path); t=scalar_value(s["Parameters/time"]); tm=scalar_value(s["Parameters/time_minus"]); dt=t-tm
                 if dt<=0: raise ValueError(f"Non-positive dt in {path}: time={t}, time_minus={tm}")
-                cur=process_state(xm,ym,idx,s,"",Re,Ca,beta,Lambda,lower)
-                prv=process_state(xm,ym,idx,s,"m",Re,Ca,beta,Lambda,lower)
+                cur=process_state(xm,ym,idx,s,"",Re,Ca,beta,Lambda,lower,sig)
+                prv=process_state(xm,ym,idx,s,"m",Re,Ca,beta,Lambda,lower,sig)
                 for n,a in cur.items(): ds[n][:,it]=a
                 for n,a in prv.items(): ds[n+"_m"][:,it]=a
                 ds["t"][it]=t; ds["tm"][it]=tm; ds["dt"][it]=dt
@@ -657,5 +780,7 @@ def extract_snapshots(config):
     return op
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("config",type=Path); a=ap.parse_args(); extract_snapshots(load_config(a.config))
+    ap=argparse.ArgumentParser(); ap.add_argument("config",type=Path); a=ap.parse_args(); cfg=load_config(a.config)
+    # mode "append_v2": add the ΔP_x v2 fields to an existing closure file; default: full extraction
+    (append_v2 if cfg.get("mode")=="append_v2" else extract_snapshots)(cfg)
 if __name__=="__main__": main()
