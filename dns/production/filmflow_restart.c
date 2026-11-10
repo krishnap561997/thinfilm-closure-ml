@@ -122,6 +122,14 @@ int main (int argc, char * argv[])
     return 1;
   }
 
+  /* Noise phases are set here, not in an (i = 0) event: restore() replays the event
+     schedule with events(false), so an (i = 0) event never runs after a restart and the
+     phases stayed uninitialised (inlet RMS ~0.002 instead of ~0.025; fixed 2026-11-10).
+     Same seed and rand() sequence as filmflow0.c, so the forcing is continuous in t. */
+  srand(noise_seed);
+  for (int k = 0; k < MNOISE; k++)
+    noise_phase[k] = 2.*pi*(rand()/((double) RAND_MAX));
+
   H0 = cbrt(3.*RE*MU_L*MU_L/(RHO_L*RHO_L*grav*sin(angle)));
   U0 = grav*sin(angle)*H0*H0*RHO_L/MU_L/3.0;
   US = 1.5*U0;
@@ -220,11 +228,6 @@ event init (t = 0) {
 
 event init_noise (i = 0)
 {
-  srand(noise_seed);
-
-  for (int k = 0; k < MNOISE; k++)
-    noise_phase[k] = 2.*pi*(rand()/((double) RAND_MAX));
-
   inlet_F = chang_noise_signal(t);
   inlet_U = 1.5*(1. + inlet_F);
 }

@@ -8,6 +8,7 @@ THINFILM_ROOT ?= $(shell git -C $(CURDIR) rev-parse --show-toplevel 2>/dev/null)
 #   make                  # Compile filmflow0.c
 #   make default          # Compile filmflow0.c
 #   make restart          # Compile filmflow_restart.c
+#   make profiles         # Compile filmflow_restart_profiles.c (restart + 1D column profiles)
 #   make run              # Submit filmflow
 #   make run-restart      # Submit filmflow_restart
 #   make clean
@@ -25,6 +26,9 @@ DEFAULT_TARGET := filmflow
 
 RESTART_SRC    := filmflow_restart.c
 RESTART_TARGET := filmflow_restart
+
+PROFILES_SRC    := filmflow_restart_profiles.c
+PROFILES_TARGET := filmflow_restart_profiles
 
 # ============================================================
 # Modules and compiler configuration
@@ -81,6 +85,7 @@ all: default
 default: $(DEFAULT_TARGET)
 
 restart: $(RESTART_TARGET)
+profiles: $(PROFILES_TARGET)
 
 $(DEFAULT_TARGET): $(DEFAULT_SRC) Makefile
 	module purge; \
@@ -93,6 +98,21 @@ $(DEFAULT_TARGET): $(DEFAULT_SRC) Makefile
 	CC99='$(CC99)' "$(QCC)" $(QCCFLAGS) \
 	  $(DEFAULT_SRC) \
 	  -o $(DEFAULT_TARGET) \
+	  -I$(BASILISK_OLD) \
+	  -I$(CUSTOM_HEADERS) \
+	  $(OPENGLIBS) \
+	  $(HDFLIBS) \
+	  -lm
+
+$(PROFILES_TARGET): $(PROFILES_SRC) Makefile
+	module purge; \
+	module load $(MODULES); \
+	unset BPATH CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH; \
+	export BASILISK="$(BASILISK_OLD)"; \
+	export PATH="$(BASILISK_OLD):$$PATH"; \
+	CC99='$(CC99)' "$(QCC)" $(QCCFLAGS) \
+	  $(PROFILES_SRC) \
+	  -o $(PROFILES_TARGET) \
 	  -I$(BASILISK_OLD) \
 	  -I$(CUSTOM_HEADERS) \
 	  $(OPENGLIBS) \
@@ -130,7 +150,7 @@ run-restart: $(RESTART_TARGET)
 # ============================================================
 
 clean:
-	rm -f $(DEFAULT_TARGET) $(RESTART_TARGET)
+	rm -f $(DEFAULT_TARGET) $(RESTART_TARGET) $(PROFILES_TARGET)
 	rm -f *.o _*.c
 
 purge:

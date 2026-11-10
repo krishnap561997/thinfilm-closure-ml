@@ -11,6 +11,12 @@
  *   int_px_dy       = int_0^h dp/dx dy   (4th-order x-stencil, trapezoid to y = h)
  *   dudy_wall       = (3675 u1 - 1225 u2 + 441 u3 - 75 u4)/(840 dy)
  *   u_interface_raw = u linearly interpolated to y = h
+ *   int_pl_dy       = int_0^h p_l dy, liquid pressure only (added 2026-11-10)
+ *   p_liq_interface = p_l(h): LS line through the top 4 cells with centre <= h - 1.5 dy,
+ *                     evaluated at y = h; int_pl_dy uses these cells (trapezoid, wall
+ *                     value 1.5 p0 - 0.5 p1) plus a segment to p_l(h). Same as
+ *                     extract_closure_terms.ip_liquid_leibniz, so
+ *                     I_p,liq = d/dx int_pl_dy - p_liq_interface * h_x  (in Python).
  *
  * The definitions follow pipeline/extract_closures/extract_closure_terms.py
  * (depth_integral, integrate_to_height, compute_px, compute_wall_gradient and the
@@ -20,12 +26,14 @@
 #ifndef COLUMN_PROFILES_H
 #define COLUMN_PROFILES_H
 
+#include <math.h>
 #include <hdf5.h>
 #include <hdf5_hl.h>
 
-#define CP_NFIELD 6
+#define CP_NFIELD 8
 static const char * cp_names[CP_NFIELD] = {
-  "h", "q", "int_u2_dy", "int_px_dy", "dudy_wall", "u_interface_raw"
+  "h", "q", "int_u2_dy", "int_px_dy", "dudy_wall", "u_interface_raw",
+  "int_pl_dy", "p_liq_interface"
 };
 
 static int cp_nx = 0, cp_ny = 0;
@@ -119,6 +127,22 @@ static void column_profiles_compute (scalar ff, vector uu, scalar pp, double * o
     out[0][i] = h; out[1][i] = q; out[2][i] = m; out[3][i] = ip;
     out[4][i] = (3675.*uc[0] - 1225.*uc[nx] + 441.*uc[2*nx] - 75.*uc[3*nx])/(840.*dl);
     out[5][i] = cp_interp_column (uc, h);
+
+    /* liquid pressure only: top fully liquid cell jb (centre <= h - 1.5 dl), clipped to [3, ny-1] */
+    const double * pcol = P + i;
+    int jb = (int) floor ((h - 1.5*dl)/dl - 0.5);
+    if (jb < 3) jb = 3;
+    if (jb > ny - 1) jb = ny - 1;
+    static const double w0[4] = {0.7, 0.4, 0.1, -0.2}, w1[4] = {-0.3, -0.1, 0.1, 0.3};
+    double sfit = (h - (jb - 3 + 0.5)*dl)/dl, plh = 0.;
+    for (int k = 0; k < 4; k++)
+      plh += (w0[k] + sfit*w1[k])*pcol[(size_t) (jb - 3 + k)*nx];
+    double pw = 1.5*pcol[0] - 0.5*pcol[nx];
+    double ipl = 0.5*(pw + pcol[0])*(0.5*dl);
+    for (int j = 1; j <= jb; j++)
+      ipl += 0.5*(pcol[(size_t) j*nx] + pcol[(size_t) (j - 1)*nx])*dl;
+    ipl += 0.5*(pcol[(size_t) jb*nx] + plh)*(h - (jb + 0.5)*dl);
+    out[6][i] = ipl; out[7][i] = plh;
   }
 }
 
