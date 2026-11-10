@@ -148,7 +148,7 @@
   ],
   "epochs": 100,
   "no_early_stopping": true,
-  "max_concurrent": 6,
+  "max_concurrent": 2,
   "training": {
     "batch_size": 8192,
     "lr": 0.001,
