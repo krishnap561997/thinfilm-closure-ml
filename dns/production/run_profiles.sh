@@ -15,7 +15,9 @@
 #   POST=budget                    -> pipeline/extract_closures/profile_budget.py (budget.csv)
 #   sbatch --chdir=RUN_DIR --export=ALL,POST=budget run_profiles.sh
 set -euo pipefail
-cd "${SLURM_SUBMIT_DIR}"
+# The job starts in the directory given by sbatch --chdir (default: the submit directory).
+# Do not cd to SLURM_SUBMIT_DIR, which is where sbatch was called and ignores --chdir.
+[[ -f RUN_INFO.txt ]] || { echo "not a run directory: $(pwd) (use sbatch --chdir=RUN_DIR)" >&2; exit 1; }
 date; hostname
 ROOT="${THINFILM_ROOT:-/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code/thinfilm-closure-ml}"
 source "${ROOT}/env.sh"
