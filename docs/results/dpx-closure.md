@@ -91,9 +91,52 @@ What the results show:
 - **G and H are equivalent.** Adding q_xx to F (giving G) helps in the We 1.6 and 2.4 cases.
 - **Low We fails in training and held-out cases alike.** In validation for G_s0p5, Re20 Ca0.02 β6.4 (We 0.4) has R² 0.29 and Re40 Ca0.005 β45 (We 0.2) has 0.50. All other validation cases are at 0.88 or above. In those two cases the Markovian inputs explain little of ΔP_x, whatever the filter. This matches the budget not closing at low We: it is either extraction error in the target or memory. The dense-profile budget check (jobs 50644567–70) should tell which.
 
+### Figures
+
+Made with `scripts/figures/dpx-closure/make_dpx_figures.py` and stored in `figures/dpx-closure/`. All are for held-out cases. The best cases are Re120 Ca0.01 β45 and Re80 Ca0.01 β90; the worst are Re80 Ca0.005 β6.4 and Re20 Ca0.01 β45. The models compared are G_s0p5, H_s0p5, F_s0p5 and A_sg.
+
+- `fig01_extraction_strategies.png`: ΔP_x from the DNS by method a/b/c, raw and filtered, and the old target against v2 (Re120 Ca0.01 β45, t = 1500, 400 < x < 600).
+  - The three I_p methods agree away from the sharp troughs.
+  - The raw ΔP_x is dominated by grid-scale spikes; filtering with σ = 0.5 keeps the wave-scale signal.
+- `fig02_r2_vs_We.png`: per-case R² against We.
+  - Left: the input groups at σ = 0.5.
+  - Middle: the filter width, for G and A.
+  - Right: validation and held-out cases for G_s0p5. The low-We failure appears in training cases too.
+- `fig03`–`fig06`: snapshots at t = 1500 for the best cases, in the linear region (x < 100) and the nonlinear region (400 < x < 600).
+- `limit01`–`limit04`: the same for the worst cases.
+  - In the nonlinear window even Re80 Ca0.005 β6.4 reaches window R² 0.92–0.98.
+  - In the linear window the DNS ΔP_x has isolated spikes of 0.3–0.5 that no model predicts. Some sit at the edges of an exactly flat h plateau (x ≈ 46–57, h = 0.978), and others have no feature in h at all.
+- `fig07_crest_average.png`: crest-aligned averages over about 800–1000 solitary waves (t > 1000, x > 150). Every model reproduces the mean ΔP_x around the crest and capillary ripples in all four cases. The RMS error is well below the RMS of the DNS signal.
+- `fig08_truth_vs_pred.png`: 2D histograms of prediction against DNS.
+  - G and H lie on the 1:1 line in the best cases, with slope 0.96–1.03. A_sg is visibly damped (slope 0.86–0.91).
+  - Every case has a horizontal band at prediction ≈ 0: DNS events the model cannot see. This band dominates the worst cases.
+- `fig09_spectra.png`: wavenumber spectra of ΔP_x.
+  - In the best cases the error of G_s0p5 is 1–2 decades below the signal at the wave scale. In the worst cases it is comparable to the signal over 1/λ < 0.3.
+  - Beyond λ = 1 h_N the predictions keep short-wave power that the filtered target does not have. It is small in absolute terms.
+- `limit05_error_map.png`: x–t map for Re80 Ca0.005 β6.4. **The error is almost entirely at x < 250**, as intermittent spikes at every time.
+- `limit06_lag_correlation.png`: correlation of the G_s0p5 error with lagged and shifted inputs.
+  - There is no correlation with inputs at earlier times, but 10-unit sampling cannot resolve wave passage.
+  - The error is anti-correlated with the DNS ΔP_x at the same point (−0.6 for We 0.4). That is, the model misses an amplitude component.
+  - The error has a correlation length of about 1–2 h_N, and no correlation with upstream h or κ_x.
+
+**Where the low-We error comes from.** Split at x = 250, R² for G_s0p5:
+
+| Case | x < 250 | x ≥ 250 | Share of squared error from x < 250 |
+|---|---|---|---|
+| Re120 Ca0.01 β45 | 0.94 | 0.99 | 0.21 |
+| Re80 Ca0.01 β90 | 0.80 | 0.98 | 0.39 |
+| Re80 Ca0.005 β6.4 | 0.00 | 0.92 | 0.96 |
+| Re20 Ca0.01 β45 | 0.14 | 0.86 | 0.59 |
+
+So the low-We failure is mostly a short-wave component in the nearly flat upstream film, not the solitary waves. Downstream of x = 250 the Markovian model with h_xxx or κ_x inputs is at R² 0.86–0.99.
+
+**Hypothesis, not yet tested.** h_N is about 20.5 cells, so in the nearly flat upstream film the interface sits close to a cell face. There the fully liquid top cell (h − 1.5Δ) can switch from column to column, and p_l(h) and ∂ₓ∫p_l jump with it. The flat h plateau at 20.0 cells points the same way.
+
+To test it, compare ΔP_x against the position of the interface within its cell, (h mod Δ)/Δ, at x < 250, and use the dense-profile runs to see whether the spikes persist in time (physical) or flicker (extraction). If they are extraction, re-score with x < 250 excluded or with a fixed-depth liquid fit before going to memory models.
+
 ## Caveats
 
-- One seed, one network, pointwise inputs. The wave-region summary (`scripts/mlp_wave_region_summary.py`) has not been run yet.
+- One seed, one network, pointwise inputs.
 - The first section (stencil MLP, old target) uses validation data of the development cases only.
 - One seed, one stencil, one model class; the target is the extracted ΔP_x including its grid-scale noise.
 

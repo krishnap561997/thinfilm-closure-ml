@@ -5,6 +5,7 @@ One folder per write-up in `docs/results/`, with the same name:
 | Folder | Write-up |
 |---|---|
 | `budget-check/` | `../budget-check.md` |
+| `dpx-closure/` | `../dpx-closure.md` |
 | `functional-form-structure/` | `../functional-form-structure.md` |
 | `mesh-sensitivity/` | `../mesh-sensitivity.md` |
 | `mlp-heldout-eval/` | `../mlp-heldout-eval.md` |
