@@ -85,16 +85,30 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
             const double F0=noise.value(t);
             inlet<<std::setprecision(17)<<t<<','<<t*p.TN<<','<<F0<<','<<1.0+F0<<'\n';
 
+            const auto step_start=std::chrono::steady_clock::now();
             rk4_step(state,t,p.dt,p,closure,noise);  //RK4 step has the numerical pipeline
             // BC -> MUSCL recon -> closure -> Rusanov flux -> flux div -> source + viscous +
             // capillary
+
+            // Per-step log line (Basilisk style), flushed so run.log is live:
+            // step index, nondimensional t, dt, wall time of this step and in total, cells*steps/s
+            {
+                const auto now=std::chrono::steady_clock::now();
+                const double wall=std::chrono::duration<double>(now-start).count();
+                const double wstep=std::chrono::duration<double>(now-step_start).count();
+                const auto flags=std::cout.flags(); const auto prec=std::cout.precision();
+                std::cout<<std::defaultfloat<<"i "<<(n+1)<<" t "<<std::setprecision(10)<<t+p.dt
+                         <<std::setprecision(4)<<" dt "<<p.dt<<" step "<<wstep<<" s wall "<<wall
+                         <<" s speed "<<double(p.in.N)*(n+1)/std::max(wall,1e-12)<<" cells.step/s"<<std::endl;
+                std::cout.flags(flags); std::cout.precision(prec);
+            }
 
             // Checks diagnostics every progress_every timesteps
             if((n+1)%p.progress_every==0 || n==0){
                 const auto d=compute_diagnostics(state,p,closure);
                 std::cout<<"step "<<(n+1)<<" / "<<p.nsteps<<"; t="<<(t+p.dt)*p.TN<<" s"
                          <<"; h_min="<<d.h_min<<"; |hx|_max="<<d.max_abs_hx
-                         <<"; min(discriminant)="<<d.min_hyperbolic_discriminant<<'\n';
+                         <<"; min(discriminant)="<<d.min_hyperbolic_discriminant<<std::endl;
             }
 
             // Saves h5 files every save_every timesteps
@@ -118,7 +132,10 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         for(int i=0;i<p.in.N;++i) final<<std::setprecision(17)<<x[i]*p.hN<<','<<hf[i]<<','<<p.uN*qf[i]/hf[i]<<','<<rf[i]/hf[i]<<'\n';
 
         const auto elapsed=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
-        std::cout<<"Completed in "<<elapsed<<" s\n";
+        std::cout<<"Completed in "<<elapsed<<" s\n"
+                 <<"# "<<p.nsteps<<" steps, "<<elapsed<<" s real, "<<p.in.N<<" cells, "
+                 <<double(p.in.N)*p.nsteps/std::max(elapsed,1e-12)<<" cells.step/s, "
+                 <<elapsed/std::max(p.nsteps,1)<<" s/step"<<std::endl;
     }catch(const std::exception& e){ std::cerr<<"ERROR: "<<e.what()<<'\n'; return 1; }
     return 0;
 }

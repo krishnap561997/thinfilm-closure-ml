@@ -57,9 +57,11 @@ The oracle *a posteriori* run will add exact DNS corrections taken from `profile
 ```
 
 - `oracle.txt` with `terms = none` supplies only the DNS initial state and inlet.
-- `ml.txt`: either `sum_model = <file>` (one model for ΔM_x + ΔT_w), or `mx_model = <file>` and `tw_model = <file>`. Optional `hx_smooth = <sigma in cells>` smooths h and q before differentiating (default 0).
-- Model files come from `ml/functional_mlp/export_for_cpp.py <best.pt> <out.txt>` (tanh MLPs of any depth; inputs any of h, q, h_x, q_x followed by Re, Ca, angle in radians). The C++ forward pass agrees with PyTorch to 6 digits.
-- At every RK4 stage the models are evaluated cell by cell on the ROM state, h_x and q_x by central differences (`ddx_1d`), and the result is subtracted from the q-equation (−ΔM_x − ΔT_w, as in the oracle). ΔM_x enters as a cell source, not as a face flux, so the flux Jacobian and Rusanov wavespeed are unchanged.
+- `ml.txt`: either `sum_model = <file>` (one model for ΔM_x + ΔT_w), or `mx_model = <file>` and `tw_model = <file>`, or neither; optionally `px_model = <file>` (ΔP_x v2, added as +ΔP_x). Optional `hx_smooth = <sigma in cells>` smooths h and q before the central differences for the plain inputs h_x, q_x (default 0).
+- With `px_model`, `px_curvature_fix = 1` (default) also adds h_s(κ_x,s − h_xxx,s)/We, filtered at `px_sigma` (default 0.5 h_N). ΔP_x v2 is defined against exact curvature, while the Noble–Vila capillarity here is the linearised h h_xxx/We. Set it to 0 to drop the term.
+- Model files come from `ml/functional_mlp/export_for_cpp.py <best.pt> <out.txt>` (tanh MLPs of any depth). Inputs: h, q, h_x, q_x, Re, Ca, angle (radians), and filtered fields `<f>_s<sigma>` (f = h_x, h_xx, h_xxx, q_x, q_xx, kappa, kappa_x, kappa_x_We; e.g. `h_xxx_s0p5`). The filtered fields use a Gaussian with analytic derivatives, the operator of `scipy.ndimage.gaussian_filter1d(mode='nearest')` used in training.
+- Check: `make ml_check`, then `python scripts/ml_hook_check.py --forcing rom_forcing.h5 --ml ml.txt --px-ckpt best.pt`. On the Re120 Ca0.01 β45 DNS state the filtered inputs agree with Python to 5e-12 and the ΔP_x output with PyTorch to 1e-7 relative.
+- At every RK4 stage the models are evaluated cell by cell on the ROM state, h_x and q_x by central differences (`ddx_1d`), and the result is added to the q-equation as −ΔM_x − ΔT_w + ΔP_x, as in the oracle. ΔM_x enters as a cell source, not as a face flux, so the flux Jacobian and Rusanov wavespeed are unchanged.
 
 ## ML extension
 

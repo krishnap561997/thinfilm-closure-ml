@@ -28,3 +28,7 @@ purge: clean
 	rm -f $(OUTPUTS)
 
 .PHONY: all clean purge
+
+# Check the ML hook against Python (see rom/lavalle-cpp/README.md, "ML closure")
+ml_check: tools/ml_check.cpp src/ml/ml_closure.cpp src/numerics/derivatives.cpp include/ml/ml_closure.hpp
+	g++ $(CXXFLAGS) tools/ml_check.cpp src/ml/ml_closure.cpp src/numerics/derivatives.cpp -o $@

@@ -37,6 +37,7 @@ filmflow
 filmflow_restart
 filmflow_debug
 rom/lavalle-cpp/thinfilm
+rom/lavalle-cpp/ml_check
 thinfilm_training_data*.h5
 inlet_signal.csv
 final_state.csv

@@ -120,6 +120,7 @@ Update this file in the same commit as any change that moves the science forward
 - For the first 10 time units both match the oracle (h error 0.06 at 1, 0.22 at 10; oracle 0.06 / 0.17; Lavalle 0.12 / 0.61) and restore the wave height.
 - Then they drift. The sum model over-amplifies the crests (max h 2.38 at 50 and 2.50 at 99.9 against 2.1) and leads the DNS; error 0.47 at 50 (Lavalle 0.59), 1.26 at 99.9 (Lavalle 1.07). The separate models fail sooner (1.03 at 50, 2.05 at 99.9).
 - Next: smoothed derivatives (`hx_smooth`), DNS re-initialisation every 5–10 time units, closed-loop-aware training.
+- In progress (12 Nov): the same closures plus the ΔP_x v2 MLP (G_s0p5, and H_s0p5 with the sum model) and the exact-curvature term h(κ_x − h_xxx)/We; array 51017895, run directories `rom/runs/ml_*_px*`. The ML hook now takes `px_model` and filtered inputs; it agrees with PyTorch to 1e-7.
 
 See the schedule at the end of this file. Phase 0 (2–8 Nov) covers the oracle runs, the held-out evaluation on one shared data configuration, and the closure hook in `rom/lavalle-cpp/include/closures/closure_model.hpp` (the oracle module in `rom/lavalle-cpp/{include,src}/oracle/` and the learned-closure hook in `{include,src}/ml/` are done).
 

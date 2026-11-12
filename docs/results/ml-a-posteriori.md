@@ -14,7 +14,7 @@ Couple the 1×16 MLPs to the ROM and run it from the DNS state, on the same case
   - Reference runs from the oracle study: `lavalle` (no correction) and `Tw_Mx` (exact DNS ΔT_w + ΔM_x).
 - **Cost:** 155 s (sum model) and 301 s (two models) for 100 time units on one core, against ≈ 50 s for Lavalle alone.
 - **Data:** `$THINFILM_DATA/BasC/DNS/oracle/Re120_Ca0_010_theta45_f10Hz/rom/`: `models/*.txt`, `runs/{ml_sum_hhx,ml_mx_tw}/` (`ml.txt`, `run.log`, `thinfilm_training_data.h5`), `summary_ml.csv` (`scripts/oracle_summary.py`, every 0.1).
-- **Figures:** `scripts/figures/ml-a-posteriori/fig01_h_profiles.py`, `anim01_h_full_domain.py` (mp4, 0 < x < 800, not in git: regenerate with the script).
+- **Figures:** `scripts/figures/ml-a-posteriori/fig01_h_profiles.py`, `anim01_h_full_domain.py` (mp4, 0 < x < 800, not in git: regenerate with the script), both with `--set 2026-11-05`; output in `figures/ml-a-posteriori/comparisons_2026-11-05/`.
 
 ## Results
 
@@ -42,13 +42,28 @@ Max h (ROM; DNS in brackets): elapsed 5: Lavalle 1.66, oracle 2.09, ML sum 2.06,
 
 ## Where it fails
 
-Figures: [`fig01`](figures/ml-a-posteriori/fig01_h_profiles.png); the animation shows the whole domain.
+Figures: [`fig01`](figures/ml-a-posteriori/comparisons_2026-11-05/fig01_h_profiles.png); the animation shows the whole domain.
 
 - **The sum model over-amplifies the waves.** Max h grows past the DNS from elapsed ≈ 20: 2.25 at 30, 2.38 at 50, 2.50 at 75–99.9 against 2.04–2.12. In `fig01` the crests are also ahead of the DNS crests from elapsed 50 (taller waves travel faster), with a longer, thinner substrate behind them (h ≈ 0.55 where the DNS has 0.8–1.0 at elapsed 75–99.9, read from the figure). By elapsed 99.9 the error (1.26) is above Lavalle alone (1.07).
 - **The separate models fail sooner and differently.** From elapsed 20 the error grows faster (0.37 at 20, 1.03 at 50, 2.05 at 99.9). The crests broaden into flat-topped humps (h ≈ 2.2–2.3 over ≈ 15 h_N at elapsed 99.9, `fig01`) and the substrate develops spurious bumps (h up to 1.4 at x ≈ 550, elapsed 75).
 - **The closed-loop drift is the main failure, not the *a priori* error.** Over the first 10 time units, when the ROM state is still close to the DNS, both models do as well as the oracle. Once the ROM waves are taller or shifted, the models are evaluated on states that differ from the DNS and appear to reinforce the deviation rather than correct it. Not tested: whether this is a model error outside the training distribution, a phase-drift effect that also limits the oracle, or both.
 - **Derivative mismatch (untested).** Training used Savitzky–Golay derivatives of the DNS profiles (`profiles_to_closures.py`); the ROM uses central differences on a grid 4× coarser (dx = 0.2 against 0.049). Capillary ripples ahead of the crests give large, noisy h_x. The `hx_smooth` option exists but was not used.
 - **Scope.** One case, one frequency, 100 time units (about 2 forcing periods), single seed per model, models not converged at 100 epochs. No error bars.
+
+## Adding the ΔP_x v2 MLP (12 Nov 2026; results pending)
+
+Same case, window and setup as above, with a learned ΔP_x on top of the ΔM_x + ΔT_w models. SLURM array 51017895 (`rom/run_ml_px.sh`; one core per run, about 55 min each).
+
+- **ΔP_x models:** 4×64 from `functional_mlp/runs/dpx_v2_sweep01/layers4_width64` (`dpx-closure.md`), target `delta_Px_ML_v2`. Re120 Ca0.01 β45 is held out.
+  - `G_s0p5`: inputs h, q and h_x, q_x, h_xxx, q_xx filtered at σ = 0.5 h_N; best validation R² (0.897), held-out R² 0.81.
+  - `H_s0p5`: h, q and filtered h_x, q_x, κ_x/We; held-out R² 0.815.
+- **Coupling:** added as +ΔP_x. The filtered inputs are computed on the ROM grid with the training operator (Gaussian, analytic derivatives, σ = 2.5 cells). ΔP_x v2 is defined against exact curvature (P_Lav,s uses h κ_x/We) and the ROM's capillarity is the linearised h h_xxx/We, so the runs also add h_s(κ_x,s − h_xxx,s)/We (`px_curvature_fix = 1`). Not corrected: the ROM's other P_Lav terms (hydrostatic, q_xx/Re) are unfiltered, so the ROM and the target differ at wavelengths below about 1 h_N.
+- **Check:** `scripts/ml_hook_check.py` on the DNS state at t = 1800 and 1850. The C++ inputs agree with Python to 5e-12 and the ΔP_x outputs with PyTorch to 1e-7 relative. rms on that state: ΔP_x 0.055, curvature term 0.021, against 0.37 (ΔM_x) and 0.23 (ΔT_w).
+- **Runs** (in `rom/runs/`):
+  - `ml_sum_pxG`: sum model (h, h_x) + `G_s0p5`;
+  - `ml_mx_tw_pxG`: separate ΔM_x and ΔT_w models + `G_s0p5`;
+  - `ml_sum_pxH`: sum model + `H_s0p5`.
+  Compare with `ml_sum_hhx` and `ml_mx_tw` (same models, no ΔP_x) and the oracle runs.
 
 ## Open items
 
