@@ -82,13 +82,22 @@ The output directory must not exist yet; `evaluate.py` refuses to overwrite. To 
 
 ## 5. Evaluate every model in the sweep
 
+At most 2 GPU jobs may run at a time, so evaluate a sweep as one array throttled with `%2`, not as separate `sbatch` calls. `run_evaluate_array.sh` reads a task list with one `RUN_DIR SPLIT` per line:
+
 ```bash
-for ck in $SWEEP/*/delta_Px_ML_v2/seed42/best.pt; do
-  d=$(dirname $ck)
-  [ -d $d/eval_heldout ] && continue          # skip models already evaluated
-  RUN_DIR=$d SPLIT=heldout sbatch --export=ALL run_evaluate_single.sh
+export TASKS=$SWEEP/eval_tasks.txt
+: > $TASKS
+for SPLIT in val heldout; do
+  for ck in $SWEEP/*/delta_Px_ML_v2/seed42/best.pt; do
+    d=$(dirname $ck)
+    [ -d $d/eval_$SPLIT ] || echo "$d $SPLIT" >> $TASKS   # skip models already evaluated
+  done
 done
+n=$(wc -l < $TASKS)
+sbatch --export=ALL --array=0-$((n-1))%2 run_evaluate_array.sh
 ```
+
+Logs go to `eval_array_<jobid>_<task>.log` and `.err` in this folder. A cancelled task can leave an `eval_<split>` folder without `metrics.csv`; delete it before resubmitting.
 
 `submit_evaluate_all.sh` in this folder is out of date: it points at the `thinfilm_mlp` cache and calls a `run_evaluate.sh` that does not exist. Use the loop above instead.
 

@@ -67,6 +67,9 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 - **Use nondimensional Nusselt scaling everywhere:** h_N, u_N, Re = u_N h_N/ν, Ca = μ u_N/σ, Fr² = Re sinβ/3, We = Re·Ca, Λ = 3. See `docs/equations.md`.
 - **Use these closure names consistently:** `delta_Mx_ML`, `delta_Tw_ML`, `delta_Px_ML`, `delta_Dx_ML` (ΔC = C_DNS − C_Lav). The combined source term is S_ML = −ΔM_x + ΔP_x − ΔT_w + ΔD_x.
 - **SLURM settings:** account and qos `bala1s` (burst: `bala1s-b`); use `hpg-dev` for short jobs.
+- **Resource limits (hard rules):**
+  - At most **2 GPU jobs at a time** in total. Submit a GPU batch (training sweep, evaluations) as one array throttled with `%2`, for example `run_evaluate_array.sh` or `submit_array.sh` with `--array=0-N%2`, and set `max_concurrent: 2` in sweep configs.
+  - At most **64 CPUs at a time on qos `bala1s`**, summed over all running and pending jobs. Use `bala1s-b` (no limit) for anything beyond that.
 - **Modules:**
   - DNS: `gcc/14.2.0 hdf5 imagemagick`
   - **All** thin-film DNS use the Basilisk at `/home/krishnap.kalivel/basilisk-old/src`. It is the version compatible with the HDF5 output headers. The newer `$BASILISK` install belongs to the heterogeneous-nucleation project and is **not** compatible, so never build these cases against it.
