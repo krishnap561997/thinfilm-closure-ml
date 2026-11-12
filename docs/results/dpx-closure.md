@@ -57,14 +57,48 @@ Is part of the failure the target? `pipeline/extract_closures/dpx_diagnostics.py
 
 **Chosen:** `delta_Px_ML_v2` = −G_σ(I_p,liq) − [h κ_x/We − cosβ/Fr² h h_x + q_xx/Re]_σ with method b and a Gaussian filter of σ = 0.5 h_N (analytic derivatives, exact curvature). σ = 1 closes the budget no better and removes about 90% of a 3 h_N capillary ripple (σ = 0.5: about 40%). Stored with `int_px_dy_liq`, `p_liq_interface`, `kappa_s`, `kappa_x_s` in the closure files (`extract_closure_terms.py`, appended to the 22 existing files and extracted for 7 new runs with data past t = 1500; jobs 50638701–50638730).
 
+## v2 ablation: filtered curvature inputs (12 Nov 2026)
+
+Setup:
+- Target `delta_Px_ML_v2`, with a 4×64 functional MLP (pointwise inputs, no stencil) and seed 42, trained for 100 epochs.
+- 18 development cases; the We ≤ 0.1 cases are left out.
+- 19 input groups: A, B, C, F, G and H, each at σ = 0.25, 0.5 and 1 h_N, plus A_sg (`ml/functional_mlp/sweep_config_dpx.json`).
+- Sweep: `$THINFILM_STORE/codes/ml-models/functional_mlp/runs/dpx_v2_sweep01/layers4_width64`. Training array 50649593; evaluation arrays 50933081–85 and 50933682.
+- Summary: `scripts/eval_sweep_summary.py <sweep>`.
+
+| Group | Val R² | Val NRMSE | Held-out R² | Held-out NRMSE | R² We 0.2 | R² We 0.4 | R² We 0.8–2.4 |
+|---|---|---|---|---|---|---|---|
+| G_s0p5 (A + h_xxx + q_xx) | 0.897 | 0.321 | 0.808 | 0.439 | 0.72 | 0.33 | 0.94–0.98 |
+| H_s0p5 (A + κ_x/We) | 0.896 | 0.322 | 0.815 | 0.430 | 0.74 | 0.32 | 0.94–0.98 |
+| F_s0p5 (A + h_xxx) | 0.893 | 0.327 | 0.775 | 0.474 | 0.71 | 0.32 | 0.79–0.97 |
+| A_sg (old SG derivatives) | 0.846 | 0.392 | 0.714 | 0.535 | 0.69 | 0.31 | 0.61–0.93 |
+| A_s1 | 0.718 | 0.531 | 0.463 | 0.733 | 0.58 | 0.11 | 0.19–0.68 |
+
+All values are pooled except the per-We columns. The held-out cases by We are:
+- We 0.2: Re20 Ca0.01 β45
+- We 0.4: Re80 Ca0.005 β6.4
+- We 0.8: Re80 Ca0.01 β90
+- We 1.2: Re120 Ca0.01 β45
+- We 1.6: Re40 Ca0.04 β45
+- We 2: Re200 Ca0.01 β6.4
+- We 2.4: Re120 Ca0.02 β90
+
+What the results show:
+- **The gate fails.** The best held-out pooled NRMSE is 0.43; the gate is 0.25, which is equivalent to R² ≥ 0.94. Low-We R² reaches only 0.72 and 0.33, against a gate of 0.8.
+- **The curvature inputs work where We ≥ 0.8.** Held-out R² there is 0.94–0.98 for G, H and F at σ = 0.5, against 0.61–0.93 for A_sg.
+- **The third derivative is the input that matters.** G, H and F (h_xxx or κ_x) beat B and C (second derivative only), and those beat A.
+- **σ = 0.5 is the best filter width** for G, H and F. σ = 1 is worst for every group.
+- **G and H are equivalent.** Adding q_xx to F (giving G) helps in the We 1.6 and 2.4 cases.
+- **Low We fails in training and held-out cases alike.** In validation for G_s0p5, Re20 Ca0.02 β6.4 (We 0.4) has R² 0.29 and Re40 Ca0.005 β45 (We 0.2) has 0.50. All other validation cases are at 0.88 or above. In those two cases the Markovian inputs explain little of ΔP_x, whatever the filter. This matches the budget not closing at low We: it is either extraction error in the target or memory. The dense-profile budget check (jobs 50644567–70) should tell which.
+
 ## Caveats
 
-- Validation data of the development cases only; no held-out evaluation exists for ΔP_x.
+- One seed, one network, pointwise inputs. The wave-region summary (`scripts/mlp_wave_region_summary.py`) has not been run yet.
+- The first section (stencil MLP, old target) uses validation data of the development cases only.
 - One seed, one stencil, one model class; the target is the extracted ΔP_x including its grid-scale noise.
 
 ## Open items
 
-1. Held-out evaluation of ΔP_x.
-2. The curvature input on the same split, against `delta_Px_ML_v2` (Step 2 of the 10 Nov plan; We ≤ 0.1 cases left out).
-3. A memory term if curvature does not help.
+1. Low We (≤ 0.4): decide between extraction error and memory, using the dense-profile budget check, then the Step 3 memory diagnostic.
+2. A memory term (Step 4), since the Markovian gate fails at low We.
 4. ΔP_x is required for Paper 1's comprehensive passive-gas model (decision of 10 Nov), even though the oracle with ΔT_w + ΔM_x only is stable for 100 time units without it.
