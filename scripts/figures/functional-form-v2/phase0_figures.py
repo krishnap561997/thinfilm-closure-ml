@@ -96,7 +96,7 @@ def fig3(P, out, key='raw_full'):
     ax.barh(y - 0.2, [errs[n] for n in names], height=0.38, color=C1, label=f"best pooled Tier-1 form ({best['k']} terms)")
     ax.set_yticks(y, [n.replace('_theta', ' β') + (' (H)' if n in best['heldout_cases'] else '') for n in names], fontsize=8)
     ax.set_xlabel('NRMSE of S (RMSE / std, entire record)'); ax.invert_yaxis(); ax.grid(axis='y', visible=False)
-    ax.legend(frameon=False, fontsize=9, loc='lower right')
+    ax.legend(frameon=False, fontsize=9, loc='upper center', bbox_to_anchor=(0.5, -0.07), ncol=2)
     ax.set_title('Per case, sorted by δ = Re/10; (H) = held-out, others in-sample', fontsize=10)
     save(fig, out, 'fig3_percase_nrmse')
     print(f"  fig3 best {key}: k={best['k']} LOCO {best['loco_std']:.3f} held-out {best['heldout_std']:.3f} beta64 {best['beta64_std']:.3f}")

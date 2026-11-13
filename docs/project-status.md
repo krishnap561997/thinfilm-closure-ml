@@ -93,6 +93,7 @@ Update this file in the same commit as any change that moves the science forward
 - Both are weak for β = 6.4° (NRMSE 0.56–0.67).
 
 **Functional-form search for ΔM_x and ΔM_x + ΔT_w (1 Nov 2026).** Full write-up: `docs/results/functional-form-structure.md`.
+- **Phase 0 of plan v2 (13 Nov, preliminary, SG derivatives on the old cache):** a 3-term Tier-1 form, S ≈ 0.071 ∂ₓ[(q − h³)h²] + 0.088 q q_x/h + 0.120 ∂ₓ[(q − h³)q/h], matches the old 19-term library (LOCO 0.33, held-out 0.29) but fails a β = 6.4° holdout (1.30). Per-case Tier-1 fits reach 0.22 on average, so the gap is the case-to-case variation of the coefficients. Theory coefficients transfer only at low δ and low Ca, and the relaxation term has the opposite sign to theory (unresolved). Most cases sit in ordering-matrix row 2 (δ ≈ 3–30). Full write-up: `docs/results/functional-form-v2.md`.
 
 - ΔT_w ≈ −0.64 ΔM_x (corr −0.975): the two cancel only partly, so forms are developed for the sum ΔM_x + ΔT_w. ΔM_x = ∂ₓΔF with ΔF ≈ F(h, q) (R² ≈ 0.997); it is nearly linear in h_x, q_x.
 - Pooled sparse regression (t > 1000): ΔM_x has a 5-term form with no Re/Ca/β dependence (leave-one-case-out NRMSE 0.129, held-out 0.093, β = 6.4° holdout 0.127). The sum has no adequate sparse form yet (LOCO ≈ 0.35–0.4). Not yet compared with the MLP on the same data. These fits used t > 1000; since 10 Nov training uses the entire record (`docs/decisions.md`).
