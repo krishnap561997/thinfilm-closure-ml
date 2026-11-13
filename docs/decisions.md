@@ -2,6 +2,16 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-13 — Answers to D1–D5 of the functional-form plan
+
+Decided by the user (plan `docs/plans/functional-form-plan.md` §6). Items marked *to confirm* were flagged by Claude and are not settled.
+
+- **D1, closed-loop criterion.** The form must perform **on par** with the ML sum model (`ml_sum_hhx`), which predicts ΔM_x + ΔT_w, both *a priori* and *a posteriori* on the Re120 Ca0.01 10 Hz oracle run. "Beats" (plan §2.5) is replaced by "on par". *To confirm:* (a) the angle: the user wrote β = 90°, but the only oracle run and ML sum closed-loop result are for β = 45° (`DNS/oracle/Re120_Ca0_010_theta45_f10Hz`); (b) a numeric tolerance for "on par" (proposed: stable for 100 time units, Ē_h and the max-h errors at elapsed 50 and 99.9 within 10% of `ml_sum_hhx`; a priori M1 and M2 within 10% of the MLP on the same samples).
+- **D2, δ for route P1.** ε = O(0.1) for all cases, so δ = εRe = Re/10. Caveat (Claude): with a fixed ε, δ is Re rescaled, so P1's "coefficients against δ" becomes "against Re" and cannot carry the Ca and β dependence of the wavelength. For the forced 10 Hz wave, ε = kh_N = 2πf/c ≈ 2π·0.0214/3 ≈ 0.045, so δ ≈ 5 rather than 12. The measured ε_k of task 0.3c is computed anyway; if it varies by more than about a factor 2 across cases, revisit.
+- **D3, the 3 Nov cases.** Left out for now; revisit after APS DFD and retrain with them, based on what is learned.
+- **D4, extra closed-loop cases.** Liu & Gollub (1994), Re 19.33, β = 6.4°, at 4.5 and 6 Hz (Lavalle is already good at 1.5 Hz). Other cases: user decides on 14 Nov. Notes (Claude): no monochromatic DNS of these exists; `BasC/liu1994/case01–04` are broadband-forced (dimensional, L = 2 m, T_END = 25 s), so new DNS is needed. *To confirm:* 6 Hz versus 7 Hz — `richard-comparison.md` records Liu & Gollub Fig. 6 at 3, 4.5 and 7 Hz. Setup and cost are proposed before any submission.
+- **D5, talk content (G0).** (1) A theoretical representation of Lavalle et al. (where it sits in the ordering matrix: the δ ≪ 1, Re ~ 1 row); (2) Lavalle's performance inside and outside its parametric range; (3) the ablation study for the different closure terms; (4) the *a posteriori* comparisons.
+
 ## 2026-11-13 — Functional-form plan v2; submission moves to January 2027
 
 Decided by the user in Cowork; full plan in `docs/plans/functional-form-plan.md`.
