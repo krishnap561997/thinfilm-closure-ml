@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-10: Paper 1 scope (comprehensive passive-gas model), training on the full time record, ΔP_x plan._
+_Last updated: 2026-11-13: functional-form plan v2 (`docs/plans/functional-form-plan.md`); submission moved to 15 Jan 2027._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -132,8 +132,8 @@ Title: "A machine-learning augmented reduced model for thin liquid films down an
 
 **Targets.**
 - Journal: IJHMT or AI Thermal Fluids. Switching from revtex/PRFluids to the journal template is still to do, and the introduction should be framed around heat-transfer applications.
-- Submission: 15 Dec 2026.
-- APS DFD talk on 22 Nov 2026; talk results freeze on 15 Nov.
+- Submission: target Fri 15 Jan 2027 (moved from 15 Dec on 13 Nov; no hard results freeze, draft to co-authors about 4 Jan).
+- APS DFD talk on 22 Nov 2026; soft results freeze on Sun 15 Nov.
 
 **Scope.** A comprehensive ML-augmented reduced model for falling films with a passive gas: closures for ΔM_x, ΔT_w and ΔP_x (ΔP_x with curvature inputs, and non-Markovian memory closures if needed). Paper 1 includes:
 - *a priori* evaluation on held-out cases;
@@ -168,16 +168,19 @@ Paper 2: gas-sheared films. Paper 3: heated films (heat transfer).
 - Eq. (20): the 1/Re multiplies only 3q/h².
 - The draft's Ca range (0.001–0.06) differs from the report (0.005–0.1).
 
-## Schedule to 15 Dec 2026
+## Schedule to 15 Jan 2027
+
+From `docs/plans/functional-form-plan.md` §5 (13 Nov 2026). The other threads (ΔP_x, memory models) run alongside.
 
 | Dates | Work |
 |---|---|
-| 2–8 Nov | Closure hook in `rom/lavalle-cpp`; oracle runs; held-out evaluation (all three terms, one shared data config); launch burst runs for the partial DNS cases (4–6 at a time, held-out gaps first) |
-| 9–15 Nov | Retrain on ROM-consistent derivative inputs (ΔF flux target, ΔT_w pointwise, ΔP_x with curvature); first coupled ROM run (ΔT_w, then ΔM_x). **Talk results freeze 15 Nov** |
-| 16–21 Nov | APS DFD slides and practice talk (talk is 22 Nov) |
-| 23 Nov–6 Dec | *A posteriori* with all three terms; validation section; hyperbolicity check. Fallback if not stable by 30 Nov: couple only ΔT_w and show the rest *a priori* |
-| 7 Dec | Draft to co-authors |
-| 7–14 Dec | Revisions; journal template |
-| 15 Dec | Submit |
+| 13–15 Nov | Functional-form Phase 0 (talk slice); gate G0 Sun 15 Nov |
+| 16–21 Nov | Phase 1 infrastructure (cache v2, analytic closure in `lavalle-cpp`, closed-loop harness; jobs queued before the talk); APS DFD slides |
+| 22 Nov | APS DFD talk |
+| 23 Nov–6 Dec | Phase 2 core results; gate G2 ~2 Dec |
+| From 7 Dec | Phase 3, iterating with the writing (lighter over the holidays); no hard results freeze |
+| ~4 Jan | Draft to co-authors |
+| 4–14 Jan | Revisions; journal template |
+| 15 Jan 2027 | Submit |
 
-Plan document (claude.ai): https://claude.ai/artifact/5nVWtUcjG4BFfRooFs7grk
+Functional-form plan (current): `docs/plans/functional-form-plan.md`. Older plan document (claude.ai, 29 Oct): https://claude.ai/artifact/5nVWtUcjG4BFfRooFs7grk

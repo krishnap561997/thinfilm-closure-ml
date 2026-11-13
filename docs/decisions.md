@@ -2,6 +2,18 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-13 — Functional-form plan v2; submission moves to January 2027
+
+Decided by the user in Cowork; full plan in `docs/plans/functional-form-plan.md`.
+
+- **Submission** moves from 15 Dec 2026 to the second week of January 2027 (target Fri 15 Jan 2027). No hard results freeze: results and writing iterate until submission, and the draft to co-authors (about 4 Jan) uses the current results. APS DFD talk still 22 Nov, with a soft results freeze on Sun 15 Nov.
+- **The functional form for S = ΔM_x + ΔT_w is part of Paper 1.** If it beats the ML sum model in closed loop (definition: plan §2.5, still to be confirmed, D1), it becomes Paper 1's closure for ΔM_x + ΔT_w.
+- **Role of the MLPs:** the 1×16 MLPs and their input ablation show *a priori* that local information (h, q, h_x, q_x) is enough to predict the two terms. They are the comparison for the form, not the main closure.
+- **Target structure:** route S (one library, fitted directly on the sum) first; route J (joint fit, two libraries, component penalties) and route C (separate fits, then added) are backups, compared head-to-head in Phase 3.
+- **Parameter dependence:** both routes, compared: (P1) per-case fits → coefficient trends against δ → parametric form; (P2) pooled parametric sparse regression with fixed parameter factors.
+- **Model selection** uses accuracy plus the closed-loop ROM test only. Hyperbolicity and the low-δ theory-coefficient check are reported diagnostics, not gates.
+- Unchanged: entire time record (2026-11-10 entry); ΔP_x not part of this fit; same 15 dev / 7 held-out split as the MLPs (`ml/functional_mlp/data_config.json`).
+
 ## 2026-11-10 — Broadband restart bug: restarts ran without inlet forcing
 
 - `dns/production/filmflow_restart.c` set the noise phases in an `event init_noise (i = 0)`. `restore()` replays the event schedule with `events(false)`, so that event never ran after a restart and the phases stayed uninitialised. Inlet RMS after a restart: about 0.002 against about 0.025 (Re10 Ca0.005: 0.026 → 0.0015). Fixed in commit 6426624 (phases set in `main()`, same seed and `rand()` sequence, so the forcing is continuous); `check_profile_restart.py` tests this on every new profile restart.
