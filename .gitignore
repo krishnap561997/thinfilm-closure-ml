@@ -108,3 +108,6 @@ envs/*/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ordering-matrix scripts write intermediate sympy pickles
+scripts/ordering-matrix/*.pkl

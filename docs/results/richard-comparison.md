@@ -1,6 +1,6 @@
 # Comparison: three-moment closure (ordering matrix §4) vs Richard et al. enstrophy models
 
-_Prepared 8 Nov 2026. This is a companion to `ordering-matrix.md`. All numbers below come from `richard_compare.py` (added to `ordering-matrix-scripts.zip`)._
+_Prepared 8 Nov 2026. This is a companion to `ordering-matrix.md`. All numbers below come from `richard_compare.py` (added to `scripts/ordering-matrix/`)._
 
 ## Sources
 

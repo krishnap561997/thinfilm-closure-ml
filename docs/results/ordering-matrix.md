@@ -2,7 +2,7 @@
 
 **Ca ∈ {ε, ε², ε³} × Re ∈ {ε⁻¹, ε⁻², ε⁻³}**
 
-_Prepared 8 Nov 2026 with the `thinfilm-longwave-derivation` skill. Every expression below was derived or checked with sympy; the scripts are in `ordering-matrix-scripts.zip` (see §7). This is a draft for review: the judgement calls I made on my own are listed in §6._
+_Prepared 8 Nov 2026 with the `thinfilm-longwave-derivation` skill. Every expression below was derived or checked with sympy; the scripts are in `scripts/ordering-matrix/` (see §7). This is a draft for review: the judgement calls I made on my own are listed in §6._
 
 ---
 
@@ -331,7 +331,7 @@ In every cell, M_x = ∂ₓA₂: 6q²/(5h) in row 1, and (q²/h)f₂(s) in rows 
 
 ## 7. Verification log and scripts
 
-`ordering-matrix-scripts.zip` contains:
+`scripts/ordering-matrix/` contains:
 
 - **`rowb1.py`:** the q-gauge expansion for row 1.
   - It confirms ∫u₁ = 0.
