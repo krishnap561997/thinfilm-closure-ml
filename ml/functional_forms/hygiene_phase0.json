@@ -1,0 +1,9 @@
+{
+  "_note": "Phase 0 data hygiene (plan task 0.2). Cache arrays written 2026-10-22, before the 10 Nov overwrites; dropped anyway as the plan asks. See docs/decisions.md, 2026-11-10.",
+  "drop_t_gt": {"Re050_Ca0_010_theta45": 1050.0},
+  "drop_t": {
+    "Re010_Ca0_010_theta45": [1960.0],
+    "Re010_Ca0_100_theta45": [1560.0, 1570.0],
+    "Re040_Ca0_100_theta45": [1810.0, 1820.0]
+  }
+}
