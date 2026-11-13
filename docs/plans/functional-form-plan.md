@@ -231,7 +231,7 @@ Goal: two or three presentable, clearly labelled *preliminary* results.
 - **D4:** which extra closed-loop cases to use, and the DNS compute for them (task 1.4).
 - **D5:** the content of the talk (G0).
 
-**Answers (13 Nov), recorded in `docs/decisions.md`:** D1 on par with `ml_sum_hhx` a priori and a posteriori (angle and tolerance to confirm); D2 ε = O(0.1), δ = Re/10 (with the caveat noted there); D3 3 Nov cases left out until after APS; D4 Liu & Gollub Re 19.33 β 6.4° at 4.5 and 6 Hz (new monochromatic DNS needed; 6 vs 7 Hz to confirm), others on 14 Nov; D5 Lavalle theory, Lavalle in and out of range, closure-term ablation, a posteriori comparisons.
+**Answers (13 Nov), recorded in `docs/decisions.md`:** D1 on par with `ml_sum_hhx` a priori and a posteriori on Re120 Ca0.01 β45, 10 Hz (tolerance proposed: 10%); D2 ε = O(0.1), δ = Re/10 (with the caveat noted there); D3 3 Nov cases left out until after APS; D4 Liu & Gollub Re 19.33 β 6.4° at 4.5 and 7 Hz (new monochromatic DNS needed), others on 14 Nov; D5 Lavalle theory, Lavalle in and out of range, closure-term ablation, a posteriori comparisons, and the preliminary Phase 0 form.
 
 ## 7. Rules for this work (from `CLAUDE.md`)
 
