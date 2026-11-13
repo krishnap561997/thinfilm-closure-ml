@@ -22,7 +22,7 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 | `dns/production/cases/<case>/` | `params.in` per DNS case (plus case-specific `.c` where one existed) |
 | `dns/include/hdf5_headers/` | HDF5/XDMF output headers included by the Basilisk sources |
 | `dns/include/column_profiles.h` | In-situ 1D output: per-column h, q, ∫u², ∫₀ʰ∂ₓp, ∂_z u\|₀, interface velocity (at t and t−dt), ~1 MB per output instead of a 133 MB 2D snapshot |
-| `dns/oracle/` | `filmflow_restart_mono.c`: monochromatic (10 Hz) restart with column-profile output every `T_PROF`, for the oracle *a posteriori* runs |
+| `dns/oracle/` | `filmflow0_mono.c`: production `filmflow0.c` with a monochromatic inlet (`FREQ` in Hz, `AMP`), for from-scratch spin-up runs; `filmflow_restart_mono.c`: monochromatic (10 Hz) restart with column-profile output every `T_PROF`, for the oracle *a posteriori* runs |
 | `dns/tests/` | Physics/BC test setups (bc-blowup-fix, clsvof, white-noise domain tests, vertical-confined, hdf5-output) |
 | `dns/legacy/` | Older dimensional setup (`inclined-whitenoise-dim`) and generic sources — not used for production |
 | `rom/lavalle-cpp/` | C++ Lavalle two-equation solver (Rusanov + MUSCL, RK4, Noble–Vila capillarity, Chang noise forcing, HDF5 out; `oracle/` and `ml/` closure modules). Build: `module load gcc/14.2.0 hdf5 && make` |
