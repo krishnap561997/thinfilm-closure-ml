@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-10: Paper 1 scope (comprehensive passive-gas model), training on the full time record, ΔP_x plan._
+_Last updated: 2026-11-16: Orr–Sommerfeld reference and gate GB, Phase A of the structured-closure plan, comb-forced DNS submitted, cache v2 being built (branch `structured-closure`). Previous: 2026-11-10, Paper 1 scope and ΔP_x plan._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -127,6 +127,22 @@ Update this file in the same commit as any change that moves the science forward
 
 ## Next steps
 
+**Current work (16 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker and running jobs are in `docs/plans/structured-closure-progress.md`. The explainer for Krishna is `docs/explainers/2026-11-16-structured-closure-explainer.md`.
+
+- **Done:**
+  - an Orr–Sommerfeld solver, verified (B.1–B.3), with the OS case table (B.4);
+  - the linear-regime tests of DNS, ROM and MLPs (B.5–B.8);
+  - Phase A diagnostics of the current MLPs;
+  - D2 = L2, i.e. the closure's linear part must match OS through (a, b, c, d), with g₃ in the default model;
+  - the ROM first-cell output fix.
+- **Running:**
+  - five comb-forced DNS runs for multi-frequency linear checks (D3);
+  - closure extractions: Re050, 7 further cases, and full redos of the 4 stale files;
+  - the cache v2 build.
+- **Next:** finish cache v2 → Phase C (train the structured closure, V1, L2) → C.4–C.10 (solver) → Phase D closed loop → gate GD, about 6 Dec.
+- **The functional-form plan is secondary.** It serves as the monomial baseline and for the closed forms in Phase E. It shares cache v2 and the closed-loop harness.
+
+
 **Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.
 
 - Lavalle alone: h error ≈ 0.6 (relative to std h) after 5 time units, waves underpredicted (max h 1.45 vs 2.1).
@@ -152,7 +168,7 @@ Title: "A machine-learning augmented reduced model for thin liquid films down an
 
 **Targets.**
 - Journal: IJHMT or AI Thermal Fluids. Switching from revtex/PRFluids to the journal template is still to do, and the introduction should be framed around heat-transfer applications.
-- Submission: 15 Dec 2026.
+- Submission: 15 Jan 2027, with the draft to co-authors from 4 Jan (schedule of 13 Nov in the FF plan; the structured-closure plan keeps it).
 - APS DFD talk on 22 Nov 2026; talk results freeze on 15 Nov.
 
 **Scope.** A comprehensive ML-augmented reduced model for falling films with a passive gas: closures for ΔM_x, ΔT_w and ΔP_x (ΔP_x with curvature inputs, and non-Markovian memory closures if needed). Paper 1 includes:
@@ -188,16 +204,16 @@ Paper 2: gas-sheared films. Paper 3: heated films (heat transfer).
 - Eq. (20): the 1/Re multiplies only 3q/h².
 - The draft's Ca range (0.001–0.06) differs from the report (0.005–0.1).
 
-## Schedule to 15 Dec 2026
+## Schedule to 15 Jan 2027 (structured-closure plan §4; FF plan in parallel as baseline)
 
 | Dates | Work |
 |---|---|
-| 2–8 Nov | Closure hook in `rom/lavalle-cpp`; oracle runs; held-out evaluation (all three terms, one shared data config); launch burst runs for the partial DNS cases (4–6 at a time, held-out gaps first) |
-| 9–15 Nov | Retrain on ROM-consistent derivative inputs (ΔF flux target, ΔT_w pointwise, ΔP_x with curvature); first coupled ROM run (ΔT_w, then ΔM_x). **Talk results freeze 15 Nov** |
-| 16–21 Nov | APS DFD slides and practice talk (talk is 22 Nov) |
-| 23 Nov–6 Dec | *A posteriori* with all three terms; validation section; hyperbolicity check. Fallback if not stable by 30 Nov: couple only ΔT_w and show the rest *a priori* |
-| 7 Dec | Draft to co-authors |
-| 7–14 Dec | Revisions; journal template |
-| 15 Dec | Submit |
+| 16–22 Nov | Plan intake; OS solver and B.1–B.8; Phase A; gate GB (D2 = L2); comb DNS; cache v2. APS DFD talk 22 Nov |
+| 23–29 Nov | Comb DNS write-up; Phase C training (C.1–C.3) on cache v2 |
+| 30 Nov–6 Dec | Solver integration and tests (C.4–C.10); Phase D on the oracle case; **gate GD (~6 Dec): which closure Paper 1 carries** |
+| 7–20 Dec | Phase D broadband; Phase E closed forms (meets the FF plan); Phase F rollout if approved |
+| From 4 Jan | Draft to co-authors; submission 15 Jan 2027 |
+
+_The earlier schedule to 15 Dec 2026 was replaced on 13 Nov (FF plan) and is kept in git history._
 
 Plan document (claude.ai): https://claude.ai/artifact/5nVWtUcjG4BFfRooFs7grk
