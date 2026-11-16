@@ -111,6 +111,13 @@ Update this file in the same commit as any change that moves the science forward
 - Re120 Ca0.01 β45: Lavalle's phase speed is within 3% of OS. Its temporal growth is 39% low at the OS maximum (k ≈ 0.3). Its spatial growth at the 10 Hz forcing (ω = 0.134) is only 3% low, but 37% low at ω = 0.45.
 - B.4 (all 85 manifest cases). Lavalle's linear growth error depends on δ_lin = k_max Re (OS): it is 7–18% too high for δ < 5 and 25–45% too low for δ > 30. The 28 Hz forcing cut-off lies below the most amplified spatial frequency in 13 of the 36 DNS cases, and below the OS cut-off f_c in 31 of them.
 
+**Structured closure, Phase A diagnostics (16 Nov 2026).** Full write-up: `docs/results/structured-closure.md`; scripts `scripts/structured-closure/`.
+
+- A.1: neither current MLP preserves the uniform film. S₀ ≠ 0 (up to 0.5 × 3/Re), and the uniform-film slope shifts the kinematic speed by O(1): +0.44 for the sum model and −0.72 for the separate models in the oracle case. The cause is that `flat_mask` removes |h − 1| < 0.05 from training. The separate models' linear part doubles the most-amplified growth.
+- A.2: the sum model lies on the DNS crest c(h_max) curve, so its celerity error follows from its amplitude error. The separate models are 3–4% fast at equal height.
+- A.3: in all seven cases (δ 2–65), F = −S is negative on wave fronts and positive on backs. Its projection on q′_x has the same sign everywhere and is dominated by the front. R² is only 0.1–0.26.
+- A.4: in the linear region of the oracle case, the fitted DNS correction moves Lavalle onto OS at 10 Hz (phase speed 1.84 against 1.85, growth within 5%). The individual (a, b, c) are not identifiable from a single frequency.
+
 ## Next steps
 
 **Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.
