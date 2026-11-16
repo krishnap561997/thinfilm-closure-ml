@@ -111,6 +111,13 @@ Update this file in the same commit as any change that moves the science forward
 - Re120 Ca0.01 β45: Lavalle's phase speed is within 3% of OS. Its temporal growth is 39% low at the OS maximum (k ≈ 0.3). Its spatial growth at the 10 Hz forcing (ω = 0.134) is only 3% low, but 37% low at ω = 0.45.
 - B.4 (all 85 manifest cases). Lavalle's linear growth error depends on δ_lin = k_max Re (OS): it is 7–18% too high for δ < 5 and 25–45% too low for δ > 30. The 28 Hz forcing cut-off lies below the most amplified spatial frequency in 13 of the 36 DNS cases, and below the OS cut-off f_c in 31 of them.
 
+**OS B.5–B.8 and gate GB (16 Nov 2026).** See `docs/results/orr-sommerfeld.md`.
+
+- DNS against OS (oracle case, 10 Hz): spatial growth agrees to 1% and phase speed to 1.5% for x = 60–130. The linear region is x ≈ 60–150. The 20 Hz harmonic is bound, not free.
+- Extracted ΔM_x and ΔT_w match the exact OS-mode values to 3–6% in the linear region, which validates the extraction pipeline. ΔM_x and ΔT_w are each mostly in quadrature with h and cancel to 10–40%.
+- ROM linear test (frequency-comb inlet): the numerics reproduce analytic Lavalle to about 1%. The current ML closures are 20–28% off OS where they stay linear, and they do not keep a quiet uniform film at Re 120 (separate models) or Re 200 (both).
+- Four linear coefficients (a, b, c, d), with D = D_OS imposed and fitted over the forced band, match OS growth to within 10% in all 85 cases. Three are not enough for δ > 5. Proposed D2: L2 with (a, b, c, d).
+
 **Structured closure, Phase A diagnostics (16 Nov 2026).** Full write-up: `docs/results/structured-closure.md`; scripts `scripts/structured-closure/`.
 
 - A.1: neither current MLP preserves the uniform film. S₀ ≠ 0 (up to 0.5 × 3/Re), and the uniform-film slope shifts the kinematic speed by O(1): +0.44 for the sum model and −0.72 for the separate models in the oracle case. The cause is that `flat_mask` removes |h − 1| < 0.05 from training. The separate models' linear part doubles the most-amplified growth.
