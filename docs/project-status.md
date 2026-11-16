@@ -115,7 +115,7 @@ Update this file in the same commit as any change that moves the science forward
 
 - DNS against OS (oracle case, 10 Hz): spatial growth agrees to 1% and phase speed to 1.5% for x = 60–130. The linear region is x ≈ 60–150. The 20 Hz harmonic is bound, not free.
 - Extracted ΔM_x and ΔT_w match the exact OS-mode values to 3–6% in the linear region, which validates the extraction pipeline. ΔM_x and ΔT_w are each mostly in quadrature with h and cancel to 10–40%.
-- ROM linear test (frequency-comb inlet): the numerics reproduce analytic Lavalle to about 1%. The current ML closures are 20–28% off OS where they stay linear, and they do not keep a quiet uniform film at Re 120 (separate models) or Re 200 (both).
+- ROM linear test (frequency-comb inlet): the numerics reproduce analytic Lavalle to about 1%. The current ML closures are 20–28% off OS where they stay linear, and at Re 120 and 200 they go nonlinear through excess growth (separate models) or a shifted base state plus a spurious uniform equilibrium at h ≈ 2.9 (sum model). Both MLPs have spurious uniform equilibria at h ≈ 2–3. It is not an inlet effect: the drifting first cell in ROM outputs is a write-out artefact (the stored inlet cell is integrated but never used).
 - Four linear coefficients (a, b, c, d), with D = D_OS imposed and fitted over the forced band, match OS growth to within 10% in all 85 cases. Three are not enough for δ > 5. Proposed D2: L2 with (a, b, c, d).
 
 **Structured closure, Phase A diagnostics (16 Nov 2026).** Full write-up: `docs/results/structured-closure.md`; scripts `scripts/structured-closure/`.

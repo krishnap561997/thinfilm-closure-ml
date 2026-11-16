@@ -145,10 +145,23 @@ Maximum growth error over the reliable modes (relative to the maximum OS growth)
 - **Concern 1 (linear regime).** Neither current ML closure reproduces the OS linear behaviour.
   - The sum model is 27–28% off at Re 20 and 120. Its base film settles at h = 1.019–1.020 instead of 1 because S₀ ≠ 0.
   - The separate models are 20% off at Re 20. Analytically they double the growth at Re 120.
-- **ML runs that left the linear regime.**
-  - Which: the separate models at Re 120, and both models at Re 200.
-  - What happens: starting from the first eighth of the domain, |h − 1| grows to 0.4–1.4, far above the 1e-5 forcing, and nonlinear waves (|h − 1| up to 2) fill the domain. The Lavalle runs stay below 2e-3.
-  - Likely cause: an inlet adjustment toward the shifted ML base state, possibly together with ML inputs near the boundary cells. I have not isolated it. Either way, with these closures the ROM cannot hold a quiet uniform film at high Re.
+- **ML runs that left the linear regime.** The separate models at Re 120, and both models at Re 200.
+  - **It is not an inlet problem** (corrected 16 Nov).
+    - The first cell does drift in the output: h reaches 1.37–2.44, and q goes to −0.02–1.50. This is a write-out artefact.
+    - `apply_white_noise_bc` (and the oracle `apply_inlet`) clamps the ghost cells *and the first physical cell* to the inlet state, but only in the copy used to build the RHS.
+    - `rk4_step` still integrates the stored cell 0, whose RHS is never used again, so it drifts linearly in time (about 8e-4 per time unit with the ML closures, negligible with Lavalle). The dynamics always see the clamped inlet.
+    - From cell 1 onward the solution is smooth: the interior relaxes to the model's own uniform state over about 40 units.
+    - Fix: re-apply the inlet state to the stored cell after each step, or skip it in the output. This affects every ROM output's first cell, including the oracle runs.
+  - **Separate models, Re 120 and 200: excess linear growth.** Their analytic maximum spatial growth is 0.041 (OS 0.019 and 0.016). From 1e-5 that amplifies to about 1e2–1e3 over the domain, which was sized for OS growth, so the comb saturates nonlinearly. It is the closure's linear error, the same one found in A.1.
+  - **Sum model, Re 200: a shifted base state and a spurious equilibrium.**
+    - The uniform state with q = 1 is h_eq = 1.108 (S₀ ≠ 0), and the interior settles there.
+    - The start-up step from 1.108 to the initial h = 1 travels downstream as a front.
+    - The model also has spurious uniform equilibria at h = 2.05 and 2.92, and by t = 500 the solution locks onto h = 2.924 locally.
+  - **Spurious uniform equilibria exist for both MLPs at every Re tested** (roots of (3/Re)(h − 1/h²) = S(h, 1, 0, 0)):
+    - sum model: 2.72 and 2.78 at Re 120, 2.05 and 2.92 at Re 200;
+    - separate models: 2.87, 2.49 and 2.95 at Re 20, 120 and 200.
+    - Hypothesis, not tested: the sum model's closed-loop crest over-amplification at Re 120 (max h 2.5 against the DNS's 2.1, `ml-a-posteriori.md`) is pulled toward its spurious states near h ≈ 2.7.
+    - The structured closure removes both mechanisms by construction: S(h, h³, 0, 0) = 0, and relaxation toward Q = h³ with κ > 0 leaves q = h³ as the only uniform equilibrium.
 
 ## Linear closure targets (B.7)
 
@@ -226,7 +239,7 @@ Medians per δ_lin bin:
    - The prototype table of plan §0 is confirmed, so nothing here supports L1 over L2.
 3. **The ROM numerics are accurate in the linear regime** (B.6, Lavalle to about 1%). The current ML closures are not:
    - growth is 20–28% off where they stay linear;
-   - they do not keep the uniform film at Re 120 (separate models) and Re 200 (both).
+   - at Re 120 and 200 they leave the linear regime, through twice the OS growth (separate models) or a shifted base state plus a spurious uniform equilibrium (sum model). It is not an inlet effect.
 4. **Four linear coefficients reproduce OS over the forced band in every case** (B.8).
 
 Proposal for D2: **L2 with (a, b, c, d) fitted over the forced band.** The η_xx coefficient is needed, so Phase C's relaxation part should include g₃ (or an equivalent h_xx dependence) by default, not as an ablation.
@@ -239,7 +252,7 @@ Proposal for D2: **L2 with (a, b, c, d) fitted over the forced band.** The η_xx
 - **Mode selection with complex k relies on continuation.** A large jump in parameters can lock onto another mode. `temporal` raises if the polish moves c by more than 1e-3, but a continuation that jumps onto another converged mode would not be caught. The saddle-point check found a spurious far-field saddle (k ≈ 0.34 + 11.3i) when started on the wrong side of the real axis.
 - **`lavalle_spatial` picks the root nearest ω/3.** Checked only for ω ≤ 0.45 at Re 120. It needs a check near the cut-off and at high Re.
 - **B.5 rests on one case at one frequency.** Its harmonics are bound, so they test nothing linear. The phase-speed gap of 1.5% is attributed to mesh resolution but not proven.
-- **The B.6 ML runs that went nonlinear are unexplained.** The inlet-region growth was not isolated, and its cause (base-state adjustment or boundary inputs) is open. The reliable-mode filter excludes the lowest and highest frequencies.
+- **The B.6 explanations are diagnostic, not tested by reruns.** Rerunning the nonlinear ML cases on a shorter domain would confirm the excess-growth explanation. The first ROM cell in every output is not physical (see B.6). The reliable-mode filter excludes the lowest and highest frequencies.
 - **B.7 targets are for the passive-gas linear mode** and do not include the surface viscous term in the closure split. Against the DNS they were compared at one frequency only.
 - **B.8 coefficients are fitted to OS, not to the DNS.** The forced-band choice (ω ≤ 2 ω_max) is a judgement. The root picked is the one nearest to OS, which could hide a spurious branch.
 - **B.4 is temporal-maximum based.** ε_lin = k_max of the *temporal* problem. The spatial f_max is reported alongside but is not used for δ_lin.
