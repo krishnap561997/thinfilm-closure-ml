@@ -2,6 +2,28 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-13 — Answers to D1–D5 of the functional-form plan
+
+Decided by the user (plan `docs/plans/functional-form-plan.md` §6). Items marked *to confirm* were flagged by Claude and are not settled.
+
+- **D1, closed-loop criterion.** The form must perform **on par** with the ML sum model (`ml_sum_hhx`), which predicts ΔM_x + ΔT_w, both *a priori* and *a posteriori* on the Re120 Ca0.01 10 Hz oracle run. "Beats" (plan §2.5) is replaced by "on par". The case is **Re120 Ca0.01 β45** (confirmed by the user; β = 90° was a slip). Numeric tolerance for "on par" (proposed by Claude, not yet explicitly confirmed: stable for 100 time units, Ē_h and the max-h errors at elapsed 50 and 99.9 within 10% of `ml_sum_hhx`; a priori M1 and M2 within 10% of the MLP on the same samples).
+- **D2, δ for route P1.** ε = O(0.1) for all cases, so δ = εRe = Re/10 (accepted; the user will revisit if the initial results are poor). Caveat (Claude): with a fixed ε, δ is Re rescaled, so P1's "coefficients against δ" becomes "against Re" and cannot carry the Ca and β dependence of the wavelength. For the forced 10 Hz wave, ε = kh_N = 2πf/c ≈ 2π·0.0214/3 ≈ 0.045, so δ ≈ 5 rather than 12. The measured ε_k of task 0.3c is computed anyway; if it varies by more than about a factor 2 across cases, revisit.
+- **D3, the 3 Nov cases.** Left out for now; revisit after APS DFD and retrain with them, based on what is learned.
+- **D4, extra closed-loop cases.** Liu & Gollub (1994), Re 19.33, β = 6.4°, at **4.5 and 7 Hz** (7 Hz is the periodic-wave case; Lavalle is already good at 1.5 Hz). Other cases: user decides on 14 Nov. Notes (Claude): no monochromatic DNS of these exists; `BasC/liu1994/case01–04` are broadband-forced (dimensional, L = 2 m, T_END = 25 s), so new DNS is needed. Approved by the user on 13 Nov and submitted on bala1s-b (jobs 51180740 at 4.5 Hz, 51180741 at 7 Hz): from-scratch runs with `dns/oracle/filmflow0_mono.c`, **same nondimensional domain and mesh as production** (LX = 800, AR = 128, MAXLEVEL 14, CFL 0.1), not Liu & Gollub's dimensional length. Liu & Gollub fluid (ρ = 1072 kg/m³, μ = 0.00673 Pa·s, σ = 0.067 N/m, as in `rom/matlab/inclined-frequency`): h_N = 1.279 mm, Ca = 0.009534, We = 0.184, so f = 0.0606 (4.5 Hz) and 0.0943 (7 Hz) nondimensionally. AMP = 0.03 (as the 10 Hz oracle; Liu & Gollub's own amplitude was not matched). T_END = 2000, dumps every 50, snapshots every 10; profile restarts come later. Data: `$THINFILM_STORE/datasets/BasC/DNS/oracle/Re019_33_Ca0_00953_theta6_4_f{4_5,7}Hz/run_t0/`. We = 0.18 is in the low-We regime where the one-step ∂ₜ is unreliable (CLAUDE.md).
+- **D5, talk content (G0).** (1) A theoretical representation of Lavalle et al. (where it sits in the ordering matrix: the δ ≪ 1, Re ~ 1 row); (2) Lavalle's performance inside and outside its parametric range; (3) the ablation study for the different closure terms; (4) the *a posteriori* comparisons; (5) the preliminary functional form of Phase 0 (confirmed: it goes into the talk).
+
+## 2026-11-13 — Functional-form plan v2; submission moves to January 2027
+
+Decided by the user in Cowork; full plan in `docs/plans/functional-form-plan.md`.
+
+- **Submission** moves from 15 Dec 2026 to the second week of January 2027 (target Fri 15 Jan 2027). No hard results freeze: results and writing iterate until submission, and the draft to co-authors (about 4 Jan) uses the current results. APS DFD talk still 22 Nov, with a soft results freeze on Sun 15 Nov.
+- **The functional form for S = ΔM_x + ΔT_w is part of Paper 1.** If it beats the ML sum model in closed loop (definition: plan §2.5, still to be confirmed, D1), it becomes Paper 1's closure for ΔM_x + ΔT_w.
+- **Role of the MLPs:** the 1×16 MLPs and their input ablation show *a priori* that local information (h, q, h_x, q_x) is enough to predict the two terms. They are the comparison for the form, not the main closure.
+- **Target structure:** route S (one library, fitted directly on the sum) first; route J (joint fit, two libraries, component penalties) and route C (separate fits, then added) are backups, compared head-to-head in Phase 3.
+- **Parameter dependence:** both routes, compared: (P1) per-case fits → coefficient trends against δ → parametric form; (P2) pooled parametric sparse regression with fixed parameter factors.
+- **Model selection** uses accuracy plus the closed-loop ROM test only. Hyperbolicity and the low-δ theory-coefficient check are reported diagnostics, not gates.
+- Unchanged: entire time record (2026-11-10 entry); ΔP_x not part of this fit; same 15 dev / 7 held-out split as the MLPs (`ml/functional_mlp/data_config.json`).
+
 ## 2026-11-10 — Broadband restart bug: restarts ran without inlet forcing
 
 - `dns/production/filmflow_restart.c` set the noise phases in an `event init_noise (i = 0)`. `restore()` replays the event schedule with `events(false)`, so that event never ran after a restart and the phases stayed uninitialised. Inlet RMS after a restart: about 0.002 against about 0.025 (Re10 Ca0.005: 0.026 → 0.0015). Fixed in commit 6426624 (phases set in `main()`, same seed and `rand()` sequence, so the forcing is continuous); `check_profile_restart.py` tests this on every new profile restart.

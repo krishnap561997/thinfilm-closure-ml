@@ -22,7 +22,7 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 | `dns/production/cases/<case>/` | `params.in` per DNS case (plus case-specific `.c` where one existed) |
 | `dns/include/hdf5_headers/` | HDF5/XDMF output headers included by the Basilisk sources |
 | `dns/include/column_profiles.h` | In-situ 1D output: per-column h, q, ∫u², ∫₀ʰ∂ₓp, ∂_z u\|₀, interface velocity (at t and t−dt), ~1 MB per output instead of a 133 MB 2D snapshot |
-| `dns/oracle/` | `filmflow_restart_mono.c`: monochromatic (10 Hz) restart with column-profile output every `T_PROF`, for the oracle *a posteriori* runs |
+| `dns/oracle/` | `filmflow0_mono.c`: production `filmflow0.c` with a monochromatic inlet (`FREQ` in Hz, `AMP`), for from-scratch spin-up runs; `filmflow_restart_mono.c`: monochromatic (10 Hz) restart with column-profile output every `T_PROF`, for the oracle *a posteriori* runs |
 | `dns/tests/` | Physics/BC test setups (bc-blowup-fix, clsvof, white-noise domain tests, vertical-confined, hdf5-output) |
 | `dns/legacy/` | Older dimensional setup (`inclined-whitenoise-dim`) and generic sources — not used for production |
 | `rom/lavalle-cpp/` | C++ Lavalle two-equation solver (Rusanov + MUSCL, RK4, Noble–Vila capillarity, Chang noise forcing, HDF5 out; `oracle/` and `ml/` closure modules). Build: `module load gcc/14.2.0 hdf5 && make` |
@@ -35,7 +35,7 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 | `ml/legacy/` | Early scripts that use the old `Pytorch_ML_env` |
 | `notebooks/analysis/`, `notebooks/ml/` | Exploratory and figure notebooks. Outputs are stripped, and many still contain absolute `/blue` paths |
 | `datasets/` | **Manifests only** (`MANIFEST_dns.csv`, `MANIFEST_rom.csv`) — no data in git |
-| `docs/` | `project-status.md` (short, mirrored to claude.ai), `equations.md`, `data-layout.md`, `hipergator.md`, `decisions.md`, `results/` (full write-ups, each with a "Where it fails" section: `budget-check.md`, `oracle-a-posteriori.md`, `mesh-sensitivity.md`, `mlp-heldout-eval.md`, `functional-form-structure.md`, `dpx-closure.md`, `ml-a-posteriori.md`; functional-form planning notes: `ordering-matrix.md`, `richard-comparison.md` (scripts in `scripts/ordering-matrix/`)) |
+| `docs/` | `project-status.md` (short, mirrored to claude.ai), `equations.md`, `data-layout.md`, `hipergator.md`, `decisions.md`, `results/` (full write-ups, each with a "Where it fails" section: `budget-check.md`, `oracle-a-posteriori.md`, `mesh-sensitivity.md`, `mlp-heldout-eval.md`, `functional-form-structure.md`, `functional-form-v2.md`, `dpx-closure.md`, `ml-a-posteriori.md`; functional-form planning notes: `ordering-matrix.md`, `richard-comparison.md` (scripts in `scripts/ordering-matrix/`)); `plans/` (work plans for Claude Code, e.g. `functional-form-plan.md`, the current plan for the ΔM_x + ΔT_w form)) |
 | `envs/environment.yml` | Python env spec (the env itself lives on /blue) |
 | `env.sh` | `source env.sh` → sets THINFILM_ROOT / THINFILM_STORE / THINFILM_DATA / THINFILM_ENV |
 
