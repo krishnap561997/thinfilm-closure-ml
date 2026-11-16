@@ -56,7 +56,7 @@ def main():
         spin, run = os.path.join(d, "spinup"), os.path.join(d, f"run_t{T_SPIN:g}")
         os.makedirs(spin, exist_ok=False); os.makedirs(run)
         write_params(os.path.join(spin, "params.in"), kv + [("T_END", "10" if A.test else f"{T_SPIN:g}")])
-        write_params(os.path.join(run, "params.in"), [(k, v) for k, v in kv if k != "T_DUMP"] +
+        write_params(os.path.join(run, "params.in"), [(k, v) for k, v in kv if k not in ("T_DUMP", "T_OUT")] +
                      [("T_END", f"{T_SPIN + TC + 5:g}"), ("T_DUMP", "100000"), ("T_OUT", "1000"),
                       ("T_PROF", f"{T_PROF:g}"), ("RESTART_FILE", "restart.dump")])
         with open(os.path.join(d, "COMB_INFO.txt"), "w") as f:
