@@ -2,7 +2,7 @@
 
 _16 Nov 2026. Plan: `docs/plans/structured-closure-os-plan.md` Part I. Code: `analysis/orr_sommerfeld/`. Numbers: `python analysis/orr_sommerfeld/verify.py` (≈5 s), output in `$THINFILM_STORE/analysis/orr_sommerfeld/verification.json`._
 
-Status: B.1 (temporal), B.2 (spatial) and B.3 (verification) are done. B.4–B.8 have not started.
+Status: B.1 (temporal), B.2 (spatial), B.3 (verification) and B.4 (case table) are done. B.5–B.8 have not started.
 
 ## Solver
 
@@ -52,6 +52,48 @@ Spatial growth −k_i (OS / Lavalle):
 
 At the forced frequency Lavalle's spatial growth is only 3% low. The gap opens at higher ω and reaches 37% at ω = 0.45. Below ω ≈ 0.1, Lavalle's growth is slightly *high*. For the monochromatic 10 Hz oracle run, the linear-region amplitude error of Lavalle is therefore small. The larger errors sit in the harmonics and in the broadband runs.
 
+## Case table (B.4)
+
+_Data: all 85 cases of `datasets/MANIFEST_dns.csv`, 36 of which have DNS data. Script: `analysis/orr_sommerfeld/case_table.py`, run as SLURM job 51587062 (2.4 min on 8 CPUs). Table: `$THINFILM_STORE/analysis/orr_sommerfeld/case_table.csv`. Summary: `python analysis/orr_sommerfeld/summarize_case_table.py`._
+
+- **What each row holds:**
+  - temporal OS: k_max, maximum growth, c_r(k_max), cut-off k_c, ω_c;
+  - spatial OS: ω_max, −k_i, and k_r at ω_max;
+  - the same quantities for the linearised Lavalle model;
+  - ε_lin = k_max (OS) and δ_lin = ε_lin Re.
+- **Conversion to Hz:** T0 = h_N/u_N from each case's `params.in`, as in `filmflow0.c`. Seven cases have no RHO_L or MU_L there and use the `filmflow0.c` defaults (1072 kg/m³, 0.00673 Pa s). For the oracle case these give T0 = 2.14 ms, which reproduces the documented 10 Hz → 0.0214.
+- No case is linearly stable, and none failed.
+
+**Forcing cut-off against the unstable band** (this closes the open item "check f_cut against 2f₀" in `decisions.md`):
+
+| | All 85 | With DNS data (36) |
+|---|---|---|
+| 28 Hz below the OS cut-off f_c | 71 | 31 |
+| 28 Hz below the most amplified spatial frequency f_max | 22 | 13 |
+| 28 Hz ≥ 2 f_max (first harmonic forced) | 22 | 7 |
+| 28 Hz / f_c, median (range) | 0.42 (0.09–7.1) | 0.32 (0.09–2.4) |
+
+- At β = 45° and 90° with Re ≥ 40, the broadband forcing covers only 10–30% of the unstable band. In 13 of the 36 DNS cases it stops below the most amplified frequency. Examples: Re120 Ca0.01 β45 has f_max = 33.5 Hz and f_c = 143 Hz; Re200 Ca0.01 β45 has f_max = 70 Hz.
+- These waves therefore grow from forced frequencies below f_max and from harmonics generated nonlinearly, not from the linearly most amplified mode.
+- At β = 6.4° the opposite holds: f_c is 11–78 Hz, and at Re 20–40 the forcing extends well into the stable band.
+
+**Lavalle against OS, binned by δ_lin** (ratio of maximum spatial growth rates, Lavalle/OS, all 85 cases):
+
+| δ_lin | n | Lavalle / OS |
+|---|---|---|
+| < 5 | 33 | 1.07–1.18 (Lavalle 7–18% too high) |
+| 5–15 | 22 | 0.90–1.06 |
+| 15–30 | 17 | 0.76–0.93 |
+| 30–70 | 13 | 0.55–0.76 |
+
+- The error of the first-order model in the linear regime has a sign that depends on δ: it over-amplifies at small δ and under-amplifies at large δ, and the crossover is near δ_lin ≈ 10.
+- Lavalle's k_max is up to 2.4 times smaller than OS's (median 1.35 over the DNS cases). Its cut-off k_c is close to OS (0.96–1.27).
+- The Benney long-wave cut-off √(3Ca(1.2Re − cot β)) overestimates k_c by up to a factor of 3 at high Re.
+- **ε_lin and δ_lin for FF plan D2:**
+  - δ_lin (OS) is 1.0–66 over the DNS cases (median 15).
+  - δ from Lavalle's k_max is up to 2.3 times smaller (for example 36.7 against 20.1 for the oracle case). The two agree for δ ≲ 5.
+  - Which one to use as the long-wave parameter is decision D2.
+
 ## Where it fails
 
 - **Passive gas only.** The DNS has a real gas phase, so differences of a few percent from OS are possible (B.5 will measure them).
@@ -59,4 +101,6 @@ At the forced frequency Lavalle's spatial growth is only 3% low. The gap opens a
 - **The published check is a single case:** saddle points at Re 133, β 4.6°. No published spatial growth-rate curve at our Re 120, β 45° has been compared yet. The Benney and Re_c checks only test small k.
 - **Mode selection with complex k relies on continuation.** A large jump in parameters can lock onto another mode. `temporal` raises if the polish moves c by more than 1e-3, but a continuation that jumps onto another converged mode would not be caught. The saddle-point check found a spurious far-field saddle (k ≈ 0.34 + 11.3i) when started on the wrong side of the real axis.
 - **`lavalle_spatial` picks the root nearest ω/3.** Checked only for ω ≤ 0.45 at Re 120. It needs a check near the cut-off and at high Re.
+- **B.4 is temporal-maximum based.** ε_lin = k_max of the *temporal* problem. The spatial f_max is reported alongside but is not used for δ_lin.
+- **Fluid properties of seven cases are defaults** (see B.4). If those runs actually used other properties, their Hz values are wrong.
 - **The book PDF text loses minus signs.** The k_i signs in the table above were restored by convention; the magnitudes match.

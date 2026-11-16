@@ -84,7 +84,7 @@ Record each decision as a short entry: what was decided and why. Newest entries 
 
 - The DNS uses broadband inlet forcing (Chang et al. 1996) rather than a sweep over monochromatic frequencies, so that a single run samples many wave states.
 - Settings: F₀ = 0.025, M = 1000, f_cut = 28 Hz.
-- Open question: f_cut is dimensional and the same for every case. Check it against 2f₀ for each case.
+- f_cut is dimensional and the same for every case. Checked on 16 Nov 2026 against OS (`docs/results/orr-sommerfeld.md`, B.4): f_cut ≥ 2 f_max (spatial) in only 7 of the 36 DNS cases. In 13 it lies below f_max itself (β 45°/90°, Re ≥ 40), and in the β 6.4° cases at Re ≤ 40 it extends into the stable band. The production runs stay as they are; the broadband DNS do not force the linearly most amplified mode at high Re.
 - The parameter space is (Re, Ca, β), following Dhopeshwar et al. (2025), so that inertia and capillarity can be varied independently.
 - Candidate cases were kept only if a glycerol–water mixture can realise them (≤ 90 wt%, h_N between 0.1 and 2 mm, u_N < 0.5 m/s).
 - MAXLEVEL 14 was chosen over 15 for cost; level 15 changes only the wave speed slightly.

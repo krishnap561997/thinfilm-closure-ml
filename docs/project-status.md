@@ -109,6 +109,7 @@ Update this file in the same commit as any change that moves the science forward
 
 - Verified against the Benney limit (error O(k²)), Re_c = (5/6) cot β, and the published OS saddle points of Brevdo et al. (1999) (Kalliadasis et al. Table 7.1), which are matched to the printed digits.
 - Re120 Ca0.01 β45: Lavalle's phase speed is within 3% of OS. Its temporal growth is 39% low at the OS maximum (k ≈ 0.3). Its spatial growth at the 10 Hz forcing (ω = 0.134) is only 3% low, but 37% low at ω = 0.45.
+- B.4 (all 85 manifest cases). Lavalle's linear growth error depends on δ_lin = k_max Re (OS): it is 7–18% too high for δ < 5 and 25–45% too low for δ > 30. The 28 Hz forcing cut-off lies below the most amplified spatial frequency in 13 of the 36 DNS cases, and below the OS cut-off f_c in 31 of them.
 
 ## Next steps
 
