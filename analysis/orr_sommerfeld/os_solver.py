@@ -133,18 +133,24 @@ def surface_det(c, k, Re, Ca, cotb, rtol=1e-12):
     return T1 * N2 - T2 * N1
 
 
-def polish(c0, k, Re, Ca, cotb, tol=1e-11, maxit=30):
+def polish(c0, k, Re, Ca, cotb, tol=1e-11, maxit=30, stag_tol=1e-7):
     """Secant refinement of an eigenvalue c on the shooting determinant."""
     ca, cb = complex(c0), complex(c0) * (1 + 1e-7) + 1e-9
     fa, fb = surface_det(ca, k, Re, Ca, cotb), surface_det(cb, k, Re, Ca, cotb)
+    steps = []
     for _ in range(maxit):
         if fb == fa:
             break
         cn = cb - fb * (cb - ca) / (fb - fa)
         ca, fa = cb, fb
         cb, fb = cn, surface_det(cn, k, Re, Ca, cotb)
-        if abs(cb - ca) < tol * max(1.0, abs(cb)):
+        steps.append(abs(cb - ca))
+        if steps[-1] < tol * max(1.0, abs(cb)):
             return cb
+    # at large k^2/Ca the determinant is badly scaled and the secant stagnates at round-off;
+    # accept if the last steps are all below stag_tol (still far better than collocation)
+    if len(steps) >= 3 and max(steps[-3:]) < stag_tol * max(1.0, abs(cb)):
+        return cb
     raise RuntimeError(f"polish did not converge at k={k}, Re={Re} (c0={c0}, last={cb})")
 
 
