@@ -2,7 +2,8 @@
 #include "core/state.hpp"          // Holds evolving fields h, q and r
 #include "core/diagnostics.hpp"    // Checks minimum h, maximum h_x, hyperbolicity
 #include "closures/analytical_lavalle.hpp"  // Analytical closure relations
-#include "forcing/chang_noise.hpp"          // Chang white noise inlet BC
+#include "forcing/chang_noise.hpp"
+#include "physics/boundary_conditions.hpp"  // INLETFIX          // Chang white noise inlet BC
 #include "integrators/rk4.hpp"              // RK4 time stepper
 #include "io/hdf5_writer.hpp"               // Output hdf5 files
 #include "oracle/oracle_forcing.hpp"         // ORACLE
@@ -87,6 +88,11 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
 
             const auto step_start=std::chrono::steady_clock::now();
             rk4_step(state,t,p.dt,p,closure,noise);  //RK4 step has the numerical pipeline
+            // INLETFIX: the BC clamps the first physical cell (and ghosts) only in the RHS copy, so
+            // the stored cell was integrated with an RHS that is never used and drifted in the
+            // output. Re-impose the inlet state on the stored state; the dynamics are unchanged.
+            apply_white_noise_bc(state,p.ng,noise,t+p.dt);
+            if(oracle) oracle->apply_inlet(state,t+p.dt,p);  // ORACLE
             // BC -> MUSCL recon -> closure -> Rusanov flux -> flux div -> source + viscous +
             // capillary
 
