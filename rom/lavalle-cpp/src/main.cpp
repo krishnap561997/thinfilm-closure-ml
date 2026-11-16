@@ -56,8 +56,8 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         std::fill(state.r.begin(),state.r.end(),0.0);
         double t0=0.0;  // start time of the run
 
-        std::unique_ptr<OracleForcing> oracle;  // ORACLE
-        if(argc>2){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
+        std::unique_ptr<OracleForcing> oracle;  // ORACLE (argv[2] = "none": flat start, Chang inlet; ML via argv[3])
+        if(argc>2 && std::string(argv[2])!="none"){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
 
         std::unique_ptr<MLClosure> mlc;  // MLCLOSURE
         if(argc>3){ mlc=std::make_unique<MLClosure>(argv[3],p); MLClosure::set_active(mlc.get()); std::cout<<mlc->summary(); }  // MLCLOSURE

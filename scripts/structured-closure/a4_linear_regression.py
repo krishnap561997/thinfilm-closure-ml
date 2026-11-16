@@ -17,7 +17,7 @@ sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "../../analysis/
 from mlp_np import ORACLE
 import os_solver as osv
 
-Re, Ca, COTB, OMEGA = 120.0, 0.01, 1.0, 2 * np.pi * 10 * 2.1407e-3   # 10 Hz, T0 from case_table
+Re, Ca, COTB, OMEGA = 120.0, 0.01, 1.0, 2 * np.pi * 10 * 2.1389034e-3   # 10 Hz, T_N as in DNS/ROM
 
 
 def spatial_aug(omega, co, Re=Re, Ca=Ca, cotb=COTB):
