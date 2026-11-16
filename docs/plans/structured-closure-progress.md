@@ -38,13 +38,14 @@ _Context for Claude sessions. Updated 16 Nov 2026 (end of day 1). Plan: `structu
 |---|---|---|
 | 51592372–76 | comb DNS (Re 20, 40, 80, 120, 200 at β 45), `$THINFILM_STORE/datasets/BasC/DNS/comb/<case>/` | Krishna runs `analyse_comb.py` (`docs/plans/comb-dns-instructions.md`); Claude writes up B.5/B.7/B.8 from DNS |
 | 51592781 | Re050 closure extraction | build its cache v2: `build_cache_v2.py --cases Re050_Ca0_010_theta45` |
-| 51592842 | cache v2 build, 28 cases | check `check.csv` and `manifest.json` |
+| 51592842 | cache v2 build, 28 cases | **FAILED**: HDF5 lock on a closure file still being written by an extraction. Replaced by 51595693 |
+| 51595693 | `pipeline/cache_v2/swap_and_build.sh`, which waits (`afterok`) for extractions 51592928–33 and 35–38 (51592781 and 51592934 had already completed), checks and swaps the four `.new` files (old → `.stale_20261116`), then builds cache v2 for all closure files | read the `cache_v2_full_<id>.out` tail ("swapped …" lines), `check.csv`, `manifest.json`. If it is stuck with DependencyNeverSatisfied, an extraction failed: inspect it, then run the script by hand |
 | 51592928–34 | closure extraction: Re10 Ca0.005, Re20 Ca0.002 β90, Re20 Ca0.005 β6.4, Re40 Ca0.002, Re40 Ca0.1 β90, and the partial 3 Nov runs Re10 Ca0.001 β90 and Re20 Ca0.001 β6.4 | add to cache v2 (split `extra`) |
 | 51592935–38 | **full redo** of Re10 Ca0.01, Re10 Ca0.1, Re40 Ca0.1 β45, Re10 Ca0.04 β90 into `…h5.new` | **after 51592842**: rename old → `.stale_20261116`, `.new` → `.h5`; rebuild these in cache v2 |
 
 ## Pending actions, in order
 
-1. When the jobs finish: do the closure-file swap, run the cache v2 rebuilds above, report `check.csv`, and refresh `datasets/MANIFEST_dns.csv`.
+1. When job 51595693 finishes: confirm the four swaps, report `check.csv`, and refresh `datasets/MANIFEST_dns.csv`. The comb DNS runs wait for burst nodes (Krishna's decision: stay on `bala1s-b`).
 2. Write the comb DNS results into `orr-sommerfeld.md` (B.5 multi-frequency, B.7 per-frequency check, B.8 from DNS) and compare with the OS targets.
 3. Phase C on cache v2 (σ = 0.5), V1 first, L2 constraint with g₃.
 4. Later: re-extract the two 3 Nov partial cases when their runs finish.
