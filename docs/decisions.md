@@ -2,6 +2,16 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-16 — Closure extractions redone/added; cache v2
+
+- **New extractions** (user's decision): Re050 Ca0.01 β45 (rerun complete, job 51592781). Also Re10 Ca0.005, Re20 Ca0.002 β90, Re20 Ca0.005 β6.4, Re40 Ca0.002 β45 and Re40 Ca0.1 β90 (no closure file yet), and the partial 3 Nov runs Re10 Ca0.001 β90 (to t = 1100) and Re20 Ca0.001 β6.4 (to t = 1690). Jobs 51592928–34. The two 3 Nov cases must be extracted again when their runs finish.
+- **Full re-extraction of stale closure files** (the "closure files to redo" of 10 Nov): Re10 Ca0.01, Re10 Ca0.1, Re40 Ca0.1 β45 and Re10 Ca0.04 β90. Their snapshots at the overwritten times were regenerated on 10 Nov with the fixed restart, and the runs now reach t = 2000. The old files still contain the overwritten snapshots, and two stop at t = 1580 and 1810. Jobs 51592935–38 write `thinfilm_closure_data_<case>.h5.new` (configs in `ClosureData/configs_redo_20261116/`). **Pending:** after cache-v2 job 51592842 has finished, rename each old file to `.stale_20261116` and the `.new` file into place, then rebuild those cases in cache v2.
+- **Cache v2** (`pipeline/cache_v2/build_cache_v2.py`, `$THINFILM_STORE/codes/ml-models/cache_v2/`):
+  - full record and no flat mask;
+  - D_G(σ) derivatives for σ = 0.25, 0.5 and 1.0, the same operator as the ROM;
+  - snapshots overwritten on 10 Nov are dropped wherever they are still present;
+  - the split follows `ml/functional_mlp/data_config.json`; other cases are marked `extra`.
+
 ## 2026-11-10 — Broadband restart bug: restarts ran without inlet forcing
 
 - `dns/production/filmflow_restart.c` set the noise phases in an `event init_noise (i = 0)`. `restore()` replays the event schedule with `events(false)`, so that event never ran after a restart and the phases stayed uninitialised. Inlet RMS after a restart: about 0.002 against about 0.025 (Re10 Ca0.005: 0.026 → 0.0015). Fixed in commit 6426624 (phases set in `main()`, same seed and `rand()` sequence, so the forcing is continuous); `check_profile_restart.py` tests this on every new profile restart.
