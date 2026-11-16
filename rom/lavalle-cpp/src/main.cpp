@@ -2,7 +2,8 @@
 #include "core/state.hpp"          // Holds evolving fields h, q and r
 #include "core/diagnostics.hpp"    // Checks minimum h, maximum h_x, hyperbolicity
 #include "closures/analytical_lavalle.hpp"  // Analytical closure relations
-#include "forcing/chang_noise.hpp"          // Chang white noise inlet BC
+#include "forcing/chang_noise.hpp"
+#include "physics/boundary_conditions.hpp"  // INLETFIX          // Chang white noise inlet BC
 #include "integrators/rk4.hpp"              // RK4 time stepper
 #include "io/hdf5_writer.hpp"               // Output hdf5 files
 #include "oracle/oracle_forcing.hpp"         // ORACLE
@@ -56,8 +57,8 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         std::fill(state.r.begin(),state.r.end(),0.0);
         double t0=0.0;  // start time of the run
 
-        std::unique_ptr<OracleForcing> oracle;  // ORACLE
-        if(argc>2){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
+        std::unique_ptr<OracleForcing> oracle;  // ORACLE (argv[2] = "none": flat start, Chang inlet; ML via argv[3])
+        if(argc>2 && std::string(argv[2])!="none"){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
 
         std::unique_ptr<MLClosure> mlc;  // MLCLOSURE
         if(argc>3){ mlc=std::make_unique<MLClosure>(argv[3],p); MLClosure::set_active(mlc.get()); std::cout<<mlc->summary(); }  // MLCLOSURE
@@ -87,6 +88,11 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
 
             const auto step_start=std::chrono::steady_clock::now();
             rk4_step(state,t,p.dt,p,closure,noise);  //RK4 step has the numerical pipeline
+            // INLETFIX: the BC clamps the first physical cell (and ghosts) only in the RHS copy, so
+            // the stored cell was integrated with an RHS that is never used and drifted in the
+            // output. Re-impose the inlet state on the stored state; the dynamics are unchanged.
+            apply_white_noise_bc(state,p.ng,noise,t+p.dt);
+            if(oracle) oracle->apply_inlet(state,t+p.dt,p);  // ORACLE
             // BC -> MUSCL recon -> closure -> Rusanov flux -> flux div -> source + viscous +
             // capillary
 

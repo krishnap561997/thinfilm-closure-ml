@@ -2,6 +2,16 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-16 — Closure extractions redone/added; cache v2
+
+- **New extractions** (user's decision): Re050 Ca0.01 β45 (rerun complete, job 51592781). Also Re10 Ca0.005, Re20 Ca0.002 β90, Re20 Ca0.005 β6.4, Re40 Ca0.002 β45 and Re40 Ca0.1 β90 (no closure file yet), and the partial 3 Nov runs Re10 Ca0.001 β90 (to t = 1100) and Re20 Ca0.001 β6.4 (to t = 1690). Jobs 51592928–34. The two 3 Nov cases must be extracted again when their runs finish.
+- **Full re-extraction of stale closure files** (the "closure files to redo" of 10 Nov): Re10 Ca0.01, Re10 Ca0.1, Re40 Ca0.1 β45 and Re10 Ca0.04 β90. Their snapshots at the overwritten times were regenerated on 10 Nov with the fixed restart, and the runs now reach t = 2000. The old files still contain the overwritten snapshots, and two stop at t = 1580 and 1810. Jobs 51592935–38 write `thinfilm_closure_data_<case>.h5.new` (configs in `ClosureData/configs_redo_20261116/`). **Pending:** after cache-v2 job 51592842 has finished, rename each old file to `.stale_20261116` and the `.new` file into place, then rebuild those cases in cache v2.
+- **Cache v2** (`pipeline/cache_v2/build_cache_v2.py`, `$THINFILM_STORE/codes/ml-models/cache_v2/`):
+  - full record and no flat mask;
+  - D_G(σ) derivatives for σ = 0.25, 0.5 and 1.0, the same operator as the ROM;
+  - snapshots overwritten on 10 Nov are dropped wherever they are still present;
+  - the split follows `ml/functional_mlp/data_config.json`; other cases are marked `extra`.
+
 ## 2026-11-13 — Answers to D1–D5 of the functional-form plan
 
 Decided by the user (plan `docs/plans/functional-form-plan.md` §6). Items marked *to confirm* were flagged by Claude and are not settled.
@@ -106,7 +116,7 @@ Decided by the user in Cowork; full plan in `docs/plans/functional-form-plan.md`
 
 - The DNS uses broadband inlet forcing (Chang et al. 1996) rather than a sweep over monochromatic frequencies, so that a single run samples many wave states.
 - Settings: F₀ = 0.025, M = 1000, f_cut = 28 Hz.
-- Open question: f_cut is dimensional and the same for every case. Check it against 2f₀ for each case.
+- f_cut is dimensional and the same for every case. Checked on 16 Nov 2026 against OS (`docs/results/orr-sommerfeld.md`, B.4): f_cut ≥ 2 f_max (spatial) in only 7 of the 36 DNS cases. In 13 it lies below f_max itself (β 45°/90°, Re ≥ 40), and in the β 6.4° cases at Re ≤ 40 it extends into the stable band. The production runs stay as they are; the broadband DNS do not force the linearly most amplified mode at high Re.
 - The parameter space is (Re, Ca, β), following Dhopeshwar et al. (2025), so that inertia and capillarity can be varied independently.
 - Candidate cases were kept only if a glycerol–water mixture can realise them (≤ 90 wt%, h_N between 0.1 and 2 mm, u_N < 0.5 m/s).
 - MAXLEVEL 14 was chosen over 15 for cost; level 15 changes only the wave speed slightly.

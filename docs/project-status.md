@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-13: functional-form plan v2 (`docs/plans/functional-form-plan.md`); submission moved to 15 Jan 2027._
+_Last updated: 2026-11-16: Orr–Sommerfeld reference and gate GB, Phase A of the structured-closure plan, comb-forced DNS submitted, cache v2 being built (branch `structured-closure`). Previous: 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -106,7 +106,43 @@ Update this file in the same commit as any change that moves the science forward
 
 **New DNS runs (3 Nov 2026).** 8 white-noise cases farthest (in log Re, log Ca, log sinβ) from existing data were submitted on `bala1s-b` (4 days, 16 CPUs): Re020_Ca0_001_theta6_4, Re010_Ca0_001_theta90, Re020_Ca0_005_theta6_4, Re020_Ca0_002_theta90, Re040_Ca0_002_theta6_4, Re010_Ca0_040_theta90, Re080_Ca0_060_theta45, Re020_Ca0_020_theta6_4. Re10 β6.4° was excluded (linearly stable); the Re20 β6.4° cases are close to marginal and may not saturate. Refresh the manifest when they finish.
 
+**Orr–Sommerfeld reference solver (16 Nov 2026).** Full write-up: `docs/results/orr-sommerfeld.md`; code `analysis/orr_sommerfeld/` (plan `docs/plans/structured-closure-os-plan.md`, B.1–B.3).
+
+- Verified against the Benney limit (error O(k²)), Re_c = (5/6) cot β, and the published OS saddle points of Brevdo et al. (1999) (Kalliadasis et al. Table 7.1), which are matched to the printed digits.
+- Re120 Ca0.01 β45: Lavalle's phase speed is within 3% of OS. Its temporal growth is 39% low at the OS maximum (k ≈ 0.3). Its spatial growth at the 10 Hz forcing (ω = 0.134) is only 3% low, but 37% low at ω = 0.45.
+- B.4 (all 85 manifest cases). Lavalle's linear growth error depends on δ_lin = k_max Re (OS): it is 7–18% too high for δ < 5 and 25–45% too low for δ > 30. The 28 Hz forcing cut-off lies below the most amplified spatial frequency in 13 of the 36 DNS cases, and below the OS cut-off f_c in 31 of them.
+
+**OS B.5–B.8 and gate GB (16 Nov 2026).** See `docs/results/orr-sommerfeld.md`.
+
+- DNS against OS (oracle case, 10 Hz): spatial growth agrees to 1% and phase speed to 1.5% for x = 60–130. The linear region is x ≈ 60–150. The 20 Hz harmonic is bound, not free.
+- Extracted ΔM_x and ΔT_w match the exact OS-mode values to 3–6% in the linear region, which validates the extraction pipeline. ΔM_x and ΔT_w are each mostly in quadrature with h and cancel to 10–40%.
+- ROM linear test (frequency-comb inlet): the numerics reproduce analytic Lavalle to about 1%. The current ML closures are 20–28% off OS where they stay linear, and at Re 120 and 200 they go nonlinear through excess growth (separate models) or a shifted base state plus a spurious uniform equilibrium at h ≈ 2.9 (sum model). Both MLPs have spurious uniform equilibria at h ≈ 2–3. It is not an inlet effect: the drifting first cell in ROM outputs is a write-out artefact (the stored inlet cell is integrated but never used).
+- Four linear coefficients (a, b, c, d), with D = D_OS imposed and fitted over the forced band, match OS growth to within 10% in all 85 cases. Three are not enough for δ > 5. Proposed D2: L2 with (a, b, c, d).
+
+**Structured closure, Phase A diagnostics (16 Nov 2026).** Full write-up: `docs/results/structured-closure.md`; scripts `scripts/structured-closure/`.
+
+- A.1: neither current MLP preserves the uniform film. S₀ ≠ 0 (up to 0.5 × 3/Re), and the uniform-film slope shifts the kinematic speed by O(1): +0.44 for the sum model and −0.72 for the separate models in the oracle case. The cause is that `flat_mask` removes |h − 1| < 0.05 from training. The separate models' linear part doubles the most-amplified growth.
+- A.2: the sum model lies on the DNS crest c(h_max) curve, so its celerity error follows from its amplitude error. The separate models are 3–4% fast at equal height.
+- A.3: in all seven cases (δ 2–65), F = −S is negative on wave fronts and positive on backs. Its projection on q′_x has the same sign everywhere and is dominated by the front. R² is only 0.1–0.26.
+- A.4: in the linear region of the oracle case, the fitted DNS correction moves Lavalle onto OS at 10 Hz (phase speed 1.84 against 1.85, growth within 5%). The individual (a, b, c) are not identifiable from a single frequency.
+
 ## Next steps
+
+**Current work (16 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker and running jobs are in `docs/plans/structured-closure-progress.md`. The explainer for Krishna is `docs/explainers/2026-11-16-structured-closure-explainer.md`.
+
+- **Done:**
+  - an Orr–Sommerfeld solver, verified (B.1–B.3), with the OS case table (B.4);
+  - the linear-regime tests of DNS, ROM and MLPs (B.5–B.8);
+  - Phase A diagnostics of the current MLPs;
+  - D2 = L2, i.e. the closure's linear part must match OS through (a, b, c, d), with g₃ in the default model;
+  - the ROM first-cell output fix.
+- **Running:**
+  - five comb-forced DNS runs for multi-frequency linear checks (D3);
+  - closure extractions: Re050, 7 further cases, and full redos of the 4 stale files;
+  - the cache v2 build.
+- **Next:** finish cache v2 → Phase C (train the structured closure, V1, L2) → C.4–C.10 (solver) → Phase D closed loop → gate GD, about 6 Dec.
+- **The functional-form plan is secondary.** It serves as the monomial baseline and for the closed forms in Phase E. It shares cache v2 and the closed-loop harness.
+
 
 **Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.
 
@@ -169,7 +205,18 @@ Paper 2: gas-sheared films. Paper 3: heated films (heat transfer).
 - Eq. (20): the 1/Re multiplies only 3q/h².
 - The draft's Ca range (0.001–0.06) differs from the report (0.005–0.1).
 
-## Schedule to 15 Jan 2027
+## Schedule to 15 Jan 2027 (structured-closure plan §4; FF plan in parallel as baseline)
+
+| Dates | Work |
+|---|---|
+| 16–22 Nov | Plan intake; OS solver and B.1–B.8; Phase A; gate GB (D2 = L2); comb DNS; cache v2. APS DFD talk 22 Nov |
+| 23–29 Nov | Comb DNS write-up; Phase C training (C.1–C.3) on cache v2 |
+| 30 Nov–6 Dec | Solver integration and tests (C.4–C.10); Phase D on the oracle case; **gate GD (~6 Dec): which closure Paper 1 carries** |
+| 7–20 Dec | Phase D broadband; Phase E closed forms (meets the FF plan); Phase F rollout if approved |
+| From 4 Jan | Draft to co-authors; submission 15 Jan 2027 |
+
+
+### Functional-form plan thread (secondary since 16 Nov; runs in parallel)
 
 From `docs/plans/functional-form-plan.md` §5 (13 Nov 2026). The other threads (ΔP_x, memory models) run alongside.
 

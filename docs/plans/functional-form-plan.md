@@ -2,6 +2,8 @@
 
 _Written 13 Nov 2026 in Cowork with Krishna, from repo `main` @ 719b7da, for Claude Code on HiPerGator to carry out. Put this file in the repo at `docs/plans/functional-form-plan.md` in the first commit (task 0.0)._
 
+> **Status (16 Nov 2026): secondary for now.** The active plan is `docs/plans/structured-closure-os-plan.md`. This plan is kept as the monomial/theory-library baseline (decision D1 of that plan). Cache v2 (task 1.1) and the closed-loop harness (task 1.3) are shared with it. Phase 0 results: `docs/results/functional-form-v2.md` (merged into `main` on 16 Nov).
+
 Read first: `CLAUDE.md`, `docs/project-status.md`, `docs/results/functional-form-structure.md`, `docs/results/ordering-matrix.md` (§3, §9), `docs/results/richard-comparison.md` (§6), `docs/results/ml-a-posteriori.md`.
 
 ---
