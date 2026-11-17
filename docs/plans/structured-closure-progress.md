@@ -69,3 +69,13 @@ _Context for Claude sessions. Updated 17 Nov 2026 (end of day 2). Plan: `structu
 - **Power penalty (λ_P 10, 100; `train.py --lam_P`) fixes the a priori net power but not the a posteriori error**: a priori NRMSE rises to 0.16, and the waves drift in phase (−7 units by t = 50 for σ 0.25 λ_P 100; +7.8 for σ 0.5 without penalty), while ml_sum_hhx stays in phase (corr 0.95). Best structured so far: σ 0.25, λ_lin 10, no penalty (in phase, h error 0.60 vs ml_sum 0.47 at t = 50, max h 2.50 vs 2.38).
 - **Open:** seed spread of these a posteriori numbers is unknown (seed 1 = backup); broadband held-out a posteriori (gate GD) not yet run; a richer form for wave speed: "V1.5" (κ, g₁–g₃ depend on (h, r = q/h³); flux part unchanged, so still guaranteed hyperbolic) or V2 (also Φ(h, r), hyperbolicity by penalty + limiter). Either needs the ROM to evaluate networks of (h, r) instead of 1D tables (the MLP class in `ml_closure.cpp` can be reused).
 - Explainer for Krishna: `docs/explainers/2026-11-17-structured-closure-explainer.md`.
+
+## Next options (17 Nov, end of day). Priority: a posteriori accuracy over interpretability (user's decision)
+
+All use the same training code (`ml/structured_closure/train.py`, L2 at the 85 OS points, λ_lin 10) and the same oracle test (`rom_tests.py`). The ROM change is shared: evaluate networks directly instead of 1D tables (reuse the `MLP` class of `rom/lavalle-cpp/src/ml/ml_closure.cpp`). Do 0 first.
+
+0. **Seed spread:** seed 1 of σ 0.25 / σ 0.5 L10 (`SEED=1 sbatch --export=ALL --array=...` with `run_sweep.sh`), oracle runs. Needed before reading the ±7-unit phase differences.
+1. **V1.5:** relaxation coefficients κ, g₁–g₃ as networks of (h, r = q/h³, h_x, q_x; p); flux part (Φ(h), ΔP(h)) unchanged, so still guaranteed hyperbolic. The flat film stays exact; the linear coefficients need only the network values at (1, 1, 0, 0). Risk: gradient inputs act as nonlinear gradient terms (possibly anti-diffusive at fronts).
+2. **Flat-film-exact plain MLP + L2:** S = N(h, q, h_x, q_x; p) − N(h, h³, 0, 0; p), a source term like the old `ml_sum_hhx` with the Phase A defects removed (S₀ = e = 0 exactly; OS-matched linear growth). No hyperbolicity or structure guarantees (the ROM flux stays Lavalle's). Easiest ROM path (MLClosure hook plus the subtraction). Baseline for "does the structure help in closed loop?".
+3. **V2:** Φ(h, r) in the flux as well; hyperbolicity by penalty plus runtime limiter (plan C.8).
+4. **Then:** broadband held-out a posteriori (Phase D, gate GD) for the best of these; optionally add the 11 extra cases to training.

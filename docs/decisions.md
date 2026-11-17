@@ -2,6 +2,10 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-17 — Priority: a posteriori accuracy over interpretability
+
+- **User's decision:** focus on a posteriori accuracy rather than on interpretable 1D coefficient functions. Closures may take (h, q or r = q/h³, h_x, q_x) as inputs where the guarantees allow it (relaxation part, or a flat-film-exact plain MLP); the flux part keeps Φ(h) unless V2 is tried. Options and order: `docs/plans/structured-closure-progress.md`, "Next options".
+
 ## 2026-11-17 — Structured closure V1: constraint form, λ_lin, zero-sum derivative, GPU
 
 - **L2 is imposed on the dispersion relation, not on fitted (a, b, c, d).** The flux part is differentiated unfiltered by the finite-volume scheme, the relaxation part sees D_G(σ), so the filter factor exp(−k²σ²/2) applies to the relaxation part only (`ml/structured_closure/losses.py`). With σ = 0 this reproduces B.8.
