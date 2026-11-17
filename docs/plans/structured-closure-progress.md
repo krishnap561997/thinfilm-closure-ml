@@ -18,7 +18,7 @@ _Context for Claude sessions. Updated 16 Nov 2026 (end of day 1). Plan: `structu
 | B.1 temporal OS, B.2 spatial OS | done | `analysis/orr_sommerfeld/os_solver.py` |
 | B.3 verification | done, all pass | `verify.py` |
 | B.4 case table (85 cases) | done | `case_table.py`, `summarize_case_table.py` |
-| B.5 DNS linear region | oracle case done; comb DNS running | `b5_dns_linear.py`, `comb_dns/analyse_comb.py` |
+| B.5 DNS linear region | oracle case done; comb DNS done 17 Nov (Re 80–200 match OS; Re 40 matches in x 30–100; Re 20 correction below scatter) | `b5_dns_linear.py`, `comb_dns/analyse_comb.py` |
 | B.6 ROM linear (comb inlet) | done (3 cases × Lavalle, sum, separate) | `b6_rom/` |
 | B.7 linear closure targets | done (85 cases); DNS check done for the oracle case at 10 Hz | `linear_targets.py`, `b7_dns_check.py` |
 | B.8 (a, b, c, d) fits | done (85 cases) | `linear_targets.csv`, columns `band_abcd_*` |

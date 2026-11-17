@@ -230,6 +230,90 @@ Medians per δ_lin bin:
   - The single-frequency DNS fit of A.4 (x < 60: a −0.016, b −0.79, c +0.50) has the same signs. Its coefficients are not identifiable, though (in the 60–130 window they come out completely different), so this is not a validation of the individual coefficients.
 - These are the L2 targets for Phase C (`linear_targets.csv`, columns `band_abcd_*`).
 
+## Comb-forced DNS across Re (D3: B.5, B.7, B.8 from the DNS)
+
+_17 Nov 2026. Runs: `dns/comb/` (jobs 51592372–76, `bala1s-b`), data in `$THINFILM_STORE/datasets/BasC/DNS/comb/<case>/`. Analysis: `analysis/orr_sommerfeld/comb_dns/analyse_comb.py` (job 51787456), output `comb_fits.csv`, `comb_modes_<case>.csv`, `comb_growth_<case>.png` in `$THINFILM_STORE/analysis/orr_sommerfeld/comb_dns/`. Instructions: `docs/plans/comb-dns-instructions.md`._
+
+- **Setup.**
+  - Five cases at β 45°: Re 20, 80, 120, 200 at Ca 0.01, and Re 40 at Ca 0.04.
+  - Production physics and mesh (MAXLEVEL 12, dx 0.049) on a short domain, LX = 200. Flat start.
+  - Inlet comb: 21–31 modes of 3e-4 each, period exactly 100, up to 0.97 ω_c.
+  - Spin-up to t = 150, then profiles every 0.25 for t = 155–255. Each mode is projected over exactly one period.
+  - Fit window x = 60–150.
+  - Reliable modes: R² of ln|A| > 0.95 and wavelength < 2 × window, which excludes ω ≲ 0.1.
+- **Errors over the reliable modes:**
+  - growth error = |−k_i,DNS − (−k_i,OS)| / max −k_i,OS;
+  - phase speed = c_DNS/c_OS − 1;
+  - ΔM_x, ΔT_w error = |DNS − OS| / |OS|, complex, per unit η.
+
+| | Re 20 | Re 40 (Ca 0.04) | Re 80 | Re 120 | Re 200 |
+|---|---|---|---|---|---|
+| reliable modes (ω range) | 10 (0.25–0.88) | 16 (0.13–1.07) | 17 (0.13–1.13) | 18 (0.13–1.19) | 22 (0.13–1.45) |
+| growth, DNS vs OS: median / max | 0.069 / 0.145 | 0.098 / 0.288 | **0.027** / 0.084 | **0.017** / 0.080 | **0.028** / 0.172 |
+| growth, Lavalle vs OS: median / max | 0.027 / 0.097 | 0.150 / 0.276 | 0.244 / 0.303 | 0.317 / 0.410 | 0.374 / 0.531 |
+| phase speed, DNS vs OS: median (range) | −0.9% (−2.3, +0.8) | −1.8% (−16.6, +1.2) | −1.0% (−2.0, −0.8) | −1.1% (−1.6, −0.9) | −1.5% (−1.8, −1.1) |
+| ΔM_x, DNS vs OS: median / max | 0.036 / 0.046 | 0.046 / 2.5 | 0.012 / 0.072 | 0.010 / 0.072 | 0.033 / 0.051 |
+| ΔT_w, DNS vs OS: median / max | 0.032 / 0.059 | 0.042 / 1.3 | 0.017 / 0.050 | 0.013 / 0.052 | 0.010 / 0.033 |
+| total wave height in window, max\|h − ⟨h⟩\| | 0.051 | **0.28** | 0.031 | 0.025 | 0.021 |
+| drift of ⟨h⟩ between window halves | 3.5e-3 | 4.5e-3 | 1.8e-3 | 1.7e-3 | 1.6e-3 |
+
+**B.5 across Re: the DNS follows OS over the whole forced band at Re 80–200.**
+- Growth matches OS to a median of 2–3%.
+- The phase speed is 1–1.5% below OS at every frequency, the same offset as the oracle case. It is systematic, so it is consistent with the mesh explanation (level 15 waves ran 1.2% faster than level 14), though still not proven.
+- The worst modes (8–17%) are scattered single modes near the top of the reliable band, not a trend.
+- Lavalle's growth error rises from 24% to 37% (median), and 30% to 53% (max), over Re 80–200, as in B.6 and B.8.
+
+**B.7 across Re: the extracted closure terms match OS.**
+- At Re 80–200, ΔM_x and ΔT_w per frequency agree with the exact OS values to a median of 1–3% (max 5–7%), in amplitude and phase.
+- At Re 20 the agreement is 3–4%.
+- This extends the single-frequency check of the oracle case to the whole band and to three more Re. The extraction pipeline is accurate in the linear regime wherever it has been tested.
+
+**B.8 from the DNS:** (a, b, c, d) fitted to the DNS k(ω) and, for comparison, to OS at the same frequencies, both with D = 1.2 Re − cot β imposed.
+
+| | a | b | c | d | fit error k_i / k_r |
+|---|---|---|---|---|---|
+| Re 80, DNS / OS | −0.0054 / −0.0070 | −0.715 / −0.896 | +0.408 / +0.521 | +0.075 / +0.090 | 0.077 / 0.028 vs 0.085 / 0.032 |
+| Re 120, DNS / OS | −0.0046 / −0.0056 | −0.914 / −1.072 | +0.524 / +0.626 | +0.055 / +0.063 | 0.119 / 0.037 vs 0.115 / 0.039 |
+| Re 200, DNS / OS | −0.0030 / −0.0037 | −1.008 / −1.187 | +0.573 / +0.693 | +0.027 / +0.032 | 0.210 / 0.037 vs 0.150 / 0.043 |
+| Re 20, DNS / OS | +0.025 / −0.020 | +1.46 / −0.59 | −0.67 / +0.35 | +0.10 / +0.17 | 0.147 / 0.017 vs 0.019 / 0.017 |
+| Re 40, DNS / OS | +0.012 / −0.013 | +0.61 / −0.75 | −0.39 / +0.45 | +0.08 / +0.12 | 0.266 / 0.150 vs 0.019 / 0.020 |
+
+- **Re 80–200:** the DNS coefficients have the OS signs and trend with Re, and are 15–25% smaller in magnitude. The two fits match their data equally well.
+  - With D fixed, b and c (and a) trade off along one direction. The difference is mostly along it, so it is a weakly constrained combination, not a different linear physics.
+  - The OS values are the L2 targets. The DNS confirms them to this level.
+- **The coefficients depend on the frequency set.** The OS fit at the comb frequencies gives d = 0.063 for the oracle case, against 0.087 from the B.8 forced band. Compare DNS and OS only at the same frequencies, as here.
+
+**Re 20 and Re 40: not clean linear tests in the standard window** (Re 40 is usable in x = 30–100, see below).
+- **Re 20 (δ_lin 4.4).**
+  - The closure terms match OS (3–4%), but the growth error (median 7%) is larger than Lavalle's (3%).
+  - The linear correction Lavalle needs at this δ is smaller than the DNS measurement scatter, so the B.8 fit to the DNS has no information. It returns coefficients of the opposite sign with a fit error 8× that of OS.
+  - Only 10 modes pass the filter. The window and settling are marginal: ⟨h⟩ drift 3.5e-3.
+- **Re 40, Ca 0.04.**
+  - Each mode stays below 0.044, but the 31 modes add up to a total wave height of 0.28 inside the window, so the window is not linear.
+  - A few modes are badly off: phase speed −17%, closure terms off by 1–2.5× at ω 0.19 and 1.07. The ⟨h⟩ drift is the largest, 4.5e-3.
+  - The median errors are still 4–10%, but the case does not test linear theory cleanly in this window.
+  - **Rescued by an upstream window** (job 51789519, output `comb_dns/win30_100/` and `win45_110/`):
+
+    | Re 40 Ca 0.04 | x 30–100 | x 45–110 | x 60–150 |
+    |---|---|---|---|
+    | reliable modes (ω range) | 25 (0.13–1.76) | 22 (0.13–1.57) | 16 (0.13–1.07) |
+    | total wave height max\|h − ⟨h⟩\| | 0.053 | 0.072 | 0.28 |
+    | growth DNS vs OS, median / max | **0.031** / 0.20 | 0.041 / 0.23 | 0.098 / 0.29 |
+    | growth Lavalle vs OS, median | 0.24 | 0.23 | 0.15 |
+    | phase speed, median (range) | −1.1% (−2.7, −0.2) | −1.2% (−4.2, −0.2) | −1.8% (−16.6, +1.2) |
+    | ΔM_x / ΔT_w vs OS, median | 0.042 / 0.033 | 0.053 / 0.039 | 0.046 / 0.042 |
+    | (a, b, c, d) DNS | −0.008, −0.54, +0.30, +0.072 | −0.006, −0.41, +0.23, +0.079 | wrong signs |
+    | (a, b, c, d) OS, same ω | −0.013, −0.82, +0.48, +0.085 | −0.014, −0.86, +0.50, +0.089 | |
+
+    - In x = 30–100 the case behaves like Re 80–200: growth median 3%, systematic phase-speed offset −1.1%, closure terms 3–4%, and DNS (a, b, c, d) with the OS signs.
+    - The DNS coefficients are about 35% smaller than OS, a larger gap than at Re 80–200 (15–25%).
+    - The largest growth errors are a cluster at ω 1.13–1.26, where the DNS grows 15–30% (of the peak) slower than OS, plus ω 1.51, where it grows faster. They are not scattered single modes.
+    - The window includes x = 30–60, the inlet-adjustment zone of the oracle case. There the forcing was 100× larger and the adjustment was visible; here the medians show no sign of it.
+    - The ⟨h⟩ drift (4.3e-3) is the same in every window, so it is not caused by the nonlinearity.
+    - **Use x = 30–100 for this case.** No rerun is needed.
+
+**Mean film thickness.** In every run ⟨h⟩ ≈ 0.9946–0.9974 in the window, 0.3–0.55% below Nusselt. It is not yet explained (candidates: the mean of the inlet flux, the gas phase, mesh mass error). It is small next to the waves and does not affect the mode-by-mode comparisons, which use h − ⟨h⟩_t.
+
 ## Gate GB summary
 
 1. **B.3 passes** (Benney limit, Re_c, Brevdo et al. saddle points, convergence).
@@ -237,6 +321,7 @@ Medians per δ_lin bin:
    - growth to 1% and phase speed to 1.5% (B.5);
    - the extracted ΔM_x and ΔT_w to 3–6% (B.7).
    - The prototype table of plan §0 is confirmed, so nothing here supports L1 over L2.
+   - Comb DNS (17 Nov): the same holds over the whole forced band at Re 80, 120 and 200 (growth median 2–3%, phase speed −1 to −1.5%, ΔM_x and ΔT_w 1–3%).
 3. **The ROM numerics are accurate in the linear regime** (B.6, Lavalle to about 1%). The current ML closures are not:
    - growth is 20–28% off where they stay linear;
    - at Re 120 and 200 they leave the linear regime, through twice the OS growth (separate models) or a shifted base state plus a spurious uniform equilibrium (sum model). It is not an inlet effect.
@@ -251,10 +336,14 @@ Proposal for D2: **L2 with (a, b, c, d) fitted over the forced band.** The η_xx
 - **The published check is a single case:** saddle points at Re 133, β 4.6°. No published spatial growth-rate curve at our Re 120, β 45° has been compared yet. The Benney and Re_c checks only test small k.
 - **Mode selection with complex k relies on continuation.** A large jump in parameters can lock onto another mode. `temporal` raises if the polish moves c by more than 1e-3, but a continuation that jumps onto another converged mode would not be caught. The saddle-point check found a spurious far-field saddle (k ≈ 0.34 + 11.3i) when started on the wrong side of the real axis.
 - **`lavalle_spatial` picks the root nearest ω/3.** Checked only for ω ≤ 0.45 at Re 120. It needs a check near the cut-off and at high Re.
-- **B.5 rests on one case at one frequency.** Its harmonics are bound, so they test nothing linear. The phase-speed gap of 1.5% is attributed to mesh resolution but not proven.
+- **B.5 rested on one case at one frequency** (its harmonics are bound). The comb DNS extend it to the forced band at Re 80, 120 and 200, all at β 45° and Ca 0.01.
+  - Re 40 Ca 0.04 agrees too, in the window x = 30–100. It is nonlinear in x = 60–150.
+  - Not tested: other inclinations, Ca other than 0.01 and 0.04, low δ (at Re 20 the correction is below the measurement scatter).
+  - The systematic 1–1.5% phase-speed gap is attributed to mesh resolution but not proven.
+  - The 0.3–0.55% deficit in mean h is unexplained.
 - **The B.6 explanations are diagnostic, not tested by reruns.** Rerunning the nonlinear ML cases on a shorter domain would confirm the excess-growth explanation. The first ROM cell in every output is not physical (see B.6). The reliable-mode filter excludes the lowest and highest frequencies.
 - **B.7 targets are for the passive-gas linear mode** and do not include the surface viscous term in the closure split. Against the DNS they were compared at one frequency only.
-- **B.8 coefficients are fitted to OS, not to the DNS.** The forced-band choice (ω ≤ 2 ω_max) is a judgement. The root picked is the one nearest to OS, which could hide a spurious branch.
+- **B.8 coefficients are fitted to OS.** At Re 80–200 the DNS-fitted values have the same signs but are 15–25% smaller, along the weakly constrained direction left once D is fixed. The forced-band choice (ω ≤ 2 ω_max) is a judgement. The root picked is the one nearest to OS, which could hide a spurious branch.
 - **B.4 is temporal-maximum based.** ε_lin = k_max of the *temporal* problem. The spatial f_max is reported alongside but is not used for δ_lin.
 - **Fluid properties of seven cases are defaults** (see B.4). If those runs actually used other properties, their Hz values are wrong.
 - **The book PDF text loses minus signs.** The k_i signs in the table above were restored by convention; the magnitudes match.
