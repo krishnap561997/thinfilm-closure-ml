@@ -3,6 +3,8 @@
 Loss = sum over training cases (equal weight per case) of mean (S_pred - S)^2 / rms_c(S)^2
      + lam_lin * mean over training cases [ mean r_j^2 + r_D^2 ]          (L2; lam_lin = 0 is L0)
      + lam_F  * per-case-normalised mean (d_x F - dF_x)^2                 (anchor of the flux part)
+     + lam_P  * mean over random whole snapshots of r^2, r = sum_x (S_pred - S) q' / sum_x |S q'|
+                (power of the closure into the waves; q' = q - <q>_x; 17 Nov oracle diagnosis)
 r_j, r_D: losses.dispersion_residual against os_dispersion.json.
 
 Output: $THINFILM_STORE/codes/ml-models/structured_closure/runs/<name>/
@@ -23,12 +25,20 @@ from losses import dispersion_residual, disp_F, stack_targets      # noqa: E402
 
 def build(cases, a, dev):
     """Concatenate cases into flat tensors with per-point case index."""
-    cols = {k: [] for k in D.FIELDS}; idx = []; meta = []
+    keys = D.FIELDS + ("qp",)
+    cols = {k: [] for k in keys}; idx = []; meta = []; sids = []; soff = 0; srange = []
     for i, c in enumerate(cases):
         d = D.load_case(c, a.sigma, a.x0, a.t0, a.stride)
-        f = D.flat(d)
-        for k in D.FIELDS:
+        d["qp"] = d["q"] - d["q"].mean(1, keepdims=True)          # q' per snapshot (power diagnostics)
+        nt, nx = d["h"].shape
+        arr = {k: d[k].ravel() for k in keys}
+        ok = np.ones(nt * nx, bool)
+        for v in arr.values():
+            ok &= np.isfinite(v)
+        f = {k: v[ok] for k, v in arr.items()}
+        for k in keys:
             cols[k].append(f[k])
+        sids.append(np.repeat(np.arange(nt), nx)[ok] + soff); srange.append((soff, soff + nt)); soff += nt
         idx.append(np.full(len(f["h"]), i, np.int64))
         Re, Ca, beta = float(d["Re"]), float(d["Ca"]), float(d["beta"])
         meta.append(dict(case=c, Re=Re, Ca=Ca, beta=beta, cotb=1 / math.tan(beta), We=Re * Ca, n=len(f["h"]),
@@ -36,6 +46,11 @@ def build(cases, a, dev):
                          p=D.pfeat(Re, Ca, beta)))
     T = {k: torch.tensor(np.concatenate(v), device=dev) for k, v in cols.items()}
     T["idx"] = torch.tensor(np.concatenate(idx), device=dev)
+    sid = np.concatenate(sids)
+    T["sid"] = torch.tensor(sid, device=dev)
+    T["s_start"] = torch.tensor(np.searchsorted(sid, np.arange(soff)), device=dev)
+    T["s_end"] = torch.tensor(np.searchsorted(sid, np.arange(soff), side="right"), device=dev)
+    T["s_range"] = srange
     pc = lambda key: torch.tensor([m[key] for m in meta], dtype=torch.float32, device=dev)
     C = dict(Re=pc("Re"), cotb=pc("cotb"), p=torch.tensor(np.stack([m["p"] for m in meta]), device=dev),
              wS=pc("rmsS") ** -2 / pc("n"), wF=pc("rmsF") ** -2 / pc("n"))
@@ -66,6 +81,22 @@ def lin_loss(model, C, tgs, sigma):
     return (r ** 2).mean(-1).mean() + (rD ** 2).mean()
 
 
+def power_loss(model, T, C, nsnap, gen=None):
+    """Relative power error of whole snapshots, nsnap random snapshots per case:
+    r = sum_x (S_pred - S) q' / sum_x |S q'|;  returns mean r^2."""
+    picks = torch.cat([torch.randint(lo, hi, (nsnap,), device=T["h"].device) for lo, hi in T["s_range"]])
+    st, en = T["s_start"][picks], T["s_end"][picks]
+    lens = en - st
+    loc = torch.repeat_interleave(torch.arange(len(picks), device=st.device), lens)
+    pts = torch.repeat_interleave(st, lens) + (torch.arange(int(lens.sum()), device=st.device)
+                                               - torch.repeat_interleave(torch.cumsum(lens, 0) - lens, lens))
+    i = T["idx"][pts]
+    S, _ = model(T["h"][pts], T["q"][pts], T["h_x"][pts], T["q_x"][pts], T["h_xx"][pts], C["p"][i], C["Re"][i], C["cotb"][i])
+    num = torch.zeros(len(picks), device=S.device).index_add_(0, loc, (S - T["S"][pts]) * T["qp"][pts])
+    den = torch.zeros(len(picks), device=S.device).index_add_(0, loc, (T["S"][pts] * T["qp"][pts]).abs())
+    return ((num / den) ** 2).mean()
+
+
 def roots(model, C, tg, sigma, i, it=8):
     """Newton from the OS roots onto the augmented relation; returns growth and k_r errors (B.8 scaling)."""
     with torch.enable_grad():
@@ -86,6 +117,7 @@ def roots(model, C, tg, sigma, i, it=8):
 def evaluate(model, T, C, meta, chunk=1 << 17):
     """Per-case NRMSE of S (rms-normalised) and of the flux part against dF_x; min discriminant."""
     n = len(meta); se = torch.zeros(n, dtype=torch.float64, device=T["h"].device); sf = torch.zeros_like(se)
+    pn, pd, pt = torch.zeros_like(se), torch.zeros_like(se), torch.zeros_like(se)
     dmin = torch.full((n,), float("inf"), dtype=torch.float64, device=T["h"].device)   # amin with include_self
     for s in range(0, len(T["h"]), chunk):
         sl = slice(s, s + chunk); i = T["idx"][sl]
@@ -94,11 +126,14 @@ def evaluate(model, T, C, meta, chunk=1 << 17):
             disc = model.discriminant(T["h"][sl], T["q"][sl], C["p"][i], C["Re"][i], C["cotb"][i])
         se.index_add_(0, i, ((S.detach() - T["S"][sl]) ** 2).double())
         sf.index_add_(0, i, ((fl.detach() - T["dF_x"][sl]) ** 2).double())
+        qp = T["qp"][sl].double(); Sd = T["S"][sl].double()
+        pn.index_add_(0, i, (S.detach().double() - Sd) * qp); pd.index_add_(0, i, (Sd * qp).abs()); pt.index_add_(0, i, Sd * qp)
         dmin.index_reduce_(0, i, disc.detach().double(), "amin", include_self=True)
     out = {}
     for j, m in enumerate(meta):
         out[m["case"]] = dict(nrmse=float(torch.sqrt(se[j] / m["n"]) / m["rmsS"]),
-                              flux_vs_dFx=float(torch.sqrt(sf[j] / m["n"]) / m["rmsF"]), min_disc=float(dmin[j]))
+                              flux_vs_dFx=float(torch.sqrt(sf[j] / m["n"]) / m["rmsF"]), min_disc=float(dmin[j]),
+                              pow_err=float(pn[j] / pd[j]), pow_dns=float(pt[j] / pd[j]))
     return out
 
 
@@ -108,6 +143,8 @@ def main():
     ap.add_argument("--sigma", type=float, default=0.5)
     ap.add_argument("--lam_lin", type=float, default=1.0)
     ap.add_argument("--lam_F", type=float, default=0.0)
+    ap.add_argument("--lam_P", type=float, default=0.0, help="weight of the whole-snapshot power penalty")
+    ap.add_argument("--pow_snaps", type=int, default=2, help="snapshots per case per step for the power penalty")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--epochs", type=int, default=100)
     ap.add_argument("--batch", type=int, default=1 << 15)
@@ -181,14 +218,16 @@ def main():
             loss = loss + a.lam_lin * lL
             lF = (C["wF"][i] * (fl - T["dF_x"][sl]) ** 2).sum() * scale if a.lam_F > 0 else torch.zeros((), device=dev)
             loss = loss + a.lam_F * lF
+            lP = power_loss(model, T, C, a.pow_snaps) if a.lam_P > 0 else torch.zeros((), device=dev)
+            loss = loss + a.lam_P * lP
             opt.zero_grad(set_to_none=True); loss.backward(); opt.step(); sched.step()
-            acc += [lS.item(), lL.item(), lF.item()]
+            acc += [lS.item(), lL.item(), lP.item()]
         acc /= nb
-        msg = f"ep {ep:4d}  S {acc[0]:.4f}  lin {acc[1]:.2e}  F {acc[2]:.4f}  {(time.time() - te) / ep:.1f}s/ep"
+        msg = f"ep {ep:4d}  S {acc[0]:.4f}  lin {acc[1]:.2e}  P {acc[2]:.2e}  {(time.time() - te) / ep:.1f}s/ep"
         if ep % a.val_every == 0 or ep == a.epochs:
             ev = evaluate(model, TH, CH, metaH) if metaH else {}
             msg += f"  | eval NRMSE mean {np.mean([v['nrmse'] for v in ev.values()]):.4f}" if ev else ""
-        log(msg); hist.append(dict(ep=ep, S=acc[0], lin=acc[1], F=acc[2]))
+        log(msg); hist.append(dict(ep=ep, S=acc[0], lin=acc[1], P=acc[2]))
         if a.max_minutes and (time.time() - te) > 60 * a.max_minutes:
             log(f"stopping at epoch {ep}: max_minutes reached"); break
     torch.save(model.state_dict(), os.path.join(run, "model.pt"))
@@ -200,10 +239,10 @@ def main():
             ki, kr, L, Dg = roots(model, cc, tt, a.sigma, j)
             M[part][m["case"]].update(lin_err_ki=ki, lin_err_kr=kr, D=Dg, D_os=tt[j]["D_os"], **L)
     json.dump(M, open(os.path.join(run, "metrics.json"), "w"), indent=1)
-    log(f"{'case':24s} {'part':5s} {'NRMSE':>6s} {'fluxF':>6s} {'mindisc':>8s} {'ki_err':>6s} {'kr_err':>6s} {'D/D_os':>6s}   a       b       c       d")
+    log(f"{'case':24s} {'part':5s} {'NRMSE':>6s} {'powerr':>7s} {'powDNS':>7s} {'mindisc':>8s} {'ki_err':>6s} {'kr_err':>6s} {'D/D_os':>6s}   a       b       c       d")
     for part in ("train", "eval"):
         for c, v in M[part].items():
-            log(f"{c:24s} {part:5s} {v['nrmse']:6.3f} {v['flux_vs_dFx']:6.3f} {v['min_disc']:8.2e} {v['lin_err_ki']:6.3f} "
+            log(f"{c:24s} {part:5s} {v['nrmse']:6.3f} {v['pow_err']:+7.4f} {v['pow_dns']:+7.4f} {v['min_disc']:8.2e} {v['lin_err_ki']:6.3f} "
                 f"{v['lin_err_kr']:6.3f} {v['D'] / v['D_os']:6.3f}  {v['a']:+.4f} {v['b']:+.3f} {v['c']:+.3f} {v['d']:+.3f}")
     log(f"done: {time.time() - t0:.0f}s total, {M['s_per_epoch']:.1f} s/epoch")
 

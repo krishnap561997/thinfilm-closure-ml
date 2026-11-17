@@ -1,6 +1,6 @@
 # Progress tracker: structured-closure / Orr–Sommerfeld plan
 
-_Context for Claude sessions. Updated 16 Nov 2026 (end of day 1). Plan: `structured-closure-os-plan.md`. Branch: `structured-closure` (from `main` @ 719b7da, not pushed). Results: `docs/results/orr-sommerfeld.md`, `docs/results/structured-closure.md`. Explainer for Krishna: `docs/explainers/2026-11-16-structured-closure-explainer.md`._
+_Context for Claude sessions. Updated 17 Nov 2026 (end of day 2). Plan: `structured-closure-os-plan.md`. Branch: `structured-closure` (from `main` @ 719b7da, not pushed). Results: `docs/results/orr-sommerfeld.md`, `docs/results/structured-closure.md`. Explainer for Krishna: `docs/explainers/2026-11-16-structured-closure-explainer.md`._
 
 ## Decisions taken (16 Nov)
 
@@ -29,7 +29,7 @@ _Context for Claude sessions. Updated 16 Nov 2026 (end of day 1). Plan: `structu
 | Cache v2 (FF 1.1, shared) | building | `pipeline/cache_v2/build_cache_v2.py` |
 | C.1–C.3 training | V1 sweep done 17 Nov (seed 0; seed 1 = backup): `ml/structured_closure/` (`train.py`, `run_sweep.sh`, `summarize_runs.py`); L2 = OS dispersion residual at 85 OS points (`os_dispersion.py`, `losses.py`), λ_lin = 10 | runs in `$THINFILM_STORE/codes/ml-models/structured_closure/runs/` |
 | C.4–C.10 solver | done 17 Nov: `StructuredClosure` (tables in h, `export_tables.py`), ΔP flux hook, relaxation source with zero-sum D_G; uniform film exact, comb runs match the model's linear dispersion (3–4%) | `rom/lavalle-cpp` tag `// STRUCTCLOSURE`; `rom_tests.py make/analyse`, `run_rom_tests.sh` |
-| Phase D closed loop | first oracle run 17 Nov: structured ≈ ml_sum to t = 5, then crest over-amplification (max h 2.3–3.0 vs DNS 2.1), h error 0.6–1.2 at t = 50 (ml_sum 0.47, exact closure 0.19). Diagnosis next | `structured_closure/rom/<run>/oracle_summary.csv` |
+| Phase D closed loop | first oracle run 17 Nov: structured ≈ ml_sum to t = 5, then crest over-amplification (max h 2.3–3.0 vs DNS 2.1), h error 0.6–1.2 at t = 50 (ml_sum 0.47, exact closure 0.19). Diagnosed 17 Nov (see facts below); power penalty tried, did not help a posteriori | `structured_closure/rom/<run>/oracle_summary.csv`, `oracle_split_summary.csv`, `oracle_power_summary.csv`; `diag_oracle.py` |
 | Phase E closed forms, F rollout | not started | |
 
 ## Jobs submitted on 16 Nov (check once, do not poll)
@@ -65,3 +65,7 @@ _Context for Claude sessions. Updated 16 Nov 2026 (end of day 1). Plan: `structu
 - **GPU is 12× faster than 8 CPU cores** for training (1.1 vs 14 s/epoch); the user relaxed the 2-GPU limit for this session only.
 - **L0 (no linear constraint) gives growth errors up to 7–10× the OS peak**; L2 (λ_lin 10) cuts them ~10× at no held-out cost. λ_F anchor does not help.
 - Running analysis that imports torch then scipy needs `LD_LIBRARY_PATH=$THINFILM_ENV/lib` (system libstdc++ clash).
+- **Oracle a posteriori diagnosis (17 Nov).** A priori all closures fit S to 11–12.5% on the oracle case, but the closure's net power into the waves, <(−S) q'>, is a ~0.1% residual of large front (−0.32) and back (+0.19) contributions; every learned closure gives net input (+1.4e-3 to +2.6e-3) where the DNS gives −3.4e-4. Closed-loop split: flux part alone amplifies crests (max h 2.6–3.0), relaxation alone damps like Lavalle.
+- **Power penalty (λ_P 10, 100; `train.py --lam_P`) fixes the a priori net power but not the a posteriori error**: a priori NRMSE rises to 0.16, and the waves drift in phase (−7 units by t = 50 for σ 0.25 λ_P 100; +7.8 for σ 0.5 without penalty), while ml_sum_hhx stays in phase (corr 0.95). Best structured so far: σ 0.25, λ_lin 10, no penalty (in phase, h error 0.60 vs ml_sum 0.47 at t = 50, max h 2.50 vs 2.38).
+- **Open:** seed spread of these a posteriori numbers is unknown (seed 1 = backup); broadband held-out a posteriori (gate GD) not yet run; a richer form for wave speed: "V1.5" (κ, g₁–g₃ depend on (h, r = q/h³); flux part unchanged, so still guaranteed hyperbolic) or V2 (also Φ(h, r), hyperbolicity by penalty + limiter). Either needs the ROM to evaluate networks of (h, r) instead of 1D tables (the MLP class in `ml_closure.cpp` can be reused).
+- Explainer for Krishna: `docs/explainers/2026-11-17-structured-closure-explainer.md`.
