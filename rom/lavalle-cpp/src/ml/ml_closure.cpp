@@ -231,3 +231,18 @@ void MLClosure::add_source(Field& rhs_q, const Field& h, const Field& q, const P
         for (int i = p.ng; i < n - p.ng; ++i) rhs_q[i] += sgn * v[i];
     }
 }
+
+// STRUCTCLOSURE: zero-sum variant.  The truncated discrete Gaussian derivative of order m >= 1 does not
+// vanish exactly on a constant field (order 2: -1.8e-3 at sigma 0.5 on dx 0.2), which breaks the uniform-
+// film property of the structured closure.  Subtract c0 * (Gaussian-smoothed f), c0 = response to f = 1.
+Field gauss_deriv_hN(const Field& f, double sigma_hN, double dx, int m) {
+    Field o = gauss_deriv(f, sigma_hN, dx, m);
+    if (m == 0) return o;
+    const int r = int(4.0 * sigma_hN / dx + 0.5);
+    const Field one(std::size_t(2 * r + 3), 1.0);
+    const double c0 = gauss_deriv(one, sigma_hN, dx, m)[r + 1];
+    if (c0 == 0.0) return o;
+    const Field sm = gauss_deriv(f, sigma_hN, dx, 0);
+    for (std::size_t i = 0; i < o.size(); ++i) o[i] -= c0 * sm[i];
+    return o;
+}

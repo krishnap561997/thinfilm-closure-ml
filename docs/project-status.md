@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-16: Orr–Sommerfeld reference and gate GB, Phase A of the structured-closure plan, comb-forced DNS submitted, cache v2 being built (branch `structured-closure`). Previous: 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
+_Last updated: 2026-11-17: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A; 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -126,21 +126,41 @@ Update this file in the same commit as any change that moves the science forward
 - A.3: in all seven cases (δ 2–65), F = −S is negative on wave fronts and positive on backs. Its projection on q′_x has the same sign everywhere and is dominated by the front. R² is only 0.1–0.26.
 - A.4: in the linear region of the oracle case, the fitted DNS correction moves Lavalle onto OS at 10 Hz (phase speed 1.84 against 1.85, growth within 5%). The individual (a, b, c) are not identifiable from a single frequency.
 
+**Comb-forced DNS and cache v2 (17 Nov 2026).** See `docs/results/orr-sommerfeld.md` and `docs/decisions.md`.
+
+- **Comb DNS against OS.** At Re 80, 120 and 200 (β 45°, Ca 0.01) the DNS matches OS over the whole forced band: growth median 2–3%, phase speed 1–1.5% below OS at every frequency, and extracted ΔM_x and ΔT_w per frequency within 1–3%. Re 40 Ca 0.04 agrees in x = 30–100. At Re 20 the needed correction is smaller than the measurement scatter. Mean h is 0.3–0.55% below Nusselt (unexplained).
+- **Cache v2:** 36 cases, full record, D_G(σ) derivatives for σ = 0.25, 0.5 and 1. Three partial cases fail the ∂ₓΔF check and are excluded from training.
+
+**Structured closure V1 (17 Nov 2026).** Full write-up: `docs/results/structured-closure.md`, "Phase C"; code `ml/structured_closure/`, ROM `// STRUCTCLOSURE`.
+
+- **The design properties hold.** The flat film is exactly preserved, the equations are hyperbolic for every state, there is no stiffness, and the ROM reproduces the trained linear dispersion to 3–4%.
+- **The OS constraint (on the dispersion relation, at 85 points, λ_lin = 10) works:**
+  - growth error against OS 8–11% in the ROM, against Lavalle's 27–36% (Re 120–200);
+  - without it, up to 10× the OS peak;
+  - no cost in held-out NRMSE (0.26 at σ 0.25, 0.30 at σ 0.5).
+- **Oracle a posteriori:**
+  - as good as `ml_sum_hhx` for about 5 time units, then drifts faster;
+  - best structured: σ 0.25, h error 0.60 against 0.47 at t = 50;
+  - the error is dominated by wave phase drift.
+- **Diagnosis.**
+  - Pointwise fit is not the issue (NRMSE about 0.12 on the oracle case for all closures). The closure's net power into the waves is a ~0.1% residual of large front and back terms, and every learned closure gets its sign wrong.
+  - A power penalty fixes the a priori power but not the a posteriori error.
+- **Bug fixed:** the truncated Gaussian second derivative is not zero on constants (cache-v2 h_xx carries −3.5e-3·h at σ 0.5).
+
 ## Next steps
 
-**Current work (16 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker and running jobs are in `docs/plans/structured-closure-progress.md`. The explainer for Krishna is `docs/explainers/2026-11-16-structured-closure-explainer.md`.
+**Current work (17 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker is `docs/plans/structured-closure-progress.md`. The explainers for Krishna are `docs/explainers/2026-11-16-structured-closure-explainer.md` and `2026-11-17-structured-closure-explainer.md`.
 
 - **Done:**
-  - an Orr–Sommerfeld solver, verified (B.1–B.3), with the OS case table (B.4);
-  - the linear-regime tests of DNS, ROM and MLPs (B.5–B.8);
-  - Phase A diagnostics of the current MLPs;
-  - D2 = L2, i.e. the closure's linear part must match OS through (a, b, c, d), with g₃ in the default model;
-  - the ROM first-cell output fix.
-- **Running:**
-  - five comb-forced DNS runs for multi-frequency linear checks (D3);
-  - closure extractions: Re050, 7 further cases, and full redos of the 4 stale files;
-  - the cache v2 build.
-- **Next:** finish cache v2 → Phase C (train the structured closure, V1, L2) → C.4–C.10 (solver) → Phase D closed loop → gate GD, about 6 Dec.
+  - the OS reference and linear tests (B.1–B.8, gate GB, D2 = L2);
+  - Phase A;
+  - the comb DNS (D3);
+  - cache v2;
+  - Phase C V1 training (one seed), the ROM implementation (C.4–C.10) and the first oracle a posteriori runs.
+- **Open questions:**
+  - seed spread of the a posteriori numbers (seed 1 is the backup);
+  - broadband held-out a posteriori runs (Phase D, gate GD);
+  - V2 (coefficients depending on q/h³), or more data (11 extra cases), for wave speed.
 - **The functional-form plan is secondary.** It serves as the monomial baseline and for the closed forms in Phase E. It shares cache v2 and the closed-loop harness.
 
 

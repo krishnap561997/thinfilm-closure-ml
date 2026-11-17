@@ -2,6 +2,24 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-17 — Structured closure V1: constraint form, λ_lin, zero-sum derivative, GPU
+
+- **L2 is imposed on the dispersion relation, not on fitted (a, b, c, d).** The flux part is differentiated unfiltered by the finite-volume scheme, the relaxation part sees D_G(σ), so the filter factor exp(−k²σ²/2) applies to the relaxation part only (`ml/structured_closure/losses.py`). With σ = 0 this reproduces B.8.
+- **L2 imposed at the 85 OS case-table points** minus those with held-out parameters (user's decision); it needs no DNS.
+- **λ_lin = 10** (user's decision, from the λ = 1/10/100 scan: 10 halves the growth error of 1 at no held-out cost; 100 costs 15% held-out NRMSE).
+- **Sweep with one seed** (user's decision), seed 1 kept as a backup: λ_lin {0, 10} × λ_F {0, 0.1} × σ {0.5, 0.25}.
+- **Training on GPU:** 12× faster than 8 CPU cores; the user relaxed the 2-GPU limit for this session only.
+- **Zero-sum Gaussian derivative** for the structured closure (bug found by the uniform-film ROM test): the truncated kernel gives h_xx ≠ 0 on constants, differently on the DNS and ROM grids. ROM: `gauss_deriv_hN` subtracts c0 × smoothed field; training subtracts c0·h. The older ML models are unchanged.
+
+## 2026-11-17 — Phase C training data: excluded cases, derivative filter σ; comb DNS window
+
+- **Excluded from structured-closure training** (user's decision): Re10 Ca0.001 β90, Re20 Ca0.001 β6.4 and Re40 Ca0.1 β90.
+  - Their cache-v2 check (∂ₓΔF against the extracted ΔM_x) fails at every σ: NRMSE 0.84–0.96, against below 0.45 for every other case.
+  - All three are partial runs; Re40 Ca0.1 β90 has only 25 snapshots.
+  - Revisit them when the runs are finished and re-extracted.
+- **Derivative filter for Phase C** (user's decision): σ = 0.5 h_N by default, with σ = 0.25 as a comparison. 0.5 is about 2.5 ROM cells, so it stays clear of grid noise; it halves derivatives at a wavelength of about 2.7 h_N. 0.25 keeps capillary ripples (better cache check at Ca 0.06–0.1) but is only about 1.25 ROM cells. Choose between them in closed loop, not on the a priori fit.
+- **Comb DNS Re40 Ca0.04 β45** is analysed in x = 30–100. In the standard 60–150 window its 31 comb modes add up to a nonlinear wave height of 0.28 (`docs/results/orr-sommerfeld.md`). No rerun.
+
 ## 2026-11-16 — Closure extractions redone/added; cache v2
 
 - **New extractions** (user's decision): Re050 Ca0.01 β45 (rerun complete, job 51592781). Also Re10 Ca0.005, Re20 Ca0.002 β90, Re20 Ca0.005 β6.4, Re40 Ca0.002 β45 and Re40 Ca0.1 β90 (no closure file yet), and the partial 3 Nov runs Re10 Ca0.001 β90 (to t = 1100) and Re20 Ca0.001 β6.4 (to t = 1690). Jobs 51592928–34. The two 3 Nov cases must be extracted again when their runs finish.

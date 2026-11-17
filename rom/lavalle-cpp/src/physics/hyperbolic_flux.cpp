@@ -15,7 +15,7 @@ CharData characteristics(double h, double q, const Parameters& p, const ClosureP
     // F2 = q^2/h * phi_sf(h,q) + P(h)
     const double a = -q*q*c.phi_sf/(hsafe*hsafe)
                    + q*q*c.dphi_sf_dh/hsafe
-                   + LavallePressureLaw::dPdh(hsafe,p);
+                   + LavallePressureLaw::dPdh(hsafe,p) + c.ddP_dh;  // STRUCTCLOSURE: + ddP_dh
     const double b = 2.0*q*c.phi_sf/hsafe + q*q*c.dphi_sf_dq/hsafe;
     const double disc = b*b + 4.0*a;
     if (disc < 0.0) return {0.5*b,0.5*b,std::abs(0.5*b),disc};
@@ -52,12 +52,12 @@ NumericalFlux compute_rusanov_fluxes(const State& s, int ng, double,
         const double wL=L.r/L.h, wR=R.r/R.h;
         const std::array<double,3> FL{
             L.q,
-            L.q*L.q/L.h*cL.phi_sf + LavallePressureLaw::P(L.h,p),
+            L.q*L.q/L.h*cL.phi_sf + LavallePressureLaw::P(L.h,p) + cL.dP,  // STRUCTCLOSURE: + dP
             L.q*wL
         };
         const std::array<double,3> FR{
             R.q,
-            R.q*R.q/R.h*cR.phi_sf + LavallePressureLaw::P(R.h,p),
+            R.q*R.q/R.h*cR.phi_sf + LavallePressureLaw::P(R.h,p) + cR.dP,  // STRUCTCLOSURE: + dP
             R.q*wR
         };
         const std::array<double,3> dU{R.h-L.h,R.q-L.q,R.r-L.r};
