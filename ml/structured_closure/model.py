@@ -110,3 +110,71 @@ class StructuredV1(nn.Module):
         c = self.coeffs(h, p, Re, cotb)
         u = q / h
         return 4 * u * u * (c["Phi"] * (c["Phi"] - 1) + h * c["Phi_h"]) + 4 * (c["plav_h"] + c["dPh"])
+
+
+# ---------------------------------------------------------------------------------------------------------
+class FlatExactMLP(nn.Module):
+    """Flat-film-exact source closure (progress tracker "Next options", option 2):
+        S = N(h, q, h_x, q_x, h_xx, Re, Ca, angle) - N(h, h^3, 0, 0, 0, Re, Ca, angle)
+    so S = 0 on every flat film for any weights (S0 = e = 0).  N has exactly the layout of the ROM's MLP class
+    (rom/lavalle-cpp/src/ml/ml_closure.cpp): inputs standardised by x_mean/x_std, tanh hidden layers, linear
+    output times y_std.  The gradients are D_G(sigma) (zero-sum), all filtered, so in the dispersion relation the
+    closure's b, c, d carry the filter factor (losses.disp_F keys bf, cf, df).  The ROM flux stays Lavalle's.
+    Parameters are recovered from the features p of data.pfeat (invertible)."""
+    NAMES = ["h", "q", "h_x", "q_x", "h_xx", "Re", "Ca", "angle"]
+
+    def __init__(self, width=64, depth=2):
+        super().__init__()
+        self.register_buffer("xm", torch.zeros(8)); self.register_buffer("xs", torch.ones(8))
+        self.register_buffer("ys", torch.ones(()))
+        layers, n = [], 8
+        for _ in range(depth):
+            layers += [nn.Linear(n, width), nn.Tanh()]; n = width
+        self.body = nn.Sequential(*layers); self.out = nn.Linear(n, 1)
+        nn.init.zeros_(self.out.weight); nn.init.zeros_(self.out.bias)
+
+    @staticmethod
+    def raw(p):
+        return 60.0 * torch.exp(p[:, 0]), 0.01 * torch.exp(1.5 * p[:, 1]), 0.8 + 0.6 * p[:, 2]
+
+    def N(self, h, q, hx, qx, hxx, Re, Ca, ang):
+        x = (torch.stack([h, q, hx, qx, hxx, Re, Ca, ang], 1) - self.xm) / self.xs
+        return self.out(self.body(x))[:, 0] * self.ys
+
+    def forward(self, h, q, hx, qx, hxx, p, Re, cotb):
+        Re_, Ca, ang = self.raw(p)
+        z = torch.zeros_like(h)
+        S = self.N(h, q, hx, qx, hxx, Re_, Ca, ang) - self.N(h, h ** 3, z, z, z, Re_, Ca, ang)
+        return S, torch.zeros_like(S)
+
+    def linear(self, p, Re, cotb):
+        single = p.dim() == 1
+        P = p[None, :] if single else p
+        n = P.shape[0]
+        mk = lambda v: torch.full((n,), v, dtype=P.dtype, device=P.device, requires_grad=True)
+        h, q, hx, qx, hxx = mk(1.0), mk(1.0), mk(0.0), mk(0.0), mk(0.0)
+        S, _ = self.forward(h, q, hx, qx, hxx, P, Re, cotb)
+        a, bf, cf, df = torch.autograd.grad(S.sum(), (q, hx, qx, hxx), create_graph=True)
+        z = torch.zeros_like(a)
+        out = dict(Fh=z, Fq=z, kap=z, g1=z, g2=z, g3=z, a=a, b=bf, c=cf, d=df, bf=bf, cf=cf, df=df)
+        return {k: v[0] for k, v in out.items()} if single else out
+
+    def discriminant(self, h, q, p, Re, cotb):
+        u = q / h
+        return 4 * plav_h(h, Re, cotb) + 0 * u          # flux unchanged: Lavalle (Phi = 1)
+
+    def set_scales(self, X, ys):
+        """X: (n, 8) raw inputs of the training data; ys: output scale (rms of S)."""
+        self.xm.copy_(X.mean(0)); self.xs.copy_(X.std(0).clamp_min(1e-6)); self.ys.fill_(float(ys))
+
+
+def load_run(run_dir, dtype=torch.float64):
+    """Model of a training run directory (config.json + model.pt), in double precision on CPU."""
+    import json, os
+    cfg = json.load(open(os.path.join(run_dir, "config.json")))
+    if cfg.get("model", "v1") == "mlp":
+        m = FlatExactMLP(cfg.get("mlp_width", 64), cfg.get("mlp_depth", 2))
+    else:
+        m = StructuredV1(cfg["width"], cfg["depth"], use_g3=not cfg["no_g3"])
+    m.load_state_dict(torch.load(os.path.join(run_dir, "model.pt"), map_location="cpu"))
+    return m.to(dtype), cfg

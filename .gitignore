@@ -111,3 +111,6 @@ desktop.ini
 
 # ordering-matrix scripts write intermediate sympy pickles
 scripts/ordering-matrix/*.pkl
+
+# meeting decks (kept local; download via VS Code)
+docs/meetings/*.pptx

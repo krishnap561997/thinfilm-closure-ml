@@ -63,7 +63,9 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
 
         std::unique_ptr<MLClosure> mlc;  // MLCLOSURE
         std::unique_ptr<StructuredClosure> scl;  // STRUCTCLOSURE (argv[3] with a structured_table key)
-        if(argc>3 && StructuredClosure::is_structured_config(argv[3])){ scl=std::make_unique<StructuredClosure>(argv[3],p); StructuredClosure::set_active(scl.get()); std::cout<<scl->summary(); }  // STRUCTCLOSURE
+        std::unique_ptr<FlatMLPClosure> fml;  // STRUCTCLOSURE (argv[3] with a flat_mlp key)
+        if(argc>3 && FlatMLPClosure::is_config(argv[3])){ fml=std::make_unique<FlatMLPClosure>(argv[3],p); FlatMLPClosure::set_active(fml.get()); std::cout<<fml->summary(); }  // STRUCTCLOSURE
+        else if(argc>3 && StructuredClosure::is_structured_config(argv[3])){ scl=std::make_unique<StructuredClosure>(argv[3],p); StructuredClosure::set_active(scl.get()); std::cout<<scl->summary(); }  // STRUCTCLOSURE
         else if(argc>3){ mlc=std::make_unique<MLClosure>(argv[3],p); MLClosure::set_active(mlc.get()); std::cout<<mlc->summary(); }  // MLCLOSURE
 
         // Inlet forcing. noise.value(t) gives forcing value at time t

@@ -13,6 +13,7 @@
 //   relax = 1                      0: flux part only (diagnostic)
 #include "closures/closure_model.hpp"
 #include "core/fields.hpp"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,4 +35,25 @@ private:
     bool relax_ = true;
     std::string desc_;
     static inline const StructuredClosure* active_ = nullptr;
+};
+
+// Flat-film-exact source MLP (progress tracker "Next options", option 2).  // STRUCTCLOSURE
+//   S = N(h, q, h_x, q_x, h_xx, Re, Ca, angle) - N(h, h^3, 0, 0, 0, Re, Ca, angle), added to the q-equation as -S.
+// Gradients: zero-sum D_G(sigma) (gauss_deriv_hN), as in training.  The flux stays Lavalle's.
+// Config (third argument): flat_mlp = <file in MLP format>, sigma = <h_N>.  Export: ml/structured_closure/export_mlp.py
+class MLP;
+class FlatMLPClosure {
+public:
+    FlatMLPClosure(const std::string& config_file, const Parameters& p);
+    ~FlatMLPClosure();
+    void add_source(Field& rhs_q, const Field& h, const Field& q, const Parameters& p) const;
+    std::string summary() const { return desc_; }
+    static bool is_config(const std::string& file);
+    static const FlatMLPClosure* active() { return active_; }
+    static void set_active(const FlatMLPClosure* s) { active_ = s; }
+private:
+    std::unique_ptr<MLP> mlp_;
+    double sigma_ = 0.5;
+    std::string desc_;
+    static inline const FlatMLPClosure* active_ = nullptr;
 };

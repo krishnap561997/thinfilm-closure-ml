@@ -56,9 +56,8 @@ def main(runs):
     hxc = np.gradient(h, dx, axis=1)
     preds["ml_sum_hhx"] = dict(S=sum_model()(h, q, hxc, None, Re, Ca, beta))
     for run in runs:
-        cfg = json.load(open(os.path.join(D.BASE, "runs", run, "config.json")))
-        mod = StructuredV1(cfg["width"], cfg["depth"], use_g3=not cfg["no_g3"]).double()
-        mod.load_state_dict({k: v.double() for k, v in torch.load(os.path.join(D.BASE, "runs", run, "model.pt"), map_location="cpu").items()})
+        from model import load_run
+        mod, cfg = load_run(os.path.join(D.BASE, "runs", run))
         sg = cfg["sigma"]
         hx, qx, hxx = gd0(h, sg, dx, 1), gd0(q, sg, dx, 1), gd0(h, sg, dx, 2)
         T = lambda a: torch.tensor(a.ravel())

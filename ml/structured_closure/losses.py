@@ -21,6 +21,8 @@ def disp_F(k, om, Re, We, cotb, L, sigma):
     Gf = torch.exp(-(k * sigma) ** 2 / 2)
     clo = 1j * L["Fh"] * k ** 2 + 1j * L["Fq"] * om * k + L["a"] * (om - 3 * k) \
         - L["kap"] * Gf * (1j * L["g1"] * k ** 2 + 1j * L["g2"] * om * k - L["g3"] * k ** 3)
+    if "bf" in L:   # fully filtered source closure (model.FlatExactMLP): b, c, d all see D_G(sigma)
+        clo = clo + Gf * (1j * L["bf"] * k ** 2 + 1j * L["cf"] * om * k - L["df"] * k ** 3)
     return lav + clo
 
 

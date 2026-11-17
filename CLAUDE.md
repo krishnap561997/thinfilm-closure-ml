@@ -34,6 +34,7 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 | `scripts/structured-closure/` | Phase A diagnostics of the current MLPs (`a1`–`a4`), numpy MLP evaluator `mlp_np.py` |
 | `dns/comb/` | Short comb-forced DNS from a flat film (LX 200, same mesh): `setup_comb_runs.py`, `run_comb.sh`; run/analysis instructions in `docs/plans/comb-dns-instructions.md` |
 | `ml/structured_closure/` | Structured closure V1 (plan Phase C): `model.py`, `losses.py` (OS dispersion constraint L2), `os_dispersion.py`, `train.py`, `run_sweep.sh`, `summarize_runs.py`, `export_tables.py` (1D tables for the ROM), `rom_tests.py` + `run_rom_tests.sh` (uniform, comb, oracle a posteriori), `test_structured.py`. Runs: `$THINFILM_STORE/codes/ml-models/structured_closure/` |
+| `scripts/meetings/` | Figure and deck builders for meeting slides (`advisor_2026_11_17_figs.py`, `advisor_2026_11_17_deck.py`; deck needs `python-pptx` on `PYTHONPATH`, not in the env). Decks (`docs/meetings/*.pptx`) and PNGs are not in git; slide explainers (`docs/meetings/*-explainer.md`) are |
 | `pipeline/cache_v2/` | Cache v2 builder (full record, D_G(σ) derivatives σ = 0.25/0.5/1, ΔF, hygiene drops) → `$THINFILM_STORE/codes/ml-models/cache_v2/` |
 | `ml/functional_mlp/` | Shallow MLPs on (h, q, derivatives) — ablations for ΔM_x and ΔT_w |
 | `ml/thinfilm_mlp/` | Neighbour-stencil MLP and curvature-feature experiments |
