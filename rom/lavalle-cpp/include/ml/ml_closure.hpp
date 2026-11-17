@@ -30,6 +30,10 @@
 #include <string>
 #include <vector>
 
+// Gaussian-filter derivative of order m, sigma in h_N (scipy gaussian_filter1d mode='nearest', truncate=4),
+// corrected to vanish exactly on constant fields (see ml_closure.cpp).
+Field gauss_deriv_hN(const Field& f, double sigma_hN, double dx, int m);  // STRUCTCLOSURE uses it
+
 class MLP {
 public:
     explicit MLP(const std::string& file);

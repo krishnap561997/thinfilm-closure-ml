@@ -33,6 +33,7 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 | `analysis/orr_sommerfeld/` | Orr–Sommerfeld solver (`os_solver.py`: temporal/spatial/saddle, linearised Lavalle), verification (`verify.py`), OS case table (`case_table.py`), linear closure targets and (a,b,c,d) fits (`linear_targets.py`), DNS linear-region checks (`b5_dns_linear.py`, `b7_dns_check.py`, `comb_dns/analyse_comb.py`), ROM comb-inlet linear test (`b6_rom/`). See its README |
 | `scripts/structured-closure/` | Phase A diagnostics of the current MLPs (`a1`–`a4`), numpy MLP evaluator `mlp_np.py` |
 | `dns/comb/` | Short comb-forced DNS from a flat film (LX 200, same mesh): `setup_comb_runs.py`, `run_comb.sh`; run/analysis instructions in `docs/plans/comb-dns-instructions.md` |
+| `ml/structured_closure/` | Structured closure V1 (plan Phase C): `model.py`, `losses.py` (OS dispersion constraint L2), `os_dispersion.py`, `train.py`, `run_sweep.sh`, `summarize_runs.py`, `export_tables.py` (1D tables for the ROM), `rom_tests.py` + `run_rom_tests.sh` (uniform, comb, oracle a posteriori), `test_structured.py`. Runs: `$THINFILM_STORE/codes/ml-models/structured_closure/` |
 | `pipeline/cache_v2/` | Cache v2 builder (full record, D_G(σ) derivatives σ = 0.25/0.5/1, ΔF, hygiene drops) → `$THINFILM_STORE/codes/ml-models/cache_v2/` |
 | `ml/functional_mlp/` | Shallow MLPs on (h, q, derivatives) — ablations for ΔM_x and ΔT_w |
 | `ml/thinfilm_mlp/` | Neighbour-stencil MLP and curvature-feature experiments |
@@ -97,5 +98,8 @@ Paper 1 is the comprehensive passive-gas model (memory closures included if need
 - Restarts before 10 Nov 2026 ran without inlet forcing (noise phases never initialised after `restore()`; fixed in `filmflow_restart.c`). Check `inlet_signal.dat` of any restarted run; see `docs/decisions.md`.
 - Basilisk ends a run as soon as no time-scheduled event remains: in short tests keep `T_OUT` and `T_DUMP` ≤ `T_END`.
 - `lavalle-cpp` and the DNS share the Chang inlet; `MNOISE = M` gives an exact comb at k·f_cut/M (used for linear tests). `./thinfilm input.txt none ml.txt` runs an ML closure without a DNS oracle file. ROM outputs written before 16 Nov have a non-physical first cell (fixed in `5df0595`).
+- scipy's `gaussian_filter1d` second derivative (and the ROM's `gauss_deriv`) is not zero on a constant field (truncation at 4σ): h_xx(1) = −3.5e-3 at σ 0.5 on the DNS grid, −1.8e-3 on the ROM grid. Cache-v2 h_xx/q_xx carry this bias. The structured closure uses the zero-sum `gauss_deriv_hN` in the ROM and subtracts c0·h in training (`ml/structured_closure/data.py`).
+- `./thinfilm input.txt <oracle|none> sc.txt` with a `structured_table` key runs the structured closure (`StructuredClosure`, tag `// STRUCTCLOSURE`).
+- Python that imports torch and then scipy needs `LD_LIBRARY_PATH=$THINFILM_ENV/lib` (system libstdc++ is too old).
 - PDF tools (pdftotext/poppler, pypdf) are not installed on HiPerGator; plain-text extraction of PDFs needs a stdlib zlib parse.
 - When restarting from a dump, link it under a different name (`RESTART_FILE = restart.dump`). A run writes its own `dump-XXXXXX`, and writing through a link with the same name would overwrite the original.

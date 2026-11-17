@@ -12,6 +12,8 @@ struct ClosurePoint {
     double phi_i = 0.0;
     double A0 = 0.0;
     double A1 = 0.0;
+    double dP = 0.0;      // STRUCTCLOSURE: added pressure-like flux dP(h) and its h-derivative
+    double ddP_dh = 0.0;  // STRUCTCLOSURE
 };
 
 class ClosureModel {

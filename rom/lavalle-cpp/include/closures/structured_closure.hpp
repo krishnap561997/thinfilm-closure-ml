@@ -1,0 +1,37 @@
+#pragma once
+// Structured closure V1 (docs/plans/structured-closure-os-plan.md sec. 3.2, tasks C.4-C.9).  // STRUCTCLOSURE
+//   d_t q + d_x[ Phi(h) q^2/h + P_Lav(h) + dP(h) ] = kappa(h) (Q - q)/h^2 + capillary + viscous
+//   Q = h^3 (1 + g1(h) h_x + g2(h) q_x + g3(h) h_xx),  gradients D_G(sigma) (Gaussian, as in training)
+// Flux part: through ClosurePoint (phi_sf, dphi_sf_dh, dP, ddP_dh) into the Rusanov flux and its
+// wave speed.  Relaxation part: Lavalle's tau_w stays in compute_momentum_source and add_source adds
+//   [kappa (Q - q) - (3/Re)(h^3 - q)] / h^2.
+// Coefficients are 1D tables in h for the run's (Re, Ca, beta), exported by
+// ml/structured_closure/export_tables.py (columns h Phi Phi_h dP dP_h kappa g1 g2 g3, uniform h).
+// Run: ./thinfilm input.txt <oracle.txt|none> sc.txt   with sc.txt keys
+//   structured_table = <file>      required (its presence selects this closure instead of MLClosure)
+//   sigma = 0.5                    gradient filter width [h_N]; must match training (checked against table header)
+//   relax = 1                      0: flux part only (diagnostic)
+#include "closures/closure_model.hpp"
+#include "core/fields.hpp"
+#include <string>
+#include <vector>
+
+class StructuredClosure : public ClosureModel {
+public:
+    StructuredClosure(const std::string& config_file, const Parameters& p);
+    ClosurePoint evaluate(double h, double q, const Parameters& p) const override;
+    void add_source(Field& rhs_q, const Field& h, const Field& q, const Parameters& p) const;
+    std::string summary() const { return desc_; }
+    static bool is_structured_config(const std::string& file);
+    static const StructuredClosure* active() { return active_; }
+    static void set_active(const StructuredClosure* s) { active_ = s; }
+private:
+    enum Col { PHI = 0, PHI_H, DP, DP_H, KAP, G1, G2, G3, NCOL };
+    double lookup(Col c, double h) const;
+    std::vector<double> tab_[NCOL];
+    double h0_ = 0, dh_ = 1, sigma_ = 0.5;
+    int n_ = 0;
+    bool relax_ = true;
+    std::string desc_;
+    static inline const StructuredClosure* active_ = nullptr;
+};

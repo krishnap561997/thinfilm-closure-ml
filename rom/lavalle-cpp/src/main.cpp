@@ -8,6 +8,7 @@
 #include "io/hdf5_writer.hpp"               // Output hdf5 files
 #include "oracle/oracle_forcing.hpp"         // ORACLE
 #include "ml/ml_closure.hpp"                   // MLCLOSURE
+#include "closures/structured_closure.hpp"     // STRUCTCLOSURE
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -61,13 +62,16 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
         if(argc>2 && std::string(argv[2])!="none"){ oracle=std::make_unique<OracleForcing>(argv[2],p); OracleForcing::set_active(oracle.get()); oracle->set_initial_state(state,p); t0=oracle->t_start(); std::cout<<oracle->summary(); }  // ORACLE
 
         std::unique_ptr<MLClosure> mlc;  // MLCLOSURE
-        if(argc>3){ mlc=std::make_unique<MLClosure>(argv[3],p); MLClosure::set_active(mlc.get()); std::cout<<mlc->summary(); }  // MLCLOSURE
+        std::unique_ptr<StructuredClosure> scl;  // STRUCTCLOSURE (argv[3] with a structured_table key)
+        if(argc>3 && StructuredClosure::is_structured_config(argv[3])){ scl=std::make_unique<StructuredClosure>(argv[3],p); StructuredClosure::set_active(scl.get()); std::cout<<scl->summary(); }  // STRUCTCLOSURE
+        else if(argc>3){ mlc=std::make_unique<MLClosure>(argv[3],p); MLClosure::set_active(mlc.get()); std::cout<<mlc->summary(); }  // MLCLOSURE
 
         // Inlet forcing. noise.value(t) gives forcing value at time t
         ChangNoise noise(p.in.MNOISE,p.fcut_noise,p.in.F0_noise,1);
 
         // Analytical Closure terms. We can change it to ML closure terms later. 
-        AnalyticalLavalleClosure closure;
+        AnalyticalLavalleClosure lavalle_closure;
+        const ClosureModel& closure = scl ? static_cast<const ClosureModel&>(*scl) : lavalle_closure;  // STRUCTCLOSURE
 
 
         // Create physical grid coordinates. Change it to a SEM mesh when NekRS
