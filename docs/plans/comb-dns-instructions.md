@@ -52,8 +52,10 @@ The analysis takes a few minutes for all five cases (no DNS data is written). Ru
 cd $THINFILM_ROOT && source env.sh
 sbatch --account=bala1s --qos=bala1s --partition=hpg-dev --cpus-per-task=2 --mem=16gb -t 00:30:00 \
   -o $THINFILM_STORE/analysis/orr_sommerfeld/logs/comb_analysis_%j.out \
-  --wrap "source $THINFILM_ROOT/env.sh; python -I $THINFILM_ROOT/analysis/orr_sommerfeld/comb_dns/analyse_comb.py"
+  --wrap "source $THINFILM_ROOT/env.sh; \$THINFILM_ENV/bin/python -I $THINFILM_ROOT/analysis/orr_sommerfeld/comb_dns/analyse_comb.py"
 ```
+
+(`env.sh` sets `THINFILM_ENV` but does not activate the env, so a bare `python` fails with "command not found" unless the env is active in the submitting shell.)
 
 Options:
 - `--cases Re120_Ca0_010_theta45 ...` to analyse a subset;

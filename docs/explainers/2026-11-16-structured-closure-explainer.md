@@ -397,3 +397,138 @@ The structured closure is built for (i)–(ii) by design, and Phase E delivers (
 - **The linear-regime evidence from the DNS is one case at one frequency** until the comb runs are analysed.
 - **(a, b, c, d) are fitted to OS over the forced band.** Over the full unstable band, four numbers are not enough at high δ (risk 2 of the plan), but the misfit is limited to short capillary waves.
 - **The interpretations in Phase A are diagnostic,** made from existing runs. The structured closure is what tests them.
+
+## Part 5. Questions and answers (17 Nov)
+
+_Questions Krishna asked after reading this explainer. The derivations behind them: `docs/plans/structured-closure-os-plan.md` §1.1, §2 (OS equations), §3.2 (structured form); `analysis/orr_sommerfeld/linear_targets.py` (docstring); `scripts/structured-closure/a1_uniform_state.py`._
+
+### 5.1 What are the assumptions of the Orr–Sommerfeld derivation?
+
+1. **Base state = flat Nusselt film:** steady, parallel, fully developed, uniform thickness, half-parabola velocity U(z) = 3z − 1.5z².
+2. **Infinitesimal disturbances:** Navier–Stokes, the interface conditions and the interface position are linearised about the base state. No saturation, no interaction between waves.
+3. **Normal modes** φ(z) exp[i(kx − ωt)]. Temporal problem: real k, complex ω. Spatial problem (what a forced film does): real ω, complex k. This implies an infinite, homogeneous domain in x (no inlet, no outlet).
+4. **2D disturbances only** (for falling films the first unstable waves are 2D).
+5. **Incompressible Newtonian liquid with constant properties and constant surface tension** (no Marangoni, no heating).
+6. **Passive gas:** zero shear, constant pressure at the interface. The gas is not solved.
+7. **Boundary conditions:** no-slip at the wall; linearised kinematic, tangential-stress and normal-stress conditions at the interface (capillary term k²/Ca in the normal-stress condition).
+
+What OS does **not** assume: no long-wave or thin-film approximation and no assumed velocity profile. It is the exact linear theory of the full 2D equations. That is why it is the reference: in the small-amplitude regime, any difference between Lavalle (or our closure) and OS is a model error.
+
+### 5.2 Has OS been compared with DNS?
+
+- **Yes, in one case so far.** Oracle DNS (Re 120, Ca 0.01, β 45°, 10 Hz and harmonics):
+  - growth within 1% of OS, phase speed within 1.5%, over x = 60–130 (B.5);
+  - ΔM_x and ΔT_w extracted from that DNS match the OS values to 3–6% (B.7).
+- **Limits:**
+  - one case, few frequencies;
+  - not valid for x < 60 (the inlet adjustment zone, not yet a pure OS mode);
+  - not valid downstream once the waves are nonlinear (assumption 2 fails).
+- **The five comb-forced DNS** (Re 20–200, β 45°) extend the comparison across the whole unstable band.
+
+### 5.3 How are closure terms obtained from Orr–Sommerfeld?
+
+An OS mode is an exact small-amplitude solution of the full equations, in effect a "DNS of an infinitesimal wave" known in closed form. Since ΔC = C_DNS − C_Lavalle, evaluating both parts on the OS mode gives the closure exactly (B.7, `linear_targets.py`):
+
+1. **Solve OS** at real k. This gives c and φ(z), normalised to η = 1, so every result is per unit wave height. Velocities: u′ = φ′, w′ = −ikφ.
+2. **Depth-integrate** the OS fields to get the "true" unclosed terms (what the DNS extraction computes):
+   - q′ = φ(1) + U_s, which equals c (a mass-conservation check);
+   - M_x′ = ik [∫ 2Uφ′ dz + U_s²];
+   - T_w′ = φ″(0)/Re;
+   - P_x′ from the depth integral of the OS pressure;
+   - D_x′ = −(k²/Re) φ(1).
+3. **Evaluate Lavalle's closures on the same h′ and q′:** M_Lav′ = 2ikc, T_Lav′ = (3/Re)(c − 2) − 0.6ik, and so on.
+4. **Take the difference:** ΔM_x = M_x′ − M_Lav′, ΔT_w = T_w′ − T_Lav′, each a complex number per unit η.
+   - Real part (in phase with h, largest at the crest): mainly changes the wave **speed**.
+   - Imaginary part (quarter-wavelength shift): mainly changes the **growth**.
+5. **Check:** the OS terms close the depth-integrated momentum balance to about 1e-11, once the surface viscous term (k²/Re)φ(1) is included. Our depth-averaged equations drop that term.
+6. **Repeat** over k across the unstable band, for all 85 cases.
+
+**From targets to four numbers (B.8).** The closure's linear part is written as S_lin = a(ξ − 3η) + b η_x + c ξ_x + d η_xx, where ξ is the disturbance in q.
+- The combination a(ξ − 3η) makes the closure zero on a flat film.
+- (a, b, c, d) are fitted so that the linearised Lavalle + S_lin reproduces the OS **spatial** dispersion over the forced band.
+- The long-wave limit is imposed exactly (D = D_OS), which fixes c once a and b are chosen.
+- The fit uses the combined S = ΔM_x + ΔT_w, because the ROM only sees the sum.
+
+They hold only at small amplitude. The nonlinear parts (crests, capillary ripples) must come from the DNS; OS supplies a constraint, not a replacement.
+
+### 5.4 How is the ML model linearised?
+
+An MLP is a smooth function of its inputs, so it is linearised by taking its first derivatives at the flat film (`a1_uniform_state.py`, function `lin_coeffs`):
+
+1. **Expansion point:** h = 1, q = 1, zero gradients. Write h = 1 + η, q = 1 + ξ.
+2. **Derivatives** of S = ΔM_x + ΔT_w with respect to each input, by central finite differences (step 1e-5):
+   S ≈ S₀ + α η + a ξ + b η_x + c ξ_x.
+   - S₀ is the MLP output on a flat film; it should be 0.
+   - d = 0 for the current models (no h_xx input).
+   - The sum model has no q input, so for it a = c = 0.
+3. **Flat-film check:** a uniform film of any thickness has q = h³ and the closure should vanish there, S(h, h³, 0, 0) = 0. Linearised: S₀ = 0 and e = α + 3a = 0.
+4. **Insert the coefficients into the linearised Lavalle equations** and compare with OS:
+   - long wave: kinematic speed 3 − e/(3/Re + a), and D = (3.6 − 3 cot β/Re − b − 3c)/(3/Re + a);
+   - finite k: the augmented quadratic, giving the temporal growth across the band.
+
+**A.1 result:**
+- Both MLPs have S₀ ≠ 0 and e ≠ 0, so a flat film is not steady in the augmented ROM, and wave speeds shift by an O(1) amount.
+- The likely cause is `flat_mask`, which removed |h − 1| < 0.05 from training, so the flat state is extrapolation.
+- The separate models roughly double the most-amplified growth. The sum model is right in the oracle case only by chance (0 to 1.4 × OS across cases).
+
+**Caveats:**
+- If S₀ ≠ 0, h = q = 1 is not actually an equilibrium of the augmented ROM. The coefficients describe the MLP, not exactly the closed loop.
+- In the ROM, h_x and q_x come from the Gaussian derivative D_G(σ). For e^{ikx} that gives ik·e^{−k²σ²/2} instead of ik, so finite-k linearisations must include this factor. Long-wave numbers are unaffected.
+
+**Phase C:** the flat-film condition is built in (§5.6). The model's Jacobian at the flat film is compared with the OS (a, b, c, d) as constraint L2, using automatic differentiation.
+
+### 5.5 What is the role of the OS solver now?
+
+**The "many cases" are OS calculations, not DNS.**
+- One OS solve takes seconds.
+- The 85-case table (B.4/B.8) already covers the DNS parameter space, and any new (Re, Ca, β) can be added.
+- No new DNS is needed to get dispersion relations.
+
+Four roles:
+
+1. **A reference, which the comb DNS verify.** Across Re 20–200:
+   - DNS growth and phase speed against OS (B.5);
+   - the extracted ΔM_x and ΔT_w against OS at each frequency (B.7). This validates the extraction pipeline where the exact answer is known;
+   - (a, b, c, d) fitted to the DNS against those fitted to OS (B.8).
+
+   Once this holds, OS can be trusted where there is no DNS.
+2. **Training targets (L2):** each training case gets its OS (a, b, c, d).
+3. **A diagnostic for every closure, and a test of the solver.**
+   - Linearise the closure and compare with OS (A.1; repeated for each structured model in C.3).
+   - Run the ROM with the comb inlet and check that the closed loop reproduces OS growth (B.6 harness, C.10).
+4. **Generalisation (Phases E/F):** fit how (a, b, c, d) vary with (Re, Ca, β) and δ_lin. At a new parameter point, OS gives the exact linear behaviour the closure must reproduce.
+
+### 5.6 How will the model be trained so that S₀ = e = 0 exactly?
+
+It is not learned. It is built into the **form** of the closure (plan §3.2), so it holds for any network weights. The q-equation is
+
+∂ₜq + ∂ₓ[Φ q²/h + P_Lav(h) + ΔP(h)] = κ(Q − q)/h² + capillary and viscous terms,
+
+with Q = h³(1 + g₁h_x + g₂q_x + g₃h_xx).
+- The networks output only the coefficient functions Φ, ΔP, κ, g₁, g₂, g₃ of (h; Re, Ca, β).
+- The correction relative to Lavalle is
+
+  S = ∂ₓ[(Φ − 1)q²/h + ΔP] − [κ(Q − q) − (3/Re)(h³ − q)]/h².
+
+**On a uniform film of any thickness** (h constant, q = h³, zero gradients):
+- **Flux part:** it is ∂ₓ of a function of h and q, which are constant, so it is 0.
+- **Relaxation part:** Q = h³ = q, so Q − q = 0. Lavalle's friction term h³ − q is 0 as well.
+
+So S(h, h³, 0, 0) = 0 for every h:
+- S₀ = 0 (h = 1);
+- e = dS(h, h³, 0, 0)/dh = 0 (zero along the whole family of uniform films).
+
+Both hold exactly, to round-off. Solver acceptance test C.10: an unforced uniform film stays uniform to round-off.
+
+**By contrast,** the current MLPs output S directly as an unconstrained function, so nothing forces it to vanish on flat films. A loss penalty could only make S₀ and e small, never exactly zero.
+
+**Linear coefficients in closed form** at h = q = 1, with F = (Φ − 1)q²/h + ΔP:
+- a = κ(1) − 3/Re;
+- b = F_h − κ(1) g₁(1);
+- c = F_q − κ(1) g₂(1);
+- d = −κ(1) g₃(1). (My own linearisation, not in the plan. It is why g₃ is needed: without it d = 0.)
+
+**Exact versus approximate:**
+- Flat-film preservation: exact, by construction.
+- Matching the OS (a, b, c, d): in the plan, a loss penalty (L2), so close but not exact. The coefficients are cheap closed-form expressions of the network outputs at h = 1, so the penalty costs little per step.
+- They could be made exact by building the networks so that their values at h = 1 are fixed to the targets. Not in the plan yet; a possible variant.
