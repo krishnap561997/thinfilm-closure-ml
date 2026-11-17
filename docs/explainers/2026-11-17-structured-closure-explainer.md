@@ -1,6 +1,6 @@
 # What we did on 17 Nov 2026, and why
 
-_Written for Krishna, to understand the work of 17 Nov: the comb-forced DNS results, cache v2, and the first structured closure (training, ROM implementation, first a posteriori test and its diagnosis). It continues `2026-11-16-structured-closure-explainer.md`; read that first for Orr–Sommerfeld, (a, b, c, d) and the structured form. Technical results: `docs/results/orr-sommerfeld.md` (comb DNS) and `docs/results/structured-closure.md` ("Phase C"). Task status: `docs/plans/structured-closure-progress.md`._
+_Written for Krishna, to understand the work of 17 Nov: the comb-forced DNS results, cache v2, and the first structured closure (training, ROM implementation, first a posteriori test and its diagnosis), and in the evening the flat-film-exact MLP in closed loop (Part 6). It continues `2026-11-16-structured-closure-explainer.md`; read that first for Orr–Sommerfeld, (a, b, c, d) and the structured form. Technical results: `docs/results/orr-sommerfeld.md` (comb DNS) and `docs/results/structured-closure.md` ("Phase C"). Task status: `docs/plans/structured-closure-progress.md`._
 
 ---
 
@@ -310,3 +310,65 @@ See Part 2.5. σ is a physical length in units of h_N, not grid cells. The grid 
 - **A plain MLP can also be made flat-film-exact.** Use S = N(h, q, h_x, q_x) − N(h, h³, 0, 0), which is zero on every flat film by construction. With the same OS linear constraint, this is the old unconstrained MLP with the two main defects of Phase A removed.
   - It gives no hyperbolicity or interpretability guarantees.
   - It is a useful baseline: comparing it with V1/V1.5 shows whether the structure itself helps in closed loop.
+
+---
+
+## Part 6. Evening: the flat-film-exact MLP in closed loop
+
+### 6.1 Questions answered first
+
+- **Is the a posteriori "h error" a mean absolute relative error?** No. It is an rms error normalised by the wave amplitude: error(t) = √(mean over x of (h_ROM − h_DNS)²) / std_x(h_DNS), over 20 < x < 760 (`scripts/oracle_summary.py`).
+  - 0 is a perfect match; about 1 means the error is as large as the waves.
+  - About 1.4 is what waves of the right amplitude give when completely out of phase.
+- **Why does OS look poor at Re 200 (slide 2)?** It is the DNS points that leave the curve, not OS.
+  - Up to ω ≈ 1 the DNS is within 2–5% of OS. Above that the points scatter: 0.0064 against 0.0092 at ω = 1.07, and 20–40% low at ω ≈ 1.4–1.5.
+  - Re 120 has the same dip at ω = 1.07, so it is a measurement artefact. The strongest modes are at ω ≈ 0.44–0.57, and their sum frequencies (0.50 + 0.57 = 1.07, …) fall exactly on comb teeth. The weakly growing high-ω modes are then biased by a small second-order product of the strong modes. Short waves are also less well resolved.
+  - The "reliable" flag is looser at Re 200 (the domain holds more short wavelengths), so a few contaminated points get through. OS is exact linear theory and independently verified, so we trust it there.
+- **What is δ on slide 3?** δ_lin = k_max·Re: the wavenumber of the fastest-growing wave times Re. It is not a height difference. It is a reduced Reynolds number, measuring how much inertia matters at the scale of the waves the film actually forms. Small δ is near-Benney, where Lavalle does well; large δ is inertia-dominated, where Lavalle's linear error grows.
+- **Should the OS constraint apply only in the linear regime?** It already does, by construction.
+  - The L2 loss never evaluates the closure on nonlinear states. It linearises the closure about the flat film (h = 1, q = 1), which uses only the network's value and first derivatives there, and compares the dispersion relation of that linearised model with OS.
+  - In V1 it constrains only Φ, ΔP, κ, g₁–g₃ and their h-slopes at h = 1. In the flat-film-exact MLP it constrains only the gradient of N at the flat film. Everything away from the flat film is fitted to the nonlinear DNS data.
+  - Caveat: a smooth network cannot change arbitrarily fast, so pinning the tangent pulls on behaviour at small-to-moderate amplitude, with strength set by λ_lin. The held-out NRMSE did not get worse at λ_lin = 10 for V1. For the MLP the constraint costs more data fit (smoke run: loss 0.10 at L0 against 0.17–0.59 at L10).
+
+### 6.2 What was run
+
+- **Model:** S = N(h, q, h_x, q_x, h_xx; Re, Ca, β) − N(h, h³, 0, 0, 0; Re, Ca, β). The second term makes S exactly zero on every flat film (Phase A defect 1), and the OS constraint fixes linear growth (defect 2). Otherwise it is the old `ml_sum_hhx` source term: the ROM flux stays Lavalle's, with no hyperbolicity or interpretability structure.
+- **Runs:** σ 0.25 with λ_lin 0, 1, 10, one seed. σ 0.5 L10 and the comb runs were still running.
+- **Test:** the oracle case (Re 120, Ca 0.01, β 45°, 10 Hz), started from the DNS state, compared over 100 time units.
+
+### 6.3 Results in four points
+
+1. **A priori it is much better.** NRMSE on the oracle DNS states 0.05 against 0.12 for `ml_sum_hhx` and V1, and the right sign of net power (about half the DNS damping at λ_lin 0 and 10). Giving the network q and the gradients is what does this.
+2. **Its crests stay the right height.** This was the long-time failure of `ml_sum_hhx` and V1 (crests 1.2–1.5× too tall, then running ahead because taller waves travel faster). At t = 100 the new MLPs have h error 0.58 (L0) and 0.70 (L10) against 1.25 and 1.54. L0 is as close as the exact closure (0.55).
+3. **It has a new, early failure: its waves are 3–6% too slow.** They lag by 2.5–3 (of a wavelength of 90) by t ≈ 40–50 while the amplitude is still right, so this is a wave-speed error of the closure itself. At t = 50 that makes L10 (0.59) worse than `ml_sum_hhx` (0.47). L0 and L10 then recover; L1 keeps lagging.
+4. **A shape error is common to all learned closures.** With the shift removed, every learned closure reaches about 0.45–0.55 by t = 50 against 0.17 for the exact closure. It sits on the wave backs (which rise too early) and in the substrate and ripple region. This is now the largest gap.
+
+### 6.4 How to read `oracle_snapshots_mlp.png`
+
+(`scripts/structured-closure/oracle_snapshots.py`; figure in `$THINFILM_STORE/codes/ml-models/structured_closure/rom/figures/`, not in git.)
+
+- **Layout:** 3 rows × 6 columns. Rows are times since the ROM start: t = 10, 50, 100. Columns are closures: Lavalle, exact (DNS ΔT_w + ΔM_x fed in), `ml_sum_hhx` (current MLP), V1 σ 0.25 L10, MLP L0, MLP L10.
+- **Each panel:** h(x) over x = 400–700 (about three wavelengths). Black is the DNS, the colour is the ROM. The text in the corner gives the h error (as in 6.1, over the whole domain) and the best-fit x-shift of the ROM against the DNS (positive = ROM ahead).
+- **What each column shows:**
+  - **Lavalle:** crests far too low (about 1.45 against 2.1) and flat-topped; by t = 100 the waves lag by 11.
+  - **Exact:** on top of the DNS to t = 50; at t = 100 slightly deeper troughs. This is the target.
+  - **`ml_sum_hhx`:** in phase at t = 50 but crests too tall (2.4); by t = 100 tall (2.5), ahead by 7, and the substrate between waves is too smooth and too flat (the capillary ripples are lost).
+  - **V1 σ 0.25:** spurious secondary bumps at t = 50; at t = 100 crests reach 3.0 with a wave split in two.
+  - **MLP L0:** crests a little high, lagging by 3 at t = 50; back in phase at t = 100, ripples close to the DNS.
+  - **MLP L10:** best at t = 10 (0.18); crest height right throughout; lags by 2.4 at t = 50; wave backs rise slightly too early.
+- **What to take from it:** the old closures fail on amplitude, the new ones on phase and back shape. The capillary ripples in front of each crest are reproduced by the exact closure and the new MLPs; `ml_sum_hhx` and V1 smooth them out by t = 100, while Lavalle keeps them but in the wrong place.
+
+### 6.5 How to read `oracle_phase_mlp.png`
+
+(`scripts/structured-closure/oracle_phase.py`; same folder; numbers in `oracle_phase_mlp.csv`.)
+
+- **Left: x-shift of the ROM against the DNS over time** (cross-correlation over x = 20–760, sub-cell). A constant slope is a wave-speed error; the DNS celerity is c = 1.92, so a slope of −0.06 is 3% slow. The new MLPs slope down from the start; `ml_sum_hhx` and V1 stay near zero, then turn up after t ≈ 50 as their crests overgrow. The jumps near t ≈ 80 are probably waves crossing the ends of the window.
+- **Middle: h error after removing that shift.** What is left is shape error. All learned closures rise together to about 0.45–0.55 by t = 50; the exact closure stays near 0.2. After t ≈ 60 `ml_sum_hhx`, V1 and MLP L1 keep rising; MLP L0 and L10 level off at 0.5–0.65.
+- **Right: max h, ROM over DNS.** Lavalle about 0.7; exact 1.0; `ml_sum_hhx` and V1 climb to 1.2–1.5; the new MLPs stay at 1.0–1.15.
+
+### 6.6 What it means and what is next
+
+- The flat-film-exact constraint plus richer inputs fixed the energy and amplitude failure, which was the long-time failure of all earlier closures.
+- What remains: (i) a few-percent wave-speed error, and (ii) a shape error on the wave backs and substrate common to all learned closures.
+- **Cheap next check:** compute each model's linear phase speed at the forcing frequency (ω ≈ 0.134) and compare with OS. If the linear speed is right, the speed error is nonlinear (crest-celerity relation, A.2); if not, the L2 band or weight needs to cover that frequency.
+- **Still pending:** the σ 0.5 L10 oracle run and the comb runs (linear growth in the ROM), then slide 5.

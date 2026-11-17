@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-17: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A._
+_Last updated: 2026-11-17 (evening): flat-film-exact MLP oracle a posteriori and phase diagnostic; earlier the same day: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -144,6 +144,10 @@ Update this file in the same commit as any change that moves the science forward
 - **Diagnosis.**
   - Pointwise fit is not the issue (NRMSE about 0.12 on the oracle case for all closures). The closure's net power into the waves is a ~0.1% residual of large front and back terms, and every learned closure gets its sign wrong.
   - A power penalty fixes the a priori power but not the a posteriori error.
+- **Flat-film-exact MLP (evening, σ 0.25, λ_lin 0/1/10, one seed):** S = N(h, q, h_x, q_x, h_xx) − N(h, h³, 0, 0, 0) with the OS constraint.
+  - A priori on the oracle case: NRMSE 0.05 (half of `ml_sum_hhx` and V1) and the right sign of net power (about half the DNS damping) for λ_lin 0 and 10.
+  - A posteriori: no crest overgrowth (L10 max h within 4% to t = 100); h error 0.59 at t = 50 (L10; `ml_sum_hhx` 0.47), but 0.58–0.70 at t = 100 against 1.25–1.54 for `ml_sum_hhx` and V1.
+  - New failure: waves 3–6% too slow from the start (wave-speed error). After removing the shift, every learned closure keeps a shape error of about 0.3 above the exact closure (wave backs, substrate/ripples).
 - **Bug fixed:** the truncated Gaussian second derivative is not zero on constants (cache-v2 h_xx carries −3.5e-3·h at σ 0.5).
 
 ## Next steps
