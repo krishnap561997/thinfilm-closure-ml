@@ -4,6 +4,7 @@
 #   sbatch --array=0-7%4 ml/structured_closure/run_sweep.sh            # seed 0
 #   SEED=1 sbatch --export=ALL --array=0-7%4 ml/structured_closure/run_sweep.sh   # backup seed
 #   SWEEP=power sbatch --export=ALL --array=0-3 ml/structured_closure/run_sweep.sh # power penalty runs
+#   SWEEP=mlp sbatch --export=ALL --array=0-3 ml/structured_closure/run_sweep.sh   # flat-film-exact MLP runs
 #SBATCH --job-name=sc_sweep
 #SBATCH --account=bala1s
 #SBATCH --qos=bala1s
@@ -17,7 +18,12 @@ source /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code/thinfilm-closure-ml/e
 SEED=${SEED:-0}
 i=${SLURM_ARRAY_TASK_ID}
 LL=(0 10); LF=(0 0.1); SG=(0.5 0.25); LP=(10 100)
-if [ "${SWEEP:-base}" = power ]; then          # SWEEP=power: sigma {0.5, 0.25} x lam_P {10, 100}, lam_lin 10, lam_F 0 (tasks 0-3)
+EXTRA=""
+if [ "${SWEEP:-base}" = mlp ]; then           # SWEEP=mlp: flat-film-exact MLP, lr 1e-2; tasks 0-3 = (s0.25,L0) (s0.25,L1) (s0.25,L10) (s0.5,L10)
+  MS=(0.25 0.25 0.25 0.5); ML=(0 1 10 10)
+  sigma=${MS[$i]}; lam_lin=${ML[$i]}; lam_F=0; lam_P=0; EXTRA="--model mlp --lr 1e-2"
+  name="mlp_s${sigma}_L${lam_lin}_seed${SEED}"
+elif [ "${SWEEP:-base}" = power ]; then          # SWEEP=power: sigma {0.5, 0.25} x lam_P {10, 100}, lam_lin 10, lam_F 0 (tasks 0-3)
   lam_lin=10; lam_F=0; lam_P=${LP[$((i % 2))]}; sigma=${SG[$((i / 2))]}
   name="v1_s${sigma}_L${lam_lin}_F${lam_F}_P${lam_P}_seed${SEED}"
 else
@@ -26,4 +32,4 @@ else
 fi
 echo "task $i: $name"
 $THINFILM_ENV/bin/python -I $THINFILM_ROOT/ml/structured_closure/train.py --name "$name" --device cuda \
-  --sigma "$sigma" --lam_lin "$lam_lin" --lam_F "$lam_F" --lam_P "$lam_P" --seed "$SEED" --epochs 100 --val_every 10 --lin_cases os
+  --sigma "$sigma" --lam_lin "$lam_lin" --lam_F "$lam_F" --lam_P "$lam_P" --seed "$SEED" --epochs 100 --val_every 10 --lin_cases os $EXTRA

@@ -136,7 +136,7 @@ Loss = (error in S on the DNS data) + λ_lin × (dispersion error at the OS poin
 - **What the DNS shows** (oracle case):
   - the true closure takes energy out on the wave fronts (−0.32) and puts it in on the back faces (+0.19);
   - the net over the wave is only −3.4e-4, about 0.1% of either.
-- **Consequence:** a closure that is 99% right pointwise can still have the wrong *sign* of net power. All the learned closures (old MLPs and new structured ones) feed net energy (+1.4e-3 to +2.6e-3), so their crests grow too high in closed loop.
+- **Consequence:** a closure that is 99% right pointwise can still have the wrong *sign* of net power. All the learned closures (old MLPs and new structured ones) feed net energy (+1.0e-3 to +2.2e-3), so their crests grow too high in closed loop.
 
 ### 2.7 Phase drift
 

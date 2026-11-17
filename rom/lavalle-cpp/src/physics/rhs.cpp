@@ -32,6 +32,7 @@ RHS evaluate_rhs(const State& input, double t, const Parameters& p,
     if(const auto* o=OracleForcing::active()) o->add_source(rhs.q,t,p);  // ORACLE
     if(const auto* m=MLClosure::active()) m->add_source(rhs.q,s.h,s.q,p);  // MLCLOSURE
     if(const auto* sc=StructuredClosure::active()) sc->add_source(rhs.q,s.h,s.q,p);  // STRUCTCLOSURE
+    if(const auto* fm=FlatMLPClosure::active()) fm->add_source(rhs.q,s.h,s.q,p);  // STRUCTCLOSURE
     // Ghost RHS stays zero by construction.
     return rhs;
 }

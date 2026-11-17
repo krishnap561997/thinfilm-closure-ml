@@ -19,7 +19,7 @@ import torch
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import data as D          # noqa: E402
-from model import StructuredV1      # noqa: E402
+from model import StructuredV1, FlatExactMLP      # noqa: E402
 from losses import dispersion_residual, disp_F, stack_targets      # noqa: E402
 
 
@@ -152,6 +152,9 @@ def main():
     ap.add_argument("--width", type=int, default=32)
     ap.add_argument("--depth", type=int, default=2)
     ap.add_argument("--no_g3", action="store_true")
+    ap.add_argument("--model", choices=["v1", "mlp"], default="v1", help="v1: structured V1; mlp: flat-film-exact source MLP")
+    ap.add_argument("--mlp_width", type=int, default=64)
+    ap.add_argument("--mlp_depth", type=int, default=2)
     ap.add_argument("--x0", type=float, default=50.0)
     ap.add_argument("--t0", type=float, default=300.0)
     ap.add_argument("--stride", type=int, default=8)
@@ -201,7 +204,14 @@ def main():
     log(f"{a.name}: {len(dcases)} training cases, {N} points; {len(hcases)} eval cases; device {dev}, "
         f"threads {torch.get_num_threads()}; data {time.time() - t0:.0f}s")
     json.dump(dict(vars(a), train_cases=dcases, eval_cases=hcases, n_points=N), open(os.path.join(run, "config.json"), "w"), indent=1)
-    model = StructuredV1(a.width, a.depth, use_g3=not a.no_g3).to(dev)
+    if a.model == "mlp":
+        model = FlatExactMLP(a.mlp_width, a.mlp_depth).to(dev)
+        Re_, Ca_, ang_ = FlatExactMLP.raw(C["p"][T["idx"]])
+        X = torch.stack([T["h"], T["q"], T["h_x"], T["q_x"], T["h_xx"], Re_, Ca_, ang_], 1)
+        model.set_scales(X, torch.sqrt((T["S"] ** 2).mean()))
+        del X
+    else:
+        model = StructuredV1(a.width, a.depth, use_g3=not a.no_g3).to(dev)
     opt = torch.optim.Adam(model.parameters(), lr=a.lr)
     nb = math.ceil(N / a.batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=a.lr, total_steps=a.epochs * nb, pct_start=0.05)

@@ -31,8 +31,14 @@ def make(runs):
     dirs = []
     for run in runs:
         base = os.path.join(OUT, run)
-        tabs = {c: export(run, c) for c in COMB}
-        sc = lambda c: os.path.join(D.BASE, "runs", run, "tables", f"sc_{c}.txt")
+        import json
+        if json.load(open(os.path.join(D.BASE, "runs", run, "config.json"))).get("model", "v1") == "mlp":
+            from export_mlp import export_mlp
+            cf = export_mlp(run)
+            sc = lambda c: cf
+        else:
+            tabs = {c: export(run, c) for c in COMB}
+            sc = lambda c: os.path.join(D.BASE, "runs", run, "tables", f"sc_{c}.txt")
         # uniform film: oracle-case parameters, no forcing, flat start
         d = os.path.join(base, "uniform"); os.makedirs(d, exist_ok=True)
         txt = open(os.path.join(B6, "Re120_Ca0_010_theta45/lavalle/input.txt")).read()
@@ -71,9 +77,8 @@ def analyse(runs):
             print(f"uniform: max|h-1| {np.abs(h - 1).max():.2e}  max|q-1| {np.abs(q - 1).max():.2e}  (t = 100)")
         except Exception as e:
             print("uniform: not available", e)
-        cfg = json.load(open(os.path.join(D.BASE, "runs", run, "config.json")))
-        m = StructuredV1(cfg["width"], cfg["depth"], use_g3=not cfg["no_g3"]).double()
-        m.load_state_dict({k: v.double() for k, v in torch.load(os.path.join(D.BASE, "runs", run, "model.pt"), map_location="cpu").items()})
+        from model import load_run
+        m, cfg = load_run(os.path.join(D.BASE, "runs", run))
         for c in COMB:
             d = os.path.join(base, f"comb_{c}")
             R, info = run_modes(d)

@@ -205,7 +205,7 @@ Closures evaluated on the DNS states with the inputs the ROM gives them. Regions
 - **The closure's net power into the waves is a tiny residual, and every learned closure gets its sign wrong.**
   - P = ⟨(−S) q′⟩, q′ = q − ⟨q⟩ₓ.
   - True closure: front −0.32, back +0.19, crest +0.02, ripples −0.01; net −3.4e-4 (slightly damping).
-  - Every learned closure gives net input: +2.6e-3 (`ml_sum_hhx`), +2.2e-3 (σ 0.5), +1.4e-3 (σ 0.25). For σ 0.5 the excess comes about 40% from the back face and 30% from the substrate (relaxation part), the rest from ripples, crest and front.
+  - Every learned closure gives net input: +2.2e-3 (`ml_sum_hhx`), +1.8e-3 (σ 0.5), +1.0e-3 (σ 0.25); the excess over the DNS is +2.6e-3, +2.1e-3 and +1.4e-3. For σ 0.5 the excess comes about 40% from the back face and 30% from the substrate (relaxation part), the rest from ripples, crest and front.
 - **Power penalty** λ_P × mean r², r = Σₓ(S_pred − S)q′ / Σₓ|S q′| over 2 random whole snapshots per case per step (λ_P 10, 100):
   - It fixes the a priori net power (0.2–0.3× of the DNS value instead of 4–6×).
   - But a priori NRMSE rises to 0.16 on the oracle case, and **a posteriori is not better**: lower crests, but larger phase drift (table above).

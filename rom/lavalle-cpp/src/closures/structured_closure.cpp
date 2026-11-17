@@ -90,3 +90,40 @@ void StructuredClosure::add_source(Field& rhs_q, const Field& h, const Field& q,
         rhs_q[i] += (lookup(KAP, hh) * (Q - q[i]) - 3.0 / p.Re * (h3 - q[i])) / (hh * hh);
     }
 }
+
+// ------------------------------------------------------------------------------------------------ FlatMLPClosure
+bool FlatMLPClosure::is_config(const std::string& file) {
+    try { return read_kv(file).count("flat_mlp") > 0; } catch (...) { return false; }
+}
+
+FlatMLPClosure::FlatMLPClosure(const std::string& config_file, const Parameters&) {
+    auto kv = read_kv(config_file);
+    mlp_ = std::make_unique<MLP>(kv.at("flat_mlp"));
+    if (kv.count("sigma")) sigma_ = std::stod(kv["sigma"]);
+    for (const auto& n : mlp_->inputs())
+        if (n != "h" && n != "q" && n != "h_x" && n != "q_x" && n != "h_xx" && n != "Re" && n != "Ca" && n != "angle")
+            throw std::runtime_error("FlatMLPClosure: unsupported input " + n);
+    desc_ = "Flat-film-exact source MLP: " + kv.at("flat_mlp") + ", sigma " + std::to_string(sigma_) +
+            " (S = N(state) - N(h, h^3, 0, 0, 0))\n";
+}
+
+FlatMLPClosure::~FlatMLPClosure() = default;
+
+void FlatMLPClosure::add_source(Field& rhs_q, const Field& h, const Field& q, const Parameters& p) const {
+    const Field hx = gauss_deriv_hN(h, sigma_, p.dx, 1), qx = gauss_deriv_hN(q, sigma_, p.dx, 1),
+                hxx = gauss_deriv_hN(h, sigma_, p.dx, 2);
+    const int nx = int(h.size());
+    Field h3(nx), zero(nx, 0.0);
+    for (int i = 0; i < nx; ++i) h3[i] = h[i] * h[i] * h[i];
+    std::vector<const double*> c1, c0;
+    for (const auto& n : mlp_->inputs()) {
+        if (n == "h") { c1.push_back(h.data()); c0.push_back(h.data()); }
+        else if (n == "q") { c1.push_back(q.data()); c0.push_back(h3.data()); }
+        else if (n == "h_x") { c1.push_back(hx.data()); c0.push_back(zero.data()); }
+        else if (n == "q_x") { c1.push_back(qx.data()); c0.push_back(zero.data()); }
+        else if (n == "h_xx") { c1.push_back(hxx.data()); c0.push_back(zero.data()); }
+        else { c1.push_back(nullptr); c0.push_back(nullptr); }
+    }
+    for (int i = p.ng; i < nx - p.ng; ++i)
+        rhs_q[i] -= mlp_->eval(c1, i, p) - mlp_->eval(c0, i, p);
+}

@@ -7,7 +7,7 @@
 #SBATCH --partition=hpg-dev
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=4gb
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00   # MLP closures: ~1 h (oracle) to ~2.5 h (comb Re200) on one core
 #SBATCH --output=/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/structured_closure/logs/rom_%A_%a.out
 module load gcc/14.2.0 hdf5
 BIN=/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code/thinfilm-closure-ml/rom/lavalle-cpp/thinfilm
