@@ -211,12 +211,51 @@ Closures evaluated on the DNS states with the inputs the ROM gives them. Regions
   - But a priori NRMSE rises to 0.16 on the oracle case, and **a posteriori is not better**: lower crests, but larger phase drift (table above).
   - So net power alone does not control the closed-loop error.
 
+### Flat-film-exact MLP, oracle a posteriori (17 Nov, evening)
+
+S = N(h, q, h_x, q_x, h_xx; p) − N(h, h³, 0, 0, 0; p), L2 at the 85 OS points, σ 0.25, λ_lin 0, 1, 10 (seed 0, lr 1e-2; `train.py --model mlp`, ROM `FlatMLPClosure`). The σ 0.5 L10 run and all comb runs were still running at the time of writing. Scripts: `scripts/oracle_summary.py`, `ml/structured_closure/diag_oracle.py`, `scripts/structured-closure/oracle_snapshots.py` (h(x) panels), `scripts/structured-closure/oracle_phase.py` (shift time series). Figures and csv in `$THINFILM_STORE/codes/ml-models/structured_closure/rom/{figures,}` (not in git).
+
+A priori on the oracle DNS states (NRMSE; net power P/P_DNS, positive = same sign as the DNS, i.e. damping):
+
+| Model | NRMSE | P/P_DNS |
+|---|---|---|
+| `ml_sum_hhx` | 0.125 | −6.5 |
+| V1 σ 0.25 L10 | 0.120 | −3.0 |
+| MLP L0 | 0.047 | +0.52 |
+| MLP L1 | 0.052 | +4.1 |
+| MLP L10 | 0.055 | +0.54 |
+
+A posteriori (h error / std h_DNS; in brackets the error after removing the best-fit x-shift; max h ROM/DNS):
+
+| t | exact | `ml_sum_hhx` | V1 σ 0.25 | MLP L0 | MLP L1 | MLP L10 |
+|---|---|---|---|---|---|---|
+| 10 | 0.17 | 0.22 | 0.23 | 0.22 | 0.22 | **0.18** |
+| 50 | 0.19 (0.17) | **0.47 (0.47)**, 1.13 | 0.60 (0.59), 1.18 | 0.67 (0.49), 1.12 | 0.79 (0.55), 1.01 | 0.59 (0.47), 1.04 |
+| 100 | 0.55 (0.44) | 1.25 (0.91), 1.19 | 1.54 (1.03), 1.47 | **0.58 (0.47)**, 1.12 | 1.21 (0.91), 1.09 | 0.70 (0.64), 1.02 |
+
+Phase (DNS wavelength 89.8, celerity c = λ/T = 1.92; shift positive = ROM ahead):
+
+| | shift t = 20 / 50 / 100 | drift / c, t < 50 |
+|---|---|---|
+| exact | 0.0 / −0.2 / −1.9 | −0.5% |
+| `ml_sum_hhx` | +0.3 / −0.1 / +6.9 | −0.9% |
+| V1 σ 0.25 | −0.5 / −0.3 / +9.4 | −1.0% |
+| MLP L0 | −1.5 / −3.0 / +1.5 | −4.1% |
+| MLP L1 | −1.3 / −4.7 / −9.0 | −5.8% |
+| MLP L10 | −0.3 / −2.5 / −0.9 | −3.3% |
+
+- **Adding q and the gradients as inputs halves the a priori error** and gives the first learned closures with the right sign of net power.
+- **No crest overgrowth.** L10 keeps max h within 4% of the DNS to t = 100; `ml_sum_hhx` and V1 overshoot by 19–47%, then run ahead (taller waves are faster).
+- **The new MLPs make the waves 3–6% too slow from the start**, while the amplitude is still right: a wave-speed error of the closure itself, not one driven by amplitude. L0 and L10 stop lagging at about 3 and recover; L1 keeps lagging. Not monotone in λ_lin (one seed).
+- **A shape error is common to all learned closures.** After removing the shift, all reach 0.37–0.55 by t = 30–50 against 0.17–0.20 for the exact closure. The snapshots put it on the wave backs (rise too early) and in the substrate/ripple region. The new MLPs do not run away: 0.47 (L0) and 0.64 (L10) at t = 100 against 0.91–1.03.
+
 ## Where it fails
 
 - **Phase C results are one seed.** The a posteriori differences between nearby models (σ, λ_P) are large and of both signs (phase drift +7.8 to −7.2 at t = 50). The seed spread is not known; seed 1 is the backup.
 - **The only a posteriori case is the oracle case**, which is monochromatic (10 Hz) while the training data are broadband, so it is outside the training distribution. The broadband held-out a posteriori test (gate GD) has not been run.
 - **V1 coefficients depend on h only, and S is linear in the gradients.** Training NRMSE (0.22–0.25) is close to held-out, which points to a limit of the form rather than of network capacity (not tested).
 - **The L2 constraint covers the forced band only.** Above it (comb ω > 0.9 at Re 120) the growth error reaches 0.3.
+- **The flat-film-exact MLP results are one seed and three λ_lin values at σ 0.25.** Its wave-speed error is not yet traced to the linear part (check: model phase speed against OS at ω ≈ 0.134). The shift is a single global cross-correlation over x = 20–760; jumps near t ≈ 80 are probably waves crossing the window ends.
 - **The power diagnosis uses 100 snapshots of one case,** and the region shares depend on thresholds.
 
 - **A.1 is a linearisation about h = q = 1, which is not an equilibrium of the MLP-augmented ROM when S₀ ≠ 0.** The growth numbers describe the closure's linear part, not the closed-loop base state. The ROM runs used raw central differences for h_x; the long-wave numbers do not depend on the filter, but finite-k ones would.
