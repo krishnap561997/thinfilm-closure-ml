@@ -280,3 +280,33 @@ See Part 2.5. σ is a physical length in units of h_N, not grid cells. The grid 
     - fewer inputs extrapolate more safely.
   - Making the relaxation coefficients depend on gradients is riskier: nonlinear gradient terms can act anti-diffusively and are sensitive to the filter and grid.
 - **What follows for the next step.** A cheap intermediate between V1 and V2 keeps the flux part as is (guaranteed hyperbolic) and lets κ, g₁, g₂ and g₃ depend on (h, r). Since the crest speed depends on more than h (A.2), and the closed-loop error is now dominated by wave speed, this is a sensible next variant.
+
+### 5.5 What is r?
+
+- **Definition.** r = q/h³: the local flow rate divided by the flow rate a flat film of the same local thickness would carry. In Nusselt scaling a flat film of thickness h carries q = h³.
+  - **r = 1:** locally in equilibrium (half-parabola profile, gravity balanced by wall friction).
+  - **r > 1:** more flow than equilibrium, as on the steep fronts of large waves where inertia matters.
+  - **r < 1:** less flow than equilibrium, e.g. in decelerating capillary ripples and the thin substrate.
+- **Link to Lavalle's friction.** Lavalle's friction is (3/Re)(h³ − q)/h² = (3/Re)·h·(1 − r). So r is exactly what Lavalle's model keeps pushing back to 1: a natural measure of non-equilibrium.
+- **Why r rather than q:** it is dimensionless and O(1), and every flat film has r = 1 whatever its thickness. A dependence on r therefore means a dependence on how non-equilibrium the flow is, separately from h.
+- **Effect of using r in the relaxation coefficients (κ, g₁–g₃):**
+  - the flat-film guarantee is unchanged (Q − q still vanishes there);
+  - the linear behaviour depends only on their values at h = 1, r = 1;
+  - hyperbolicity is unaffected (source terms).
+- **Effect of using r in Φ (V2):** the r-dependence enters the flux Jacobian, so the hyperbolicity guarantee is lost.
+- **Name clash:** in `lavalle-cpp`, `r` is a different variable, the Noble–Vila augmented variable r = h·w used for the capillary terms. The code for V1.5/V2 will use a distinct name.
+
+### 5.6 Why can't the networks have inputs h, q, h_x, q_x? Would it break the linear loss?
+
+- **They can, and the linear loss still works.** The restrictions in V1 come from the hyperbolicity guarantee and from interpretability, not from the linear loss.
+- **Relaxation coefficients κ, g₁–g₃ as networks of (h, q, h_x, q_x):**
+  - **Flat-film guarantee: kept.** With zero gradients, Q = h³(1 + g₁·0 + g₂·0 + g₃·0) = h³ whatever the g's are, and κ multiplies Q − q = 0.
+  - **Hyperbolicity: unaffected** (source terms).
+  - **Linear loss: unchanged in form.** On the flat film Q − q = 0 and h_x = q_x = h_xx = 0. So the derivatives of κ and g with respect to their inputs always multiply something that is zero there, and drop out of the linearisation. The linear coefficients only need the networks' *values* at (h, q, h_x, q_x) = (1, 1, 0, 0): a = κ − 3/Re, b = F_h − κg₁, c = F_q − κg₂, d = −κg₃, exactly as now.
+  - **Risk of gradient inputs:** g₁(h_x)·h_x is effectively a nonlinear gradient term (h_x², h_x³, …). At steep fronts such terms can turn anti-diffusive and destabilise the ROM, and they depend more on the filter σ and the grid. That is testable, not forbidden.
+- **Flux coefficients Φ, ΔP:**
+  - **With q (or r):** allowed, and the linear loss still works. Automatic differentiation adds the ∂Φ/∂q terms to F_q automatically. The hyperbolicity guarantee is lost: this is V2 (penalty + runtime limiter).
+  - **With gradients:** not as a flux. A flux that depends on h_x is no longer a function of the state, and the Riemann solver's wave speeds are undefined. Such dependence belongs in the source part.
+- **A plain MLP can also be made flat-film-exact.** Use S = N(h, q, h_x, q_x) − N(h, h³, 0, 0), which is zero on every flat film by construction. With the same OS linear constraint, this is the old unconstrained MLP with the two main defects of Phase A removed.
+  - It gives no hyperbolicity or interpretability guarantees.
+  - It is a useful baseline: comparing it with V1/V1.5 shows whether the structure itself helps in closed loop.
