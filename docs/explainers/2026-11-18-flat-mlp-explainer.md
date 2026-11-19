@@ -17,7 +17,7 @@ The flat-film-exact MLP, S = N(h, q, h_x, q_x, h_xx; p) − N(h, h³, 0, 0, 0; p
 
 **The ROM does what the model says.** The ROM's measured growth matches each model's own analytic prediction to 3–5%. Any remaining error is in the model, not in how the solver uses it.
 
-**σ 0.5 beats σ 0.25 in closed loop.** This is the opposite of the a priori ranking, where σ 0.25 fitted better. σ is the width of the derivative filter. A wider filter gives smoother gradients, which may matter more once the closure is driven by the ROM's own state. This is one seed, so it is not yet a conclusion. Seed 1 of both models is running.
+**σ 0.5 beats σ 0.25 in closed loop.** This is the opposite of the a priori ranking, where σ 0.25 fitted better. σ is the width of the derivative filter. A wider filter gives smoother gradients, which may matter more once the closure is driven by the ROM's own state. Seed 1 confirms the ranking (section 4).
 
 **What is still wrong with the best model:**
 - crests are 6–10% too high from t ≈ 50;
@@ -31,7 +31,7 @@ The closure is S = N(state) − N(h, h³, 0, 0, 0). The ROM used to evaluate the
 
 **Check:** results agree with the old code to 1e-9 in h, and 1 and 4 threads give identical numbers. One time step went from 0.164 s to 0.024 s. A 2000-time-unit run now takes about 3 hours instead of about 18. That is what makes the broadband test affordable.
 
-## 4. The broadband held-out test (running)
+## 4. The broadband held-out test (seed 0 done, 19 Nov)
 
 The oracle case is one monochromatic case, while the closures were trained on broadband data. The plan's real closed-loop test (gate GD) uses the 7 held-out broadband cases.
 
@@ -41,14 +41,19 @@ The oracle case is one monochromatic case, while the closures were trained on br
 - how the wave amplitude grows and saturates along x (envelope error);
 - the mean wavelength.
 
-**Runs:**
-- Closures: Lavalle, the previous MLP, structured V1 and the two new MLPs, in all 7 cases. Seed-1 runs follow automatically.
-- The analysis command is in the tracker.
-- A good closure should bring every distance well below Lavalle's. The interesting question is whether the gain on the oracle case holds at β 6.4°, β 90° and Re 20–200.
+**Runs:** Lavalle, the previous MLP, structured V1 and the two new MLPs, in all 7 cases. The seed-1 runs of the two new MLPs are still running.
+
+**What the seed-0 runs show** (table in the results doc; figures `broadband_metrics.png`, `broadband_waves.png`):
+- **The gain on the oracle case carries over.** The σ 0.5 MLP is the best closure on 4 of the 6 cases it completed and ties with V1 on Re 20. On four of them its h distribution is about 2.5–5 times closer to the DNS than Lavalle's, and its crest heights are within 5%. Lavalle's crests are 6–28% too low in every case. The previous MLP overshoots, by a factor of 2 at Re 200.
+- **But two runs blew up.** The σ 0.25 run on Re 40 Ca 0.04 and the σ 0.5 run on Re 80 β 90° stopped with loss of hyperbolicity: the equations stopped being well-posed, which the network does not prevent. No other closure failed. A model that fails on 1 of 7 cases is not yet usable as a general closure, so this is now the main open problem.
+- **Where it is still wrong:** on Re 40 Ca 0.04, the most capillary case, the σ 0.5 MLP is worse than Lavalle (crests 16% too high). At Re 200 β 6.4° its waves are about twice too long, even though the distribution of h is close.
+
+**Seed 1 (ROM tests):** the linear growth is as good as seed 0, and σ 0.5 beats σ 0.25 again on the oracle case (h error 0.37 at t = 50 against 0.48). So the σ ranking holds across both seeds. The t = 100 error differs by about 0.15 between seeds (0.62 and 0.75).
 
 ## 5. What comes after (proposed, not started)
 
-**If the broadband results confirm the MLP**, work on the remaining closed-loop error, which shows up as crest overshoot, back shape and wave speed. In rough order of cost:
+The broadband results confirm the MLP but add a robustness problem. In rough order of cost:
+0. **Hyperbolicity safeguard (new, 19 Nov).** Limit the closure in the ROM where the system gets close to losing hyperbolicity, so no run fails. This comes first, since a closure that crashes cannot be reported as the model.
 1. **Ensembles.** Average 3–5 seeds in the ROM. This is cheap, and averaging usually reduces closed-loop drift.
 2. **Wider inputs.** Add q_xx and h_xxx, or a second filter width, to target the wave-back shape.
 3. **Short-rollout fine-tuning (plan Phase F).** A differentiable ROM, trained on 2–5-time-unit rollouts from DNS states. This is the most direct way to train for closed-loop accuracy, but it is the most work. Ask before starting.

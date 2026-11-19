@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-18: all seed-0 flat-film-exact MLP runs analysed (σ 0.5 L10 best on the oracle), ROM speed-up (6.8×), broadband held-out a posteriori runs and seed-1 training submitted; priority set to the most accurate ML closure, first draft mid-December. Previous: 2026-11-17 (evening), flat-film-exact MLP oracle a posteriori and phase diagnostic; earlier on 17 Nov: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A; 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
+_Last updated: 2026-11-19: broadband held-out a posteriori results (seed 0): MLP σ 0.5 L10 best on 4 of 6 completed cases (tied with V1 on Re 20), 2 MLP runs blew up (loss of hyperbolicity); seed-1 ROM tests confirm σ 0.5 > σ 0.25. Previous: 2026-11-18: all seed-0 flat-film-exact MLP runs analysed (σ 0.5 L10 best on the oracle), ROM speed-up (6.8×), broadband held-out a posteriori runs and seed-1 training submitted; priority set to the most accurate ML closure, first draft mid-December. Previous: 2026-11-17 (evening), flat-film-exact MLP oracle a posteriori and phase diagnostic; earlier on 17 Nov: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A; 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -154,13 +154,17 @@ Update this file in the same commit as any change that moves the science forward
   - Comb: linear growth within 7–11% of OS (median) at Re 120–200 for λ_lin 1 and 10 (Lavalle 27–39%). Without the constraint (L0) the Re 200 waves are damped (47% error), so the constraint is needed.
   - Dense broadband a posteriori (10 time units from the DNS state, DNS inlet): the new MLPs have the lowest error on both held-out cases (Re 20 Ca 0.01 β 45: 0.11–0.14 at t = 10 against 0.22 for `ml_sum_hhx` and 0.28 for Lavalle; Re 120: 0.25–0.30 against 0.42 and 0.59). `ml_sum_hhx` is better on Re 40 Ca 0.002 (training case, We 0.08).
   - ROM speed-up: the flat-film term N(h, h³, 0, 0, 0) is tabulated in h and the cell loop uses OpenMP; 0.164 → 0.024 s per step (4 threads), identical results to 1.5e-9.
+- **Broadband held-out a posteriori, seed 0 (19 Nov; gate GD):** 7 held-out cases, ROM from a flat film with its own inlet noise, statistics over t 1000–2000.
+  - MLP σ 0.5 L10 is best on 4 of its 6 completed cases and ties with V1 on Re 20: h-PDF distance 0.04–0.07 on those five (Lavalle 0.11–0.29), crest ratio 0.95–1.00 (Lavalle 0.72–0.94).
+  - Failures: 2 MLP runs blew up with loss of hyperbolicity (σ 0.25 on Re40 Ca0.04 β45, σ 0.5 on Re80 Ca0.01 β90); σ 0.5 is worse than Lavalle on Re40 Ca0.04 (crests 16% high); at Re 200 β 6.4 its waves are twice too long.
+  - Seed 1 (ROM tests): comb growth as seed 0; oracle h error 0.37 / 0.75 at t = 50 / 100 for σ 0.5 (seed 0 0.39 / 0.62).
 - **Bug fixed:** the truncated Gaussian second derivative is not zero on constants (cache-v2 h_xx carries −3.5e-3·h at σ 0.5).
 
 ## Next steps
 
 **Priority (18 Nov 2026, Krishna):** first draft of Paper 1 by mid-December. Make the most accurate ML closure work, judged a posteriori (closed-loop ROM against the DNS and the exact closure); minimise work on functional forms and symbolic regression (plan Phase E). Slides on hold.
 
-**Running (18 Nov):** broadband held-out a posteriori runs, 7 cases × 5 closures (`ml/structured_closure/broadband.py`, job 51936424); seed 1 of the two λ_lin 10 MLPs (51936231), with their ROM and broadband runs chained (51936523).
+**Running (19 Nov):** seed-1 broadband runs of the two λ_lin 10 MLPs (job 51936778, 2 at a time). Seed-0 broadband, seed-1 training and seed-1 ROM tests are done.
 
 **Current work (17 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker is `docs/plans/structured-closure-progress.md`. The explainers for Krishna are `docs/explainers/2026-11-16-structured-closure-explainer.md`, `2026-11-17-structured-closure-explainer.md` and `2026-11-18-flat-mlp-explainer.md`.
 
@@ -171,8 +175,8 @@ Update this file in the same commit as any change that moves the science forward
   - cache v2;
   - Phase C V1 training (one seed), the ROM implementation (C.4–C.10) and the first oracle a posteriori runs.
 - **Open questions:**
-  - seed spread of the a posteriori numbers (seed 1 is the backup);
-  - broadband held-out a posteriori runs (Phase D, gate GD);
+  - robustness: 2 of 14 MLP broadband runs lose hyperbolicity (whether this is seed-dependent comes from seed 1);
+  - seed spread at long times (oracle t = 100 error varies by about 0.15 between seeds);
   - V2 (coefficients depending on q/h³), or more data (11 extra cases), for wave speed.
 - **The functional-form plan is secondary.** It serves as the monomial baseline. Phase E closed forms are de-emphasised (18 Nov). It shares cache v2 and the closed-loop harness.
 

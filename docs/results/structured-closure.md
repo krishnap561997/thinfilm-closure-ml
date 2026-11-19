@@ -291,7 +291,7 @@ All four seed-0 runs finished; `rom_tests.py analyse mlp_s0.25_L0_seed0 mlp_s0.2
 
 Check on the oracle case, 400 steps: max |Δh| 1.5e-9 and max |Δq| 3.4e-9 against the old binary (the interpolation error); 1 and 4 threads give identical results. A 2000-time-unit broadband run takes about 3 h on 4 cores.
 
-### Broadband held-out a posteriori test: setup (gate GD; running)
+### Broadband held-out a posteriori test: setup (gate GD)
 
 `ml/structured_closure/broadband.py` (`make`, `analyse`) and `run_broadband.sh`. The held-out DNS cases have h every 10 time units only (closure files), so the comparison is statistical:
 
@@ -319,13 +319,35 @@ h error / std h_DNS over 20 < x < 760 at t = 5 / 10 after the DNS state (max h a
 - **σ 0.25 is slightly ahead of σ 0.5 over these 10 time units,** the reverse of the oracle ranking at t = 50; one seed, so not separable yet.
 - **Exception: Re 40 Ca 0.002 (We 0.08, a training case).** `ml_sum_hhx` is best (0.10 against 0.22), and the new MLPs let the crests sag (1.95–2.03 against 2.18). This strongly capillary regime is where the DNS momentum budget is least reliable.
 
+### Broadband held-out a posteriori results, seed 0 (19 Nov)
+
+`broadband.py analyse` (CSV `rom/broadband/broadband_seed0.csv`); figures `scripts/structured-closure/broadband_fig.py` (`metrics`, `waves`) → `rom/figures/broadband_{metrics,waves}.png`. PDF distance (W1/std, lower is better) and main-crest ratio (ROM/DNS), t 1000–2000:
+
+| Case | Lavalle | `ml_sum_hhx` | V1 σ 0.25 | MLP σ 0.25 | MLP σ 0.5 |
+|---|---|---|---|---|---|
+| Re20 Ca0.01 β45 | 0.14 / 0.85 | 0.30 / 1.08 | 0.05 / 0.93 | 0.06 / 0.97 | 0.05 / 0.95 |
+| Re40 Ca0.04 β45 | 0.20 / 0.82 | 0.25 / 1.07 | 0.30 / 1.04 | blew up (t 641) | 0.29 / 1.16 |
+| Re80 Ca0.005 β6.4 | 0.11 / 0.94 | 0.26 / 0.97 | 0.08 / 0.98 | 0.09 / 1.00 | **0.04** / 1.00 |
+| Re80 Ca0.01 β90 | 0.32 / 0.76 | 0.35 / 1.04 | 0.38 / 1.47 | **0.03** / 0.96 | blew up (t 401) |
+| Re120 Ca0.01 β45 | 0.29 / 0.84 | 0.43 / 1.10 | 0.46 / 1.38 | 0.13 / 1.03 | **0.06** / 1.00 |
+| Re120 Ca0.02 β90 | 0.28 / 0.72 | 0.27 / 1.05 | 0.49 / 1.40 | 0.20 / 0.89 | **0.07** / 0.96 |
+| Re200 Ca0.01 β6.4 | 0.29 / 0.94 | 2.01 / 1.96 | 0.69 / 1.37 | 0.36 / 1.09 | **0.26** / 1.07 |
+
+- **MLP σ 0.5 L10 is the best closure on 4 of its 6 completed cases and ties with V1 on Re 20** (PDF distance 0.04–0.07 on those five against Lavalle 0.11–0.29; crest ratio 0.95–1.00). Envelope error 0.06–0.07 against Lavalle 0.28–0.31 at Re 120.
+- **Robustness:** two MLP runs stopped with loss of hyperbolicity (discriminant < 0): σ 0.25 on Re40 Ca0.04 β45 at t 641, σ 0.5 on Re80 Ca0.01 β90 at t 401. No other closure failed.
+- **Re40 Ca0.04 β45** (We 1.6, most capillary held-out case): σ 0.5 is worse than Lavalle (0.29 against 0.20; crests 16% high, wavelength 28 against 33).
+- **Re200 β6.4:** σ 0.5 waves are too long (centroid wavelength 31 against 14 in the DNS), although the h PDF and crest heights are close. `ml_sum_hhx` fails there (crests ×2).
+- **Lavalle** under-predicts crests in every case (ratio 0.72–0.94) and gives negative skewness where the DNS is positive. **V1** over-predicts crests by 37–47% at β 90 and Re ≥ 120.
+- **Seed 1 (ROM tests, 19 Nov):** comb growth error against OS within ±1 percentage point of seed 0 (median 1.8–1.9% at Re 20, 5–6% at Re 120, about 9% at Re 200). Oracle h error at t = 50 / 100: σ 0.5 0.37 / 0.75 (seed 0 0.39 / 0.62), σ 0.25 0.48 / 0.94. σ 0.5 is better than σ 0.25 for both seeds; the t = 100 error varies by about 0.15 between seeds. Seed-1 broadband runs: job 51936778 (running, 2 at a time).
+
 ## Where it fails
 
 - **Phase C results are one seed.** The a posteriori differences between nearby models (σ, λ_P) are large and of both signs (phase drift +7.8 to −7.2 at t = 50). The seed spread is not known; seed 1 is the backup.
-- **Until the broadband runs finish, the only a posteriori case is the oracle case**, which is monochromatic (10 Hz) while the training data are broadband, so it is outside the training distribution. The broadband held-out a posteriori test (gate GD) has not been run.
+- **The broadband held-out test is statistical.** The held-out DNS has h only every 10 time units, so the ROM uses its own noise realisation and only distributions, crests, envelope and wavelength are compared; one ROM realisation per case and closure, 100 snapshots.
+- **The flat-film-exact MLP is not guaranteed hyperbolic.** 2 of 14 seed-0 broadband runs blew up (loss of hyperbolicity); a run that fails is a failed closure, not a missing data point.
 - **V1 coefficients depend on h only, and S is linear in the gradients.** Training NRMSE (0.22–0.25) is close to held-out, which points to a limit of the form rather than of network capacity (not tested).
 - **The L2 constraint covers the forced band only.** Above it (comb ω > 0.9 at Re 120) the growth error reaches 0.3.
-- **The flat-film-exact MLP results are one seed (seed 1 of the two L10 models running) and four (σ, λ_lin) pairs.** Its wave-speed error is not yet traced to the linear part (check: model phase speed against OS at ω ≈ 0.134). The shift is a single global cross-correlation over x = 20–760; jumps near t ≈ 80 are probably waves crossing the window ends.
+- **The flat-film-exact MLP results are two seeds (broadband seed 1 running) and four (σ, λ_lin) pairs.** Its wave-speed error is not yet traced to the linear part (check: model phase speed against OS at ω ≈ 0.134). The shift is a single global cross-correlation over x = 20–760; jumps near t ≈ 80 are probably waves crossing the window ends.
 - **The power diagnosis uses 100 snapshots of one case,** and the region shares depend on thresholds.
 
 - **A.1 is a linearisation about h = q = 1, which is not an equilibrium of the MLP-augmented ROM when S₀ ≠ 0.** The growth numbers describe the closure's linear part, not the closed-loop base state. The ROM runs used raw central differences for h_x; the long-wave numbers do not depend on the filter, but finite-k ones would.
