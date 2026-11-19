@@ -2,6 +2,12 @@
 
 Record each decision as a short entry: what was decided and why. Newest entries go at the top.
 
+## 2026-11-18 — First draft mid-December; best ML closure first; broadband test is statistical
+
+- **User's decision:** the Paper 1 first draft is due mid-December 2026. Make the most accurate ML closure work, judged a posteriori, and minimise work on functional forms and symbolic regression (structured-closure plan Phase E). Slide updates are on hold.
+- **Broadband held-out a posteriori test compares statistics only.** The held-out DNS cases store h every 10 time units, too coarse to drive a ROM inlet, so the ROM uses the DNS Chang inlet parameters with its own random phases. Dense restarts would need new DNS (not requested).
+- **ROM flat-film term tabulated.** N(h, h³, 0, 0, 0; p) of the flat-film-exact MLP is tabulated in h once per run (interpolation error ~1e-9, h = 1 a node), plus OpenMP: 6.8× faster with identical results, which makes the 2000-time-unit broadband runs affordable.
+
 ## 2026-11-17 — Priority: a posteriori accuracy over interpretability
 
 - **User's decision:** focus on a posteriori accuracy rather than on interpretable 1D coefficient functions. Closures may take (h, q or r = q/h³, h_x, q_x) as inputs where the guarantees allow it (relaxation part, or a flat-film-exact plain MLP); the flux part keeps Φ(h) unless V2 is tried. Options and order: `docs/plans/structured-closure-progress.md`, "Next options".

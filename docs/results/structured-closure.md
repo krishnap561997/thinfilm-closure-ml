@@ -213,7 +213,7 @@ Closures evaluated on the DNS states with the inputs the ROM gives them. Regions
 
 ### Flat-film-exact MLP, oracle a posteriori (17 Nov, evening)
 
-S = N(h, q, h_x, q_x, h_xx; p) − N(h, h³, 0, 0, 0; p), L2 at the 85 OS points, σ 0.25, λ_lin 0, 1, 10 (seed 0, lr 1e-2; `train.py --model mlp`, ROM `FlatMLPClosure`). The σ 0.5 L10 run and all comb runs were still running at the time of writing. Scripts: `scripts/oracle_summary.py`, `ml/structured_closure/diag_oracle.py`, `scripts/structured-closure/oracle_snapshots.py` (h(x) panels), `scripts/structured-closure/oracle_phase.py` (shift time series). Figures and csv in `$THINFILM_STORE/codes/ml-models/structured_closure/rom/{figures,}` (not in git).
+S = N(h, q, h_x, q_x, h_xx; p) − N(h, h³, 0, 0, 0; p), L2 at the 85 OS points, σ 0.25, λ_lin 0, 1, 10 (seed 0, lr 1e-2; `train.py --model mlp`, ROM `FlatMLPClosure`). The σ 0.5 L10 run and the comb runs are in the next section (18 Nov). Scripts: `scripts/oracle_summary.py`, `ml/structured_closure/diag_oracle.py`, `scripts/structured-closure/oracle_snapshots.py` (h(x) panels), `scripts/structured-closure/oracle_phase.py` (shift time series). Figures and csv in `$THINFILM_STORE/codes/ml-models/structured_closure/rom/{figures,}` (not in git).
 
 A priori on the oracle DNS states (NRMSE; net power P/P_DNS, positive = same sign as the DNS, i.e. damping):
 
@@ -249,13 +249,65 @@ Phase (DNS wavelength 89.8, celerity c = λ/T = 1.92; shift positive = ROM ahead
 - **The new MLPs make the waves 3–6% too slow from the start**, while the amplitude is still right: a wave-speed error of the closure itself, not one driven by amplitude. L0 and L10 stop lagging at about 3 and recover; L1 keeps lagging. Not monotone in λ_lin (one seed).
 - **A shape error is common to all learned closures.** After removing the shift, all reach 0.37–0.55 by t = 30–50 against 0.17–0.20 for the exact closure. The snapshots put it on the wave backs (rise too early) and in the substrate/ripple region. The new MLPs do not run away: 0.47 (L0) and 0.64 (L10) at t = 100 against 0.91–1.03.
 
+### Flat-film-exact MLP: all seed-0 runs (18 Nov)
+
+All four seed-0 runs finished; `rom_tests.py analyse mlp_s0.25_L0_seed0 mlp_s0.25_L1_seed0 mlp_s0.25_L10_seed0 mlp_s0.5_L10_seed0`.
+
+**Uniform film:** h and q stay exactly 1 for 100 time units in every run.
+
+**Comb inlet, growth error against OS** (median / max over the reliable modes; ROM against the model's own analytic dispersion in brackets, median):
+
+| | Re 20 | Re 120 | Re 200 |
+|---|---|---|---|
+| Lavalle | 0.024–0.043 / 0.097 | 0.27–0.28 / 0.41 | 0.36–0.39 / 0.53 |
+| MLP σ 0.25 L0 | 0.128 / 0.155 | 0.080 / 0.150 | **0.471 / 0.615** (11 of 23 modes) |
+| MLP σ 0.25 L1 | 0.021 / 0.041 | 0.078 / 0.425 (0.034) | 0.113 / 0.338 (0.048) |
+| MLP σ 0.25 L10 | 0.017 / 0.040 | 0.073 / 0.364 (0.029) | 0.084 / 0.328 (0.040) |
+| MLP σ 0.5 L10 | 0.015 / 0.041 | 0.068 / 0.379 (0.031) | 0.090 / 0.312 (0.044) |
+
+**Oracle, σ 0.5 L10 against σ 0.25 L10** (h error; max h ROM/DNS):
+
+| t | exact | `ml_sum_hhx` | σ 0.25 L10 | σ 0.5 L10 |
+|---|---|---|---|---|
+| 10 | 0.17 | 0.22 | 0.18 | 0.21, 2.02/2.01 |
+| 20 | 0.20 | 0.28 | 0.30 | 0.33, 2.01/2.01 |
+| 50 | 0.19 | 0.47 | 0.59 | **0.39**, 2.29/2.12 |
+| 100 | 0.55 | 1.26 | 0.70 | **0.62**, 2.23/2.08 |
+
+- **With the OS constraint the MLP's linear growth is within 7–11% of OS (median) at Re 120–200**, against 27–39% for Lavalle, and the ROM reproduces the model's own prediction to 3–5%. The max errors (0.31–0.43) are at the top of the comb band, above the frequencies the constraint covers.
+- **Without it (L0) the Re 200 waves are damped** (max |h − 1| 1e-3; only 11 modes detected) and Re 20 is 13% off. The constraint is needed for linear behaviour outside the oracle regime.
+- **σ 0.5 L10 is the best learned closure on the oracle case so far:** 0.39 at t = 50 and 0.62 at t = 100, against 0.47 and 1.26 for `ml_sum_hhx`. It is still about 0.2 above the exact closure at t = 50, and its crests are 6–10% high from t ≈ 50.
+- One seed each; the seed-1 runs of both L10 models are running (see the tracker).
+
+### ROM speed-up of the flat-film-exact MLP (18 Nov)
+
+`FlatMLPClosure` evaluated the network twice per cell and RK stage. The flat-film term N(h, h³, 0, 0, 0; p) depends only on h for a given case, so it is now tabulated once per run (h 0.02–8, dh 1e-4, h = 1 exactly a node so the uniform film stays exact; outside the range the network is evaluated; `n0_table = 0` in the config restores per-cell evaluation). The cell loop runs with OpenMP (`-fopenmp`; threads from `OMP_NUM_THREADS`).
+
+| | s per step (4000 cells) |
+|---|---|
+| before | 0.164 |
+| table, 1 thread | 0.085 |
+| table, 4 threads | 0.024 |
+
+Check on the oracle case, 400 steps: max |Δh| 1.5e-9 and max |Δq| 3.4e-9 against the old binary (the interpolation error); 1 and 4 threads give identical results. A 2000-time-unit broadband run takes about 3 h on 4 cores.
+
+### Broadband held-out a posteriori test: setup (gate GD; running)
+
+`ml/structured_closure/broadband.py` (`make`, `analyse`) and `run_broadband.sh`. The held-out DNS cases have h every 10 time units only (closure files), so the comparison is statistical:
+
+- **ROM:** flat start, the DNS Chang inlet parameters (F0 0.025, M 1000, f_cut 28 Hz, q_in = 1 + F(t) as in the DNS), L 800, N 4000, dt 0.005, t 0–2000, output every 10. The random phases differ from the DNS, so realisations differ.
+- **Statistics over t ≥ 1000 and 20 < x < 760:** h mean, std and skewness; main-crest height (peaks with prominence ≥ std h; mean and 90th percentile); mean wavelength (1 / spectral centroid over 300 < x < 760).
+- **Distances to the DNS:** envelope error (rms over 20-wide x-bins of std_ROM(x) − std_DNS(x), relative to the mean DNS std), PDF distance (Wasserstein-1 of h over std h_DNS), crest-height ratio.
+- **Cases:** the 7 held-out cases (Re20 Ca0.01 β45, Re40 Ca0.04 β45, Re80 Ca0.005 β6.4, Re80 Ca0.01 β90, Re120 Ca0.01 β45, Re120 Ca0.02 β90, Re200 Ca0.01 β6.4). **Closures:** Lavalle, `ml_sum_hhx`, V1 σ 0.25 L10, MLP σ 0.25 L10 and σ 0.5 L10 (seed 0); seed 1 of both MLPs follows.
+- DNS statistics for reference (t 1000–2000): std h 0.21–0.39; main-crest mean 1.16 (β 6.4 cases) to 1.66 (Re40 Ca0.04); skewness −0.5 (β 6.4) to +1.3.
+
 ## Where it fails
 
 - **Phase C results are one seed.** The a posteriori differences between nearby models (σ, λ_P) are large and of both signs (phase drift +7.8 to −7.2 at t = 50). The seed spread is not known; seed 1 is the backup.
-- **The only a posteriori case is the oracle case**, which is monochromatic (10 Hz) while the training data are broadband, so it is outside the training distribution. The broadband held-out a posteriori test (gate GD) has not been run.
+- **Until the broadband runs finish, the only a posteriori case is the oracle case**, which is monochromatic (10 Hz) while the training data are broadband, so it is outside the training distribution. The broadband held-out a posteriori test (gate GD) has not been run.
 - **V1 coefficients depend on h only, and S is linear in the gradients.** Training NRMSE (0.22–0.25) is close to held-out, which points to a limit of the form rather than of network capacity (not tested).
 - **The L2 constraint covers the forced band only.** Above it (comb ω > 0.9 at Re 120) the growth error reaches 0.3.
-- **The flat-film-exact MLP results are one seed and three λ_lin values at σ 0.25.** Its wave-speed error is not yet traced to the linear part (check: model phase speed against OS at ω ≈ 0.134). The shift is a single global cross-correlation over x = 20–760; jumps near t ≈ 80 are probably waves crossing the window ends.
+- **The flat-film-exact MLP results are one seed (seed 1 of the two L10 models running) and four (σ, λ_lin) pairs.** Its wave-speed error is not yet traced to the linear part (check: model phase speed against OS at ω ≈ 0.134). The shift is a single global cross-correlation over x = 20–760; jumps near t ≈ 80 are probably waves crossing the window ends.
 - **The power diagnosis uses 100 snapshots of one case,** and the region shares depend on thresholds.
 
 - **A.1 is a linearisation about h = q = 1, which is not an equilibrium of the MLP-augmented ROM when S₀ ≠ 0.** The growth numbers describe the closure's linear part, not the closed-loop base state. The ROM runs used raw central differences for h_x; the long-wave numbers do not depend on the filter, but finite-k ones would.

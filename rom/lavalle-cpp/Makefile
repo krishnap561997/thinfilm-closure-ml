@@ -3,7 +3,7 @@
 export HDF5_CXX ?= g++
 export HDF5_CLINKER ?= g++
 CXX = h5c++ -shlib
-CXXFLAGS ?= -O3 -std=c++17 -Wall -Wextra -Wpedantic -Iinclude
+CXXFLAGS ?= -O3 -fopenmp -std=c++17 -Wall -Wextra -Wpedantic -Iinclude  # OpenMP: FlatMLPClosure cell loop (OMP_NUM_THREADS)
 
 SOURCES := $(shell find src -name '*.cpp')
 TARGET := thinfilm

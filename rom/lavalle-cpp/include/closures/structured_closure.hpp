@@ -55,5 +55,8 @@ private:
     std::unique_ptr<MLP> mlp_;
     double sigma_ = 0.5;
     std::string desc_;
+    // N0(h) = N(h, h^3, 0, 0, 0; p) tabulated once per run (p is fixed), linear interpolation; h = 1 is a node,
+    // so the uniform film stays exact. Outside [t0_, t0_ + (nt_-1) dt_] the network is evaluated directly.
+    std::vector<double> n0_; double t0_ = 0, tdh_ = 1e-4; int nt_ = 0;
     static inline const FlatMLPClosure* active_ = nullptr;
 };

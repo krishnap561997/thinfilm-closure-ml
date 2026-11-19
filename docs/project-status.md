@@ -1,6 +1,6 @@
 # Project status
 
-_Last updated: 2026-11-17 (evening): flat-film-exact MLP oracle a posteriori and phase diagnostic; earlier the same day: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A; 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
+_Last updated: 2026-11-18: all seed-0 flat-film-exact MLP runs analysed (σ 0.5 L10 best on the oracle), ROM speed-up (6.8×), broadband held-out a posteriori runs and seed-1 training submitted; priority set to the most accurate ML closure, first draft mid-December. Previous: 2026-11-17 (evening), flat-film-exact MLP oracle a posteriori and phase diagnostic; earlier on 17 Nov: comb-forced DNS results, cache v2 built, structured closure V1 trained, implemented in the ROM and run a posteriori on the oracle case (branch `structured-closure`). Previous: 2026-11-16, Orr–Sommerfeld reference and gate GB, Phase A; 2026-11-13, functional-form plan v2; submission moved to 15 Jan 2027._
 Update this file in the same commit as any change that moves the science forward.
 
 ## Numerics
@@ -149,11 +149,19 @@ Update this file in the same commit as any change that moves the science forward
   - A priori on the oracle case: NRMSE 0.05 (half of `ml_sum_hhx` and V1) and the right sign of net power (about half the DNS damping) for λ_lin 0 and 10.
   - A posteriori: no crest overgrowth (L10 max h within 4% to t = 100); h error 0.59 at t = 50 (L10; `ml_sum_hhx` 0.47), but 0.58–0.70 at t = 100 against 1.25–1.54 for `ml_sum_hhx` and V1.
   - New failure: waves 3–6% too slow from the start (wave-speed error). After removing the shift, every learned closure keeps a shape error of about 0.3 above the exact closure (wave backs, substrate/ripples).
+- **Flat-film-exact MLP, all seed-0 runs (18 Nov):**
+  - σ 0.5 L10 is the best learned closure on the oracle so far: h error 0.39 at t = 50 and 0.62 at t = 100 (`ml_sum_hhx` 0.47 / 1.26, exact 0.19 / 0.55); crests 6–10% high from t ≈ 50.
+  - Comb: linear growth within 7–11% of OS (median) at Re 120–200 for λ_lin 1 and 10 (Lavalle 27–39%). Without the constraint (L0) the Re 200 waves are damped (47% error), so the constraint is needed.
+  - ROM speed-up: the flat-film term N(h, h³, 0, 0, 0) is tabulated in h and the cell loop uses OpenMP; 0.164 → 0.024 s per step (4 threads), identical results to 1.5e-9.
 - **Bug fixed:** the truncated Gaussian second derivative is not zero on constants (cache-v2 h_xx carries −3.5e-3·h at σ 0.5).
 
 ## Next steps
 
-**Current work (17 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker is `docs/plans/structured-closure-progress.md`. The explainers for Krishna are `docs/explainers/2026-11-16-structured-closure-explainer.md` and `2026-11-17-structured-closure-explainer.md`.
+**Priority (18 Nov 2026, Krishna):** first draft of Paper 1 by mid-December. Make the most accurate ML closure work, judged a posteriori (closed-loop ROM against the DNS and the exact closure); minimise work on functional forms and symbolic regression (plan Phase E). Slides on hold.
+
+**Running (18 Nov):** broadband held-out a posteriori runs, 7 cases × 5 closures (`ml/structured_closure/broadband.py`, job 51936424); seed 1 of the two λ_lin 10 MLPs (51936231), with their ROM and broadband runs chained (51936523).
+
+**Current work (17 Nov 2026): structured-closure plan.** The plan is `docs/plans/structured-closure-os-plan.md`. The task tracker is `docs/plans/structured-closure-progress.md`. The explainers for Krishna are `docs/explainers/2026-11-16-structured-closure-explainer.md`, `2026-11-17-structured-closure-explainer.md` and `2026-11-18-flat-mlp-explainer.md`.
 
 - **Done:**
   - the OS reference and linear tests (B.1–B.8, gate GB, D2 = L2);
@@ -165,7 +173,7 @@ Update this file in the same commit as any change that moves the science forward
   - seed spread of the a posteriori numbers (seed 1 is the backup);
   - broadband held-out a posteriori runs (Phase D, gate GD);
   - V2 (coefficients depending on q/h³), or more data (11 extra cases), for wave speed.
-- **The functional-form plan is secondary.** It serves as the monomial baseline and for the closed forms in Phase E. It shares cache v2 and the closed-loop harness.
+- **The functional-form plan is secondary.** It serves as the monomial baseline. Phase E closed forms are de-emphasised (18 Nov). It shares cache v2 and the closed-loop harness.
 
 
 **Oracle *a posteriori* (31 Oct 2026).** Full write-up: `docs/results/oracle-a-posteriori.md`. Re120 Ca0.01 β45, 10 Hz, 100 time units.
@@ -193,7 +201,7 @@ Title: "A machine-learning augmented reduced model for thin liquid films down an
 
 **Targets.**
 - Journal: IJHMT or AI Thermal Fluids. Switching from revtex/PRFluids to the journal template is still to do, and the introduction should be framed around heat-transfer applications.
-- Submission: target Fri 15 Jan 2027 (moved from 15 Dec on 13 Nov; no hard results freeze, draft to co-authors about 4 Jan).
+- First draft: mid-December 2026 (set 18 Nov). Submission: target Fri 15 Jan 2027 (moved from 15 Dec on 13 Nov; draft to co-authors about 4 Jan).
 - APS DFD talk on 22 Nov 2026; soft results freeze on Sun 15 Nov.
 
 **Scope.** A comprehensive ML-augmented reduced model for falling films with a passive gas: closures for ΔM_x, ΔT_w and ΔP_x (ΔP_x with curvature inputs, and non-Markovian memory closures if needed). Paper 1 includes:
@@ -236,7 +244,7 @@ Paper 2: gas-sheared films. Paper 3: heated films (heat transfer).
 | 16–22 Nov | Plan intake; OS solver and B.1–B.8; Phase A; gate GB (D2 = L2); comb DNS; cache v2. APS DFD talk 22 Nov |
 | 23–29 Nov | Comb DNS write-up; Phase C training (C.1–C.3) on cache v2 |
 | 30 Nov–6 Dec | Solver integration and tests (C.4–C.10); Phase D on the oracle case; **gate GD (~6 Dec): which closure Paper 1 carries** |
-| 7–20 Dec | Phase D broadband; Phase E closed forms (meets the FF plan); Phase F rollout if approved |
+| 7–20 Dec | Phase D broadband; first draft mid-December; Phase F rollout if approved (Phase E closed forms de-emphasised, 18 Nov) |
 | From 4 Jan | Draft to co-authors; submission 15 Jan 2027 |
 
 

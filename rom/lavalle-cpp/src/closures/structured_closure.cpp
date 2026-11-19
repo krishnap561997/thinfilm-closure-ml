@@ -96,15 +96,30 @@ bool FlatMLPClosure::is_config(const std::string& file) {
     try { return read_kv(file).count("flat_mlp") > 0; } catch (...) { return false; }
 }
 
-FlatMLPClosure::FlatMLPClosure(const std::string& config_file, const Parameters&) {
+FlatMLPClosure::FlatMLPClosure(const std::string& config_file, const Parameters& p) {
     auto kv = read_kv(config_file);
     mlp_ = std::make_unique<MLP>(kv.at("flat_mlp"));
     if (kv.count("sigma")) sigma_ = std::stod(kv["sigma"]);
     for (const auto& n : mlp_->inputs())
         if (n != "h" && n != "q" && n != "h_x" && n != "q_x" && n != "h_xx" && n != "Re" && n != "Ca" && n != "angle")
             throw std::runtime_error("FlatMLPClosure: unsupported input " + n);
+    // flat-film table (n0_table = 0 disables it and evaluates N(h, h^3, 0, 0, 0) per cell, as before)
+    const bool tab = !kv.count("n0_table") || std::stoi(kv["n0_table"]) != 0;
+    if (tab) {
+        const int below = int(std::lround((1.0 - 0.02) / tdh_)), above = int(std::lround((8.0 - 1.0) / tdh_));
+        t0_ = 1.0 - below * tdh_; nt_ = below + above + 1;
+        Field hh(nt_), h3(nt_), zero(nt_, 0.0);
+        for (int j = 0; j < nt_; ++j) { hh[j] = (j == below) ? 1.0 : t0_ + j * tdh_; h3[j] = hh[j] * hh[j] * hh[j]; }
+        std::vector<const double*> c0;
+        for (const auto& n : mlp_->inputs())
+            c0.push_back(n == "h" ? hh.data() : n == "q" ? h3.data() : (n == "Re" || n == "Ca" || n == "angle") ? nullptr : zero.data());
+        n0_.resize(nt_);
+        for (int j = 0; j < nt_; ++j) n0_[j] = mlp_->eval(c0, j, p);
+    }
     desc_ = "Flat-film-exact source MLP: " + kv.at("flat_mlp") + ", sigma " + std::to_string(sigma_) +
-            " (S = N(state) - N(h, h^3, 0, 0, 0))\n";
+            " (S = N(state) - N(h, h^3, 0, 0, 0))" +
+            (tab ? ", N0 tabulated h " + std::to_string(t0_) + "-" + std::to_string(t0_ + (nt_ - 1) * tdh_) : ", N0 direct") +
+            "\n";
 }
 
 FlatMLPClosure::~FlatMLPClosure() = default;
@@ -124,6 +139,14 @@ void FlatMLPClosure::add_source(Field& rhs_q, const Field& h, const Field& q, co
         else if (n == "h_xx") { c1.push_back(hxx.data()); c0.push_back(zero.data()); }
         else { c1.push_back(nullptr); c0.push_back(nullptr); }
     }
-    for (int i = p.ng; i < nx - p.ng; ++i)
-        rhs_q[i] -= mlp_->eval(c1, i, p) - mlp_->eval(c0, i, p);
+    #pragma omp parallel for schedule(static)
+    for (int i = p.ng; i < nx - p.ng; ++i) {
+        double n0;
+        const double s = (h[i] - t0_) / tdh_;
+        if (nt_ > 1 && s >= 0.0 && s < nt_ - 1) {
+            const int j = int(s); const double w = s - j;
+            n0 = (w == 0.0) ? n0_[j] : (1 - w) * n0_[j] + w * n0_[j + 1];
+        } else n0 = mlp_->eval(c0, i, p);
+        rhs_q[i] -= mlp_->eval(c1, i, p) - n0;
+    }
 }
