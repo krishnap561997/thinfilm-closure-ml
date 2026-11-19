@@ -152,6 +152,7 @@ Update this file in the same commit as any change that moves the science forward
 - **Flat-film-exact MLP, all seed-0 runs (18 Nov):**
   - σ 0.5 L10 is the best learned closure on the oracle so far: h error 0.39 at t = 50 and 0.62 at t = 100 (`ml_sum_hhx` 0.47 / 1.26, exact 0.19 / 0.55); crests 6–10% high from t ≈ 50.
   - Comb: linear growth within 7–11% of OS (median) at Re 120–200 for λ_lin 1 and 10 (Lavalle 27–39%). Without the constraint (L0) the Re 200 waves are damped (47% error), so the constraint is needed.
+  - Dense broadband a posteriori (10 time units from the DNS state, DNS inlet): the new MLPs have the lowest error on both held-out cases (Re 20 Ca 0.01 β 45: 0.11–0.14 at t = 10 against 0.22 for `ml_sum_hhx` and 0.28 for Lavalle; Re 120: 0.25–0.30 against 0.42 and 0.59). `ml_sum_hhx` is better on Re 40 Ca 0.002 (training case, We 0.08).
   - ROM speed-up: the flat-film term N(h, h³, 0, 0, 0) is tabulated in h and the cell loop uses OpenMP; 0.164 → 0.024 s per step (4 threads), identical results to 1.5e-9.
 - **Bug fixed:** the truncated Gaussian second derivative is not zero on constants (cache-v2 h_xx carries −3.5e-3·h at σ 0.5).
 

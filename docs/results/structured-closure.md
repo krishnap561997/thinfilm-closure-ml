@@ -301,6 +301,24 @@ Check on the oracle case, 400 steps: max |Δh| 1.5e-9 and max |Δq| 3.4e-9 again
 - **Cases:** the 7 held-out cases (Re20 Ca0.01 β45, Re40 Ca0.04 β45, Re80 Ca0.005 β6.4, Re80 Ca0.01 β90, Re120 Ca0.01 β45, Re120 Ca0.02 β90, Re200 Ca0.01 β6.4). **Closures:** Lavalle, `ml_sum_hhx`, V1 σ 0.25 L10, MLP σ 0.25 L10 and σ 0.5 L10 (seed 0); seed 1 of both MLPs follows.
 - DNS statistics for reference (t 1000–2000): std h 0.21–0.39; main-crest mean 1.16 (β 6.4 cases) to 1.66 (Re40 Ca0.04); skewness −0.5 (β 6.4) to +1.3.
 
+### Dense broadband a posteriori runs (18 Nov)
+
+`ml/structured_closure/dense_aposteriori.py` (`forcing`, `make`, `analyse`). The dense restarts in `BasC/DNS/dense/` have h and q profiles every 0.01 for 10 time units; their inlet forcing is active (restarted after the 10 Nov fix). From them, `forcing` builds `rom/rom_forcing.h5` (as `pipeline/oracle/make_rom_forcing.py`, without closure terms), and the ROM runs from the DNS state with the DNS inlet, as in the oracle case. No exact-closure reference (the profiles carry no closure terms). Figure: `scripts/structured-closure/dense_error_fig.py`; csv `rom/dense/dense_summary.csv` (error every 0.1). Linear-wave figure for the same closures: `scripts/structured-closure/comb_growth_fig.py`.
+
+h error / std h_DNS over 20 < x < 760 at t = 5 / 10 after the DNS state (max h at t = 10, ROM/DNS):
+
+| | Re 20 Ca 0.01 β 45 (held out) | Re 120 Ca 0.01 β 45 (held out) | Re 40 Ca 0.002 β 45 (training) |
+|---|---|---|---|
+| Lavalle | 0.22 / 0.28 (1.90/2.10) | 0.45 / 0.59 (1.57/2.08) | 0.25 / 0.39 (1.72/2.18) |
+| `ml_sum_hhx` | 0.11 / 0.22 (2.12) | 0.24 / 0.42 (2.12) | **0.06 / 0.10** (2.13) |
+| V1 σ 0.25 L10 | 0.17 / 0.25 (2.07) | 0.23 / 0.36 (2.14) | 0.16 / 0.32 (1.90) |
+| MLP σ 0.25 L10 | **0.09 / 0.11** (2.15) | **0.20 / 0.25** (2.05) | 0.09 / 0.22 (2.03) |
+| MLP σ 0.5 L10 | 0.10 / 0.14 (2.11) | 0.21 / 0.30 (2.04) | 0.11 / 0.22 (1.95) |
+
+- **On both held-out broadband cases the flat-film-exact MLPs have the lowest error:** at t = 10 about half of `ml_sum_hhx` at Re 20 and 30–40% lower at Re 120, with crest heights within 2–3% of the DNS.
+- **σ 0.25 is slightly ahead of σ 0.5 over these 10 time units,** the reverse of the oracle ranking at t = 50; one seed, so not separable yet.
+- **Exception: Re 40 Ca 0.002 (We 0.08, a training case).** `ml_sum_hhx` is best (0.10 against 0.22), and the new MLPs let the crests sag (1.95–2.03 against 2.18). This strongly capillary regime is where the DNS momentum budget is least reliable.
+
 ## Where it fails
 
 - **Phase C results are one seed.** The a posteriori differences between nearby models (σ, λ_P) are large and of both signs (phase drift +7.8 to −7.2 at t = 50). The seed spread is not known; seed 1 is the backup.
