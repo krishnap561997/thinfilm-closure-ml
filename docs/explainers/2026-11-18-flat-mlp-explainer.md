@@ -1,4 +1,4 @@
-# 18 Nov 2026: flat-film-exact MLP, all seed-0 results; faster ROM; broadband test
+# 18–19 Nov 2026: flat-film-exact MLP, all seed-0 results; faster ROM; broadband test; safeguard
 
 _For Krishna. Continues `2026-11-17-structured-closure-explainer.md` (Part 6). Numbers and tables: `docs/results/structured-closure.md`, sections dated 18 Nov._
 
@@ -50,12 +50,31 @@ The oracle case is one monochromatic case, while the closures were trained on br
 
 **Seed 1 (ROM tests):** the linear growth is as good as seed 0, and σ 0.5 beats σ 0.25 again on the oracle case (h error 0.37 at t = 50 against 0.48). So the σ ranking holds across both seeds. The t = 100 error differs by about 0.15 between seeds (0.62 and 0.75).
 
-## 5. What comes after (proposed, not started)
+## 5. Why the two runs blew up, and the safeguard (19 Nov)
 
-The broadband results confirm the MLP but add a robustness problem. In rough order of cost:
-0. **Hyperbolicity safeguard (new, 19 Nov).** Limit the closure in the ROM where the system gets close to losing hyperbolicity, so no run fails. This comes first, since a closure that crashes cannot be reported as the model.
-1. **Ensembles.** Average 3–5 seeds in the ROM. This is cheap, and averaging usually reduces closed-loop drift.
-2. **Wider inputs.** Add q_xx and h_xxx, or a second filter width, to target the wave-back shape.
-3. **Short-rollout fine-tuning (plan Phase F).** A differentiable ROM, trained on 2–5-time-unit rollouts from DNS states. This is the most direct way to train for closed-loop accuracy, but it is the most work. Ask before starting.
+**What happened.** In both failed runs the film first got thinner than anything in the training data, and the network then extrapolated.
+- h dropped below 0.28 (the lowest the DNS training data goes) from t ≈ 110 in the Re 80 β 90° run and t ≈ 420 in the Re 40 Ca 0.04 run. The DNS minima of these cases are 0.18 and 0.29.
+- By the end, 5–9% of the domain was a near-dry film, down to h ≈ 0.01.
+- There, the closure S reached 10–15. In training its typical size is 0.17, so the network was producing values about 60 times larger than anything it was fitted to.
 
-**Not planned now:** closed forms and symbolic regression (Phase E), per your 18 Nov decision.
+**The "loss of hyperbolicity" message was a symptom, not the cause.** For this closure the hyperbolicity check reduces to 4·dP/dh, which is always positive. The code computed it as a difference of two large numbers, and rounding made it negative once h was tiny. That is now computed exactly, but on its own this would only let the film thin further.
+
+**The safeguard,** part of the closure, off unless switched on:
+- **Clamp:** each network input is limited to the range of the training data (0.01–99.99 percentiles). A narrower range (0.1–99.9) already touched real wave crests and troughs on the oracle case.
+- **Taper:** S is faded smoothly to zero for h below 0.25, and is zero below 0.15, so in near-dry film the ROM falls back to Lavalle. Lavalle survives these cases.
+- Both thresholds come from the training data and the DNS minima, not from tuning on the test cases.
+- A flat film stays exactly flat.
+
+**Status:** the oracle, comb and all 7 broadband cases are being rerun with the safeguard. It passes if every case completes and the results that were already good do not change by more than about 0.01.
+
+## 6. Making it journal quality (plan, not started)
+
+The full plan is `docs/plans/flat-mlp-journal-plan.md`. In short:
+- **No new architecture.** Training takes a minute and the held-out error stops improving by epoch 60, so the model is converged. Every learned closure shares the same wave-back error, which points to missing input information, not to too small a network.
+- **What a reviewer will ask for, and the plan provides:**
+  - a learning-rate schedule with validation stopping, and loss curves;
+  - an ablation of width/depth, inputs (adding q_xx, h_xxx or a second filter width) and σ, with 3 seeds each;
+  - a seed spread on every result.
+- **Fair model selection.** So far the 7 broadband test cases were also looked at when choosing σ. From now on, choices are made on a separate validation set: the oracle case, the Re 40 Ca 0.002 dense restart, and a held-out time window of training cases. The broadband test is then run once on the final model.
+- **Possibly a seed ensemble** as the final model (average S over 3–5 networks).
+- **Later, only if needed:** non-local or memory inputs, or short-rollout fine-tuning (Phase F). Closed forms (Phase E) are not planned, per your 18 Nov decision.
