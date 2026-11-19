@@ -12,12 +12,20 @@ struct CharData { double lm,lp,maxabs,disc; };
 
 CharData characteristics(double h, double q, const Parameters& p, const ClosurePoint& c) {
     const double hsafe=std::max(h,1e-12);
-    // F2 = q^2/h * phi_sf(h,q) + P(h)
-    const double a = -q*q*c.phi_sf/(hsafe*hsafe)
-                   + q*q*c.dphi_sf_dh/hsafe
-                   + LavallePressureLaw::dPdh(hsafe,p) + c.ddP_dh;  // STRUCTCLOSURE: + ddP_dh
+    // F2 = q^2/h * phi_sf(h,q) + P(h); Jacobian [[0,1],[a,b]] with
+    //   a = -q^2 phi_sf/h^2 + q^2 dphi_sf_dh/h + dP/dh + ddP_dh  (STRUCTCLOSURE: + ddP_dh)
     const double b = 2.0*q*c.phi_sf/hsafe + q*q*c.dphi_sf_dq/hsafe;
-    const double disc = b*b + 4.0*a;
+    // b^2 + 4a with the q^2/h^2 terms combined analytically: for phi_sf = 1 (Lavalle, flat MLP) this is exactly
+    // 4 (dP/dh + ddP_dh); the direct form cancels two O(q^2/h^2) terms and goes negative by rounding when h -> 0.
+#ifdef OLD_DISC   // pre-19 Nov form (build with CXXFLAGS+=-DOLD_DISC to reproduce older runs bit for bit)
+    const double disc = b*b + 4.0*(-q*q*c.phi_sf/(hsafe*hsafe) + q*q*c.dphi_sf_dh/hsafe
+                                   + LavallePressureLaw::dPdh(hsafe,p) + c.ddP_dh);
+#else
+    const double u = q/hsafe;
+    const double disc =4.0*u*u*c.phi_sf*(c.phi_sf - 1.0) + 4.0*q*u*u*c.phi_sf*c.dphi_sf_dq
+                      + u*u*q*q*c.dphi_sf_dq*c.dphi_sf_dq + 4.0*q*u*c.dphi_sf_dh
+                      + 4.0*(LavallePressureLaw::dPdh(hsafe,p) + c.ddP_dh);
+#endif
     if (disc < 0.0) return {0.5*b,0.5*b,std::abs(0.5*b),disc};
     const double root=std::sqrt(disc);
     const double lm=0.5*(b-root), lp=0.5*(b+root);

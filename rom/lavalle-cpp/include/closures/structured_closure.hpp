@@ -58,5 +58,12 @@ private:
     // N0(h) = N(h, h^3, 0, 0, 0; p) tabulated once per run (p is fixed), linear interpolation; h = 1 is a node,
     // so the uniform film stays exact. Outside [t0_, t0_ + (nt_-1) dt_] the network is evaluated directly.
     std::vector<double> n0_; double t0_ = 0, tdh_ = 1e-4; int nt_ = 0;
+    // Safeguard (off unless the config has the keys; 19 Nov): clip_<v> = lo hi clamps the network inputs to the
+    // training range, v in h, dq (= q - h^3), h_x, q_x, h_xx; the clamped state is (hc, hc^3 + clamp(q - h^3), ...)
+    // so a flat film stays exact. taper_h = h0 h1 multiplies S by a smoothstep in h, 0 below h0 and 1 above h1.
+    enum { CH = 0, CDQ, CHX, CQX, CHXX, NCLIP };
+    double clo_[NCLIP], chi_[NCLIP]; bool clip_[NCLIP] = {false, false, false, false, false};
+    double taper0_ = 0, taper1_ = 0; bool taper_ = false;
+    double n0_of(double h, const Parameters& p) const;
     static inline const FlatMLPClosure* active_ = nullptr;
 };

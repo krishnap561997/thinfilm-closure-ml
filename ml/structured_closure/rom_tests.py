@@ -32,7 +32,11 @@ def make(runs):
     for run in runs:
         base = os.path.join(OUT, run)
         import json
-        if json.load(open(os.path.join(D.BASE, "runs", run, "config.json"))).get("model", "v1") == "mlp":
+        from safeguard import base_run, config
+        if run.endswith("_sg"):   # flat MLP + safeguard (safeguard.py)
+            cf = config(run)
+            sc = lambda c: cf
+        elif json.load(open(os.path.join(D.BASE, "runs", run, "config.json"))).get("model", "v1") == "mlp":
             from export_mlp import export_mlp
             cf = export_mlp(run)
             sc = lambda c: cf
@@ -78,7 +82,8 @@ def analyse(runs):
         except Exception as e:
             print("uniform: not available", e)
         from model import load_run
-        m, cfg = load_run(os.path.join(D.BASE, "runs", run))
+        from safeguard import base_run
+        m, cfg = load_run(os.path.join(D.BASE, "runs", base_run(run)))
         for c in COMB:
             d = os.path.join(base, f"comb_{c}")
             R, info = run_modes(d)

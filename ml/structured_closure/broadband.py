@@ -55,6 +55,9 @@ def closure_file(name, case):
         return None
     if name == "ml_sum_hhx":
         return ML_SUM
+    if name.endswith("_sg"):   # flat MLP + training-range clamp and thin-film taper (safeguard.py)
+        from safeguard import config
+        return config(name)
     cfg = json.load(open(os.path.join(D.BASE, "runs", name, "config.json")))
     if cfg.get("model", "v1") == "mlp":
         from export_mlp import export_mlp

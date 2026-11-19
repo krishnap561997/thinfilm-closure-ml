@@ -86,9 +86,34 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
 
         // Start run-time solver. chrono cpp equivalent of tic toc
         auto start=std::chrono::steady_clock::now();
+        // CRASHDUMP: keep the last CRASH_N states (every CRASH_EVERY steps) and, if a step throws, write them
+        // and the last good state to crash_states.h5 (same layout as thinfilm_training_data.h5; dh/dt, dq/dt zero).
+        const int CRASH_EVERY=std::max(1,static_cast<int>(std::lround(0.1/p.dt))), CRASH_N=200;
+        std::vector<std::pair<double,State>> ring; ring.reserve(CRASH_N);
+        int ring_next=0;
+        State last=state; double t_last=t0;
+        auto dump_crash=[&](){
+            H5TrainingWriter cw("crash_states.h5",x,p);
+            Field h(p.in.N),q(p.in.N),r(p.in.N),z(p.in.N,0.0);
+            auto put=[&](double tt,const State& s){
+                for(int i=0;i<p.in.N;++i){const int I=p.ng+i; h[i]=s.h[I]; q[i]=s.q[I]; r[i]=s.r[I];}
+                const double F=noise.value(tt); cw.append(tt,h,q,r,z,z,F,1.0+F);
+            };
+            const int nr=static_cast<int>(ring.size());
+            for(int k=0;k<nr;++k){ const auto& e=ring[(ring_next+k)%nr]; if(e.first<t_last) put(e.first,e.second); }
+            put(t_last,last);
+            std::cerr<<"crash_states.h5: "<<nr<<" states every "<<CRASH_EVERY*p.dt<<" + last good state t="<<t_last<<'\n';
+        };
+        try{
         for(int n=0;n<p.nsteps;++n){
             const double t=t0+n*p.dt;
-            const State old=state;
+            last=state; t_last=t;
+            if(n%CRASH_EVERY==0){
+                if(static_cast<int>(ring.size())<CRASH_N) ring.emplace_back(t,state);
+                else ring[ring_next]={t,state};
+                ring_next=(ring_next+1)%CRASH_N;
+            }
+            const State& old=last;
             const double F0=noise.value(t);
             inlet<<std::setprecision(17)<<t<<','<<t*p.TN<<','<<F0<<','<<1.0+F0<<'\n';
 
@@ -136,6 +161,7 @@ int main(int argc,char** argv){      //Arguments let you run either ./thinfilm o
                 writer.append(state_time,h,q,r,dhdt,dqdt,F,1.0+F);
             }
         }
+        }catch(const std::exception&){ try{ dump_crash(); }catch(...){ std::cerr<<"crash dump failed\n"; } throw; }
 
         
         Field hf(p.in.N),qf(p.in.N),rf(p.in.N);

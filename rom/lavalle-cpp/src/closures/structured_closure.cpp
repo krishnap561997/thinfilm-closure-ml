@@ -116,10 +116,36 @@ FlatMLPClosure::FlatMLPClosure(const std::string& config_file, const Parameters&
         n0_.resize(nt_);
         for (int j = 0; j < nt_; ++j) n0_[j] = mlp_->eval(c0, j, p);
     }
+    std::string sg;
+    const char* cname[NCLIP] = {"clip_h", "clip_dq", "clip_h_x", "clip_q_x", "clip_h_xx"};
+    for (int k = 0; k < NCLIP; ++k)
+        if (kv.count(cname[k])) {
+            std::istringstream ss(kv[cname[k]]);
+            if (!(ss >> clo_[k] >> chi_[k]) || !(clo_[k] < chi_[k])) throw std::runtime_error("FlatMLPClosure: bad " + std::string(cname[k]));
+            clip_[k] = true; sg += std::string(" ") + cname[k] + " [" + std::to_string(clo_[k]) + ", " + std::to_string(chi_[k]) + "]";
+        }
+    if (kv.count("taper_h")) {
+        std::istringstream ss(kv["taper_h"]);
+        if (!(ss >> taper0_ >> taper1_) || !(taper0_ < taper1_)) throw std::runtime_error("FlatMLPClosure: bad taper_h");
+        taper_ = true; sg += " taper_h " + std::to_string(taper0_) + "-" + std::to_string(taper1_);
+    }
     desc_ = "Flat-film-exact source MLP: " + kv.at("flat_mlp") + ", sigma " + std::to_string(sigma_) +
             " (S = N(state) - N(h, h^3, 0, 0, 0))" +
             (tab ? ", N0 tabulated h " + std::to_string(t0_) + "-" + std::to_string(t0_ + (nt_ - 1) * tdh_) : ", N0 direct") +
-            "\n";
+            (sg.empty() ? "" : "; safeguard:" + sg) + "\n";
+}
+
+double FlatMLPClosure::n0_of(double h, const Parameters& p) const {
+    const double s = (h - t0_) / tdh_;
+    if (nt_ > 1 && s >= 0.0 && s < nt_ - 1) {
+        const int j = int(s); const double w = s - j;
+        return (w == 0.0) ? n0_[j] : (1 - w) * n0_[j] + w * n0_[j + 1];
+    }
+    const double h3 = h * h * h, zero = 0.0;
+    std::vector<const double*> c0;
+    for (const auto& n : mlp_->inputs())
+        c0.push_back(n == "h" ? &h : n == "q" ? &h3 : (n == "Re" || n == "Ca" || n == "angle") ? nullptr : &zero);
+    return mlp_->eval(c0, 0, p);
 }
 
 FlatMLPClosure::~FlatMLPClosure() = default;
@@ -128,6 +154,30 @@ void FlatMLPClosure::add_source(Field& rhs_q, const Field& h, const Field& q, co
     const Field hx = gauss_deriv_hN(h, sigma_, p.dx, 1), qx = gauss_deriv_hN(q, sigma_, p.dx, 1),
                 hxx = gauss_deriv_hN(h, sigma_, p.dx, 2);
     const int nx = int(h.size());
+    const bool any_clip = clip_[CH] || clip_[CDQ] || clip_[CHX] || clip_[CQX] || clip_[CHXX];
+    if (any_clip || taper_) {   // safeguarded path; the plain path below is unchanged (bit for bit)
+        auto cl = [&](int k, double v) { return clip_[k] ? std::min(std::max(v, clo_[k]), chi_[k]) : v; };
+        Field hc(nx), qc(nx), hxc(nx), qxc(nx), hxxc(nx);
+        for (int i = 0; i < nx; ++i) {
+            hc[i] = cl(CH, h[i]);
+            qc[i] = hc[i] * hc[i] * hc[i] + cl(CDQ, q[i] - h[i] * h[i] * h[i]);
+            hxc[i] = cl(CHX, hx[i]); qxc[i] = cl(CQX, qx[i]); hxxc[i] = cl(CHXX, hxx[i]);
+        }
+        std::vector<const double*> c1;
+        for (const auto& n : mlp_->inputs())
+            c1.push_back(n == "h" ? hc.data() : n == "q" ? qc.data() : n == "h_x" ? hxc.data() : n == "q_x" ? qxc.data()
+                         : n == "h_xx" ? hxxc.data() : nullptr);
+        #pragma omp parallel for schedule(static)
+        for (int i = p.ng; i < nx - p.ng; ++i) {
+            double w = 1.0;
+            if (taper_) {
+                const double s = std::min(std::max((h[i] - taper0_) / (taper1_ - taper0_), 0.0), 1.0);
+                w = s * s * (3.0 - 2.0 * s);
+            }
+            if (w > 0.0) rhs_q[i] -= w * (mlp_->eval(c1, i, p) - n0_of(hc[i], p));
+        }
+        return;
+    }
     Field h3(nx), zero(nx, 0.0);
     for (int i = 0; i < nx; ++i) h3[i] = h[i] * h[i] * h[i];
     std::vector<const double*> c1, c0;

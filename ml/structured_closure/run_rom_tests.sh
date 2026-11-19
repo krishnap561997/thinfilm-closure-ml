@@ -11,8 +11,8 @@
 #SBATCH --output=/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/structured_closure/logs/rom_%A_%a.out
 module load gcc/14.2.0 hdf5
 export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK:-1}
-BIN=/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code/thinfilm-closure-ml/rom/lavalle-cpp/thinfilm
-D=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/structured_closure/rom/runs.txt)
+BIN=${BIN:-/blue/bala1s/krishnap.kalivel/TLFHydrodynamics/code/thinfilm-closure-ml/rom/lavalle-cpp/thinfilm}   # BIN=... to run another build
+D=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" /blue/bala1s/krishnap.kalivel/TLFHydrodynamics/thinfilm-closure-ml/codes/ml-models/structured_closure/rom/${LIST:-runs.txt})   # LIST=... another list
 cd "$D" || exit 1
 ORA=none; [ -f oracle.txt ] && ORA=oracle.txt
 "$BIN" input.txt $ORA sc.txt > run.log 2>&1
