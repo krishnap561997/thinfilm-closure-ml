@@ -161,7 +161,7 @@ def waves(out):
     snap = 1
     cl = [("lavalle", LAB["lav"], GRAY), ("ml_sum_hhx", LAB["plain"], ORANGE), (MODEL, LAB["cons"], TEAL)]
     fs, a0 = plt.subplots(figsize=(11, 3.8))
-    fp, axp = plt.subplots(1, 3, figsize=(11, 3.9))
+    fp, axp = plt.subplots(1, 3, figsize=(11, 3.5))
     off = 1.8; x1 = 420.0
     for j, (case, title) in enumerate(cases):
         r = load_rom(os.path.join(OUT, cl[0][0], case), 1000.0); x = r[1]; m = (x > X0) & (x < X1); mw = (x > 120) & (x < x1)
@@ -180,13 +180,14 @@ def waves(out):
         for lab, c, H in curves:
             p, e = np.histogram(H[:, m].ravel(), bins=bins, density=True)
             ax.plot(0.5 * (e[1:] + e[:-1]), p, color=c, lw=3 if lab == "DNS" else 2.2, label=lab)
-        ax.set_xlabel("h"); ax.set_xlim(0, 3.2); ax.set_ylim(bottom=0); ax.set_title(title, fontsize=14, fontweight="bold")
-    axp[0].set_ylabel("PDF")
+        ax.set_xlabel("h", labelpad=1); ax.set_xlim(0, 3.2); ax.set_ylim(bottom=0); ax.set_title(title, fontsize=14, fontweight="bold")
+    axp[0].set_ylabel("PDF", labelpad=3)
     for f in (fs, fp):
         h, l = (a0 if f is fs else axp[0]).get_legend_handles_labels()
-        f.legend(h, l, loc="lower center", ncol=4, bbox_to_anchor=(0.5, -0.08), fontsize=16, columnspacing=1.2)
+        f.legend(h, l, loc="lower center", ncol=4, bbox_to_anchor=(0.5, -0.08 if f is fs else -0.05), fontsize=16, columnspacing=1.2)
     fs.tight_layout(); save(fs, out, "p5_heldout_snapshot.png")
-    fp.tight_layout(w_pad=0.5); save(fp, out, "p5_heldout_pdf.png")
+    fp.suptitle("Broadband forcing", fontsize=16, fontweight="bold")
+    fp.tight_layout(w_pad=0.5); fp.subplots_adjust(top=0.80); fp._suptitle.set_y(0.985); save(fp, out, "p5_heldout_pdf.png")
 
 
 # ---------------------------------------------------------------- Panel 3: a priori fit of the plain MLP, held-out case
@@ -194,7 +195,7 @@ FMLP = os.path.join(STORE, "codes/ml-models/functional_mlp")
 APRIORI_RUN = os.path.join(FMLP, "runs/ablation_02_sum/layers1_width16/h_hx/delta_MxTw_ML/seed42/eval_heldout")
 
 
-def apriori(out, case="Re120_Ca0_010_theta45", title="Re 120, Ca 0.01, β 45°", it=-1, x0=400., x1=755.):
+def apriori(out, case="Re120_Ca0_010_theta45", title="Re 120, Ca 0.01, β 45°", it=-1, x0=500., x1=650.):
     """DNS ΔM_x + ΔT_w against the plain MLP (ml_sum_hhx: inputs h, h_x, Re, Ca, β) at one held-out snapshot."""
     import h5py
     style()
@@ -207,18 +208,23 @@ def apriori(out, case="Re120_Ca0_010_theta45", title="Re 120, Ca 0.01, β 45°",
     w = (x[j] >= x0) & (x[j] <= x1); j, P, T = j[w], P[w], T[w]
     nr = np.sqrt(np.mean((P - T) ** 2)) / np.std(T)
     print(f"{case} t = {t[it]:.0f}: {w.sum()} points, snapshot NRMSE {nr:.3f}")
-    fig, (a0, a1) = plt.subplots(2, 1, figsize=(11, 5.6), sharex=True)
+    fig, (a0, a1) = plt.subplots(1, 2, figsize=(11, 4.0))
     for a in (a0, a1):
         for sp in ("top", "right"): a.spines[sp].set_visible(True)
-    a0.plot(x[j], h[it, j], color=NAVY, lw=1.8); a0.set_ylabel("h"); a0.set_yticks([1, 2])
-    a0.set_title(f"{title}, t = {t[it]:.0f} (held-out case)", loc="center", fontsize=16, fontweight="bold")
+    a0.plot(x[j], h[it, j], color=NAVY, lw=2.2); a0.set_ylabel("h"); a0.set_yticks([1, 2])
+    a0.set_xlabel("x"); a0.set_xlim(x0, x1)
+    fig.suptitle(f"{title}, t = {t[it]:.0f} (held-out case)", fontsize=16, fontweight="bold")
     a1.axhline(0, color=GRAY, lw=2.2, ls="--", label=LAB["lav"])
     a1.plot(x[j], T, color=NAVY, lw=2.6, label="DNS")
     a1.plot(x[j], P, color=ORANGE, lw=1.8, label=LAB["plain"])
     a1.set_ylabel(r"$\Delta M_x + \Delta T_w$"); a1.set_xlabel("x"); a1.set_xlim(x0, x1)
     a1.set_ylim(-0.9, 2.4)
-    a1.legend(loc="upper right", ncol=3, fontsize=16, handlelength=1.6, columnspacing=1.2)
-    fig.tight_layout(h_pad=0.3); save(fig, out, "p3_apriori_fit.png")
+    for a in (a0, a1):  # region where the correction peaks
+        for xv in (550, 585): a.axvline(xv, color="#D62728", ls=":", lw=2.2, zorder=0)
+    a1.legend(loc="upper right", fontsize=15, handlelength=1.6, labelspacing=0.3, borderaxespad=0.3)
+    fig.subplots_adjust(left=0.065, right=0.99, bottom=0.17, top=0.88, wspace=0.2)
+    fig._suptitle.set_y(0.965)
+    save(fig, out, "p3_apriori_fit.png")
 
 
 # ---------------------------------------------------------------- Column 1: ONR report Figure 2 redrawn (Lavalle vs DNS, monochromatic)

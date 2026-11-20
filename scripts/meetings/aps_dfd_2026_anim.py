@@ -27,14 +27,16 @@ def main():
     ap.add_argument("--x0", type=float, default=400); ap.add_argument("--x1", type=float, default=780)
     ap.add_argument("--fps", type=int, default=30); ap.add_argument("--stride", type=int, default=2)
     ap.add_argument("--hold", type=float, default=3.0, help="seconds to hold the last frame")
+    ap.add_argument("--no-plain", action="store_true", help="leave out the plain MLP (writes p3_oracle_race_noplain.mp4)")
     a = ap.parse_args()
+    runs = [r for r in RUNS if not (a.no_plain and r[1] == LAB["plain"])]
 
-    with h5py.File(RUNS[0][0]) as f:
+    with h5py.File(runs[0][0]) as f:
         tR, x = f["time"][:], f["x"][:]
     w = np.where((x >= a.x0) & (x <= a.x1))[0]; xs = x[w]
     kR = np.arange(0, len(tR), a.stride)
     H = []
-    for fn, _, _ in RUNS:
+    for fn, _, _ in runs:
         with h5py.File(fn) as f:
             assert np.allclose(f["time"][:], tR) and np.allclose(f["x"][:], x), fn
             H.append(f["h"][:, w[0]:w[-1] + 1][kR])
@@ -48,10 +50,11 @@ def main():
     print(f"{len(kR)} frames, ROM t {tR[0]:.1f}-{tR[-1]:.1f}, max |t_DNS - t_ROM| = {np.max(abs(tD[kD][iD] - tR[kR])):.3f}")
 
     style(18)
-    fig, axs = plt.subplots(3, 1, figsize=(11, 6.6), sharex=True)
-    fig.subplots_adjust(left=0.075, right=0.985, top=0.90, bottom=0.10, hspace=0.18)
+    n = len(runs)
+    fig, axs = plt.subplots(n, 1, figsize=(11, 0.6 + 2.0 * n), sharex=True)
+    fig.subplots_adjust(left=0.075, right=0.985, top=1 - 0.66 / (0.6 + 2.0 * n), bottom=0.66 / (0.6 + 2.0 * n), hspace=0.18)
     lD, lR = [], []
-    for ax, (fn, lab, c) in zip(axs, RUNS):
+    for ax, (fn, lab, c) in zip(axs, runs):
         d, = ax.plot(xs, hD_all[iD[0]], color=NAVY, lw=2.4)
         r, = ax.plot(xs, H[len(lR)][0], color=c, lw=2.4)
         ax.set_ylim(0.3, 2.8); ax.set_yticks([0.5, 1.5, 2.5]); ax.set_ylabel("h")
@@ -60,17 +63,18 @@ def main():
         lD.append(d); lR.append(r)
     axs[0].text(0.988, 0.93, "DNS", transform=axs[0].transAxes, color=NAVY, fontsize=19, fontweight="bold", va="top", ha="right")
     axs[-1].set_xlabel("x (flow →)")
-    ttl = fig.text(0.075, 0.945, "", fontsize=20, va="center")
-    fig.text(0.985, 0.945, "Re 120, Ca 0.01, β 45°, f = 10 Hz", fontsize=14, color="#555555",
+    yt = 1 - 0.36 / (0.6 + 2.0 * n)
+    ttl = fig.text(0.075, yt, "", fontsize=20, va="center")
+    fig.text(0.985, yt, "Re 120, Ca 0.01, β 45°, f = 10 Hz", fontsize=14, color="#555555",
              ha="right", va="center")
 
-    os.makedirs(a.out, exist_ok=True); fn = os.path.join(a.out, "p3_oracle_race.mp4")
+    os.makedirs(a.out, exist_ok=True); fn = os.path.join(a.out, "p3_oracle_race_noplain.mp4" if a.no_plain else "p3_oracle_race.mp4")
     writer = FFMpegWriter(fps=a.fps, codec="libx264", bitrate=4000, extra_args=["-pix_fmt", "yuv420p"])
     nhold = int(a.hold * a.fps)
     with writer.saving(fig, fn, dpi=150):
         for j in range(len(kR) + nhold):
             k = min(j, len(kR) - 1)
-            for i in range(3):
+            for i in range(n):
                 lD[i].set_ydata(hD_all[iD[k]]); lR[i].set_ydata(H[i][k])
             ttl.set_text(f"t = {tR[kR][k] - tD[0]:5.1f}")
             writer.grab_frame()
