@@ -107,13 +107,15 @@ Built with `scripts/meetings/aps_dfd_2026_figs.py` into `docs/meetings/2026-11-a
 | 1 | Film schematic + inlet noise | ONR `Figure1.pdf`, crop panel D |
 | 1 | Looping DNS video | `anim01_h_full_domain.mp4` |
 | 2 | Equations, unclosed terms in colour; Lavalle and ML ROM lines | `p2_equations.png` |
-| 2 | Lavalle ROM against DNS at Re 120 (crests far too low) | ONR `Figure2.pdf`, crop panel B |
+| 1 | Lavalle against DNS, monochromatic: Re 19.3 β 6.4 (agrees) and Re 120 β 45 (crests far too low), side by side; ONR Figure 2 redrawn | `p1_lavalle_mono.png` (`aps_dfd_2026_figs.py lavalle_mono`) |
 | 3 | A priori: MLP prediction against DNS closure terms | ONR `Figure5.pdf`, crop two rows (e.g. Re 120 Ca 0.005 β 90 and Re 200) |
+| 3 | A priori: DNS ΔM_x + ΔT_w against the plain MLP, held-out Re 120 Ca 0.01 β 45 at t = 2000 (snapshot NRMSE 0.15; replaces the "figure to come" placeholder) | `p3_apriori_fit.png` (`aps_dfd_2026_figs.py apriori`) |
 | 3 | Oracle case: h error against time (Lavalle, exact closure, plain MLP, constrained MLP) and h(x) at t = 100 (plain MLP crests too tall) | `p3_oracle_error.png` |
 | 3 | Animation, oracle case t = 0–100: Lavalle, plain MLP, constrained MLP, each over the DNS (36 s loop); still of the last frame | `p3_oracle_race.mp4`, `p3_oracle_race_last.png` (`scripts/meetings/aps_dfd_2026_anim.py`) |
 | 4 | Method schematic with the two constraints | `p4_method.png` |
 | 4 | Growth rate against frequency, Re 20 / 120 / 200: OS, DNS, Lavalle, constrained MLP | `p4_linear_growth.png` |
-| 5 | Held-out cases: h(x) at t = 2000 and h PDFs, 2 successes + Re 200 β 6.4 failure | `p5_heldout_waves.png` |
+| 5 | Broadband case Re 120 Ca 0.02 β 90: h(x) at t = 2000 | `p5_heldout_snapshot.png` |
+| 5 | h PDFs, Re 20 β 45, Re 120 β 90, Re 200 β 6.4 (linear axis) | `p5_heldout_pdf.png` |
 
 **Choices made without you (change any):**
 - Panel 2 adds ONR Figure 2B: one look shows why the closure matters.

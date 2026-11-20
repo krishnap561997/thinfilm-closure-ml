@@ -25,8 +25,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=os.path.join(ROOT, "docs/meetings/2026-11-aps-dfd/poster_figs"))
     ap.add_argument("--x0", type=float, default=400); ap.add_argument("--x1", type=float, default=780)
-    ap.add_argument("--fps", type=int, default=30); ap.add_argument("--stride", type=int, default=1)
-    ap.add_argument("--hold", type=float, default=2.5, help="seconds to hold the last frame")
+    ap.add_argument("--fps", type=int, default=30); ap.add_argument("--stride", type=int, default=2)
+    ap.add_argument("--hold", type=float, default=3.0, help="seconds to hold the last frame")
     a = ap.parse_args()
 
     with h5py.File(RUNS[0][0]) as f:
@@ -55,12 +55,13 @@ def main():
         d, = ax.plot(xs, hD_all[iD[0]], color=NAVY, lw=2.4)
         r, = ax.plot(xs, H[len(lR)][0], color=c, lw=2.4)
         ax.set_ylim(0.3, 2.8); ax.set_yticks([0.5, 1.5, 2.5]); ax.set_ylabel("h")
-        ax.text(0.005, 0.93, lab, transform=ax.transAxes, color=c, fontsize=19, fontweight="bold", va="top")
+        for sp in ("top", "right"): ax.spines[sp].set_visible(True)
+        ax.text(0.012, 0.93, lab, transform=ax.transAxes, color=c, fontsize=19, fontweight="bold", va="top")
         lD.append(d); lR.append(r)
-    axs[0].text(0.995, 0.93, "DNS", transform=axs[0].transAxes, color=NAVY, fontsize=19, fontweight="bold", va="top", ha="right")
+    axs[0].text(0.988, 0.93, "DNS", transform=axs[0].transAxes, color=NAVY, fontsize=19, fontweight="bold", va="top", ha="right")
     axs[-1].set_xlabel("x (flow →)")
     ttl = fig.text(0.075, 0.945, "", fontsize=20, va="center")
-    fig.text(0.985, 0.945, "all start from the same DNS state; Re 120, Ca 0.01, β 45°", fontsize=14, color="#555555",
+    fig.text(0.985, 0.945, "Re 120, Ca 0.01, β 45°, f = 10 Hz", fontsize=14, color="#555555",
              ha="right", va="center")
 
     os.makedirs(a.out, exist_ok=True); fn = os.path.join(a.out, "p3_oracle_race.mp4")
