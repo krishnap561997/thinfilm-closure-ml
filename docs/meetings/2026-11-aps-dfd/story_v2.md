@@ -110,6 +110,7 @@ Built with `scripts/meetings/aps_dfd_2026_figs.py` into `docs/meetings/2026-11-a
 | 2 | Lavalle ROM against DNS at Re 120 (crests far too low) | ONR `Figure2.pdf`, crop panel B |
 | 3 | A priori: MLP prediction against DNS closure terms | ONR `Figure5.pdf`, crop two rows (e.g. Re 120 Ca 0.005 β 90 and Re 200) |
 | 3 | Oracle case: h error against time (Lavalle, exact closure, plain MLP, constrained MLP) and h(x) at t = 100 (plain MLP crests too tall) | `p3_oracle_error.png` |
+| 3 | Animation, oracle case t = 0–100: Lavalle, plain MLP, constrained MLP, each over the DNS (36 s loop); still of the last frame | `p3_oracle_race.mp4`, `p3_oracle_race_last.png` (`scripts/meetings/aps_dfd_2026_anim.py`) |
 | 4 | Method schematic with the two constraints | `p4_method.png` |
 | 4 | Growth rate against frequency, Re 20 / 120 / 200: OS, DNS, Lavalle, constrained MLP | `p4_linear_growth.png` |
 | 5 | Held-out cases: h(x) at t = 2000 and h PDFs, 2 successes + Re 200 β 6.4 failure | `p5_heldout_waves.png` |
